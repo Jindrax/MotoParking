@@ -13,8 +13,15 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.gui.TableFormat;
+import ca.odell.glazedlists.swing.AdvancedListSelectionModel;
 import ca.odell.glazedlists.swing.DefaultEventTableModel;
+import ca.odell.glazedlists.swing.GlazedListsSwing;
 import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -58,8 +65,18 @@ public class GUI extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaDiario = new javax.swing.JTable();
         panelMensual = new javax.swing.JPanel();
-        panelAdmin = new javax.swing.JPanel();
-        fechaSelect = new org.jdesktop.swingx.JXDatePicker();
+        panelAdmin = new javax.swing.JTabbedPane();
+        panelLockers = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tablaLockers = new javax.swing.JTable();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        idLocker = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        aloLocker = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        capLocker = new javax.swing.JTextField();
+        actionLocker = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -89,7 +106,7 @@ public class GUI extends javax.swing.JFrame {
             .addGroup(panelDiarioLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 570, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(180, Short.MAX_VALUE))
+                .addContainerGap(199, Short.MAX_VALUE))
         );
         panelDiarioLayout.setVerticalGroup(
             panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -105,7 +122,7 @@ public class GUI extends javax.swing.JFrame {
         panelMensual.setLayout(panelMensualLayout);
         panelMensualLayout.setHorizontalGroup(
             panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 760, Short.MAX_VALUE)
+            .addGap(0, 779, Short.MAX_VALUE)
         );
         panelMensualLayout.setVerticalGroup(
             panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -114,28 +131,110 @@ public class GUI extends javax.swing.JFrame {
 
         Contenedor.addTab("Mensual", panelMensual);
 
-        fechaSelect.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fechaSelectActionPerformed(evt);
+        panelAdmin.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentShown(java.awt.event.ComponentEvent evt) {
+                panelAdminComponentShown(evt);
             }
         });
 
-        javax.swing.GroupLayout panelAdminLayout = new javax.swing.GroupLayout(panelAdmin);
-        panelAdmin.setLayout(panelAdminLayout);
-        panelAdminLayout.setHorizontalGroup(
-            panelAdminLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelAdminLayout.createSequentialGroup()
-                .addContainerGap(619, Short.MAX_VALUE)
-                .addComponent(fechaSelect, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+        jScrollPane2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jScrollPane2MouseClicked(evt);
+            }
+        });
+
+        tablaLockers.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        tablaLockers.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaLockersMouseClicked(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                tablaLockersMouseReleased(evt);
+            }
+        });
+        jScrollPane2.setViewportView(tablaLockers);
+
+        jLabel1.setText("Identificacion");
+
+        jLabel2.setText("Alojamiento");
+
+        jLabel3.setText("Capacidad");
+
+        actionLocker.setText("jButton1");
+        actionLocker.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionLockerActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(actionLocker, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(idLocker))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(aloLocker, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(capLocker, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)))
                 .addContainerGap())
         );
-        panelAdminLayout.setVerticalGroup(
-            panelAdminLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelAdminLayout.createSequentialGroup()
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(fechaSelect, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(443, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(idLocker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(aloLocker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(capLocker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(actionLocker)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        javax.swing.GroupLayout panelLockersLayout = new javax.swing.GroupLayout(panelLockers);
+        panelLockers.setLayout(panelLockersLayout);
+        panelLockersLayout.setHorizontalGroup(
+            panelLockersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelLockersLayout.createSequentialGroup()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 490, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        panelLockersLayout.setVerticalGroup(
+            panelLockersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        panelAdmin.addTab("Lockers", panelLockers);
 
         Contenedor.addTab("Administracion", panelAdmin);
 
@@ -157,9 +256,49 @@ public class GUI extends javax.swing.JFrame {
         
     }//GEN-LAST:event_ContenedorComponentShown
 
-    private void fechaSelectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fechaSelectActionPerformed
+    private void panelAdminComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_panelAdminComponentShown
+        inicializarTablaLockers();
+    }//GEN-LAST:event_panelAdminComponentShown
+
+    private void jScrollPane2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jScrollPane2MouseClicked
         
-    }//GEN-LAST:event_fechaSelectActionPerformed
+    }//GEN-LAST:event_jScrollPane2MouseClicked
+
+    private void tablaLockersMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaLockersMouseReleased
+        
+    }//GEN-LAST:event_tablaLockersMouseReleased
+
+    private void tablaLockersMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaLockersMouseClicked
+        if (tablaLockers.getSelectedRow() != -1) {
+            Locker locker = (Locker) tablaLockers.getValueAt(tablaLockers.getSelectedRow(), 0);
+            idLocker.setText(locker.getIdentificador());
+            aloLocker.setText(String.valueOf(locker.getAlojamiento()));
+            capLocker.setText(String.valueOf(locker.getCapacidad()));
+        }else{
+            JOptionPane.showMessageDialog(null, "Seleccione un locker primero.");
+        }    
+    }//GEN-LAST:event_tablaLockersMouseClicked
+
+    private void actionLockerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionLockerActionPerformed
+        Locker locker = Conection.getLocker().findLocker(idLocker.getText());
+        if(locker == null){
+            locker = new Locker(idLocker.getText(), Long.parseLong(aloLocker.getText()), Long.parseLong(capLocker.getText()));
+            try {
+                Conection.getLocker().create(locker);
+            } catch (Exception ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }else{
+            locker.setIdentificador(idLocker.getText());
+            locker.setAlojamiento(Long.parseLong(aloLocker.getText()));
+            locker.setCapacidad(Long.parseLong(capLocker.getText()));
+            try {
+                Conection.getLocker().edit(locker);
+            } catch (Exception ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_actionLockerActionPerformed
 
     /**
      * @param args the command line arguments
@@ -198,11 +337,36 @@ public class GUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane Contenedor;
-    private org.jdesktop.swingx.JXDatePicker fechaSelect;
+    private javax.swing.JButton actionLocker;
+    private javax.swing.JTextField aloLocker;
+    private javax.swing.JTextField capLocker;
+    private javax.swing.JTextField idLocker;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JPanel panelAdmin;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTabbedPane panelAdmin;
     private javax.swing.JPanel panelDiario;
+    private javax.swing.JPanel panelLockers;
     private javax.swing.JPanel panelMensual;
     private javax.swing.JTable tablaDiario;
+    private javax.swing.JTable tablaLockers;
     // End of variables declaration//GEN-END:variables
+
+    private void inicializarTablaLockers() {
+        List<Locker> lockerList = Conection.getLocker().findLockerEntities();
+        String[] columnas = {"Identificador", "Alojamiento", "Capacidad"};
+        Object[][] campos =  new Object[lockerList.size()][columnas.length];
+        int i = 0;
+        for(Locker locker: lockerList){
+            campos[i][0] = locker;
+            campos[i][1] = locker.getAlojamiento();
+            campos[i][2] = locker.getCapacidad();
+            i++;
+        }
+        DefaultTableModel modelo = new DefaultTableModel(campos, columnas);
+        tablaLockers.setModel(modelo);
+    }
 }

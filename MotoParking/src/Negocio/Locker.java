@@ -114,7 +114,7 @@ public class Locker implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("%s - %d", identificador, alojamiento);
+        return identificador;
     }
     
 }
