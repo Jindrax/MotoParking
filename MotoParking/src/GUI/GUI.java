@@ -5,6 +5,7 @@
  */
 package GUI;
 
+import Adaptadores.adaptadorCupo;
 import Negocio.Cupo;
 import Negocio.Locker;
 import Negocio.UsuarioDiario;
@@ -14,15 +15,13 @@ import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.gui.TableFormat;
 import ca.odell.glazedlists.swing.DefaultEventTableModel;
 import java.util.GregorianCalendar;
-import org.jdesktop.swingx.JXDatePicker;
-import org.jdesktop.swingx.SwingXUtilities;
 
 /**
  *
  * @author santiago pc
  */
 public class GUI extends javax.swing.JFrame {
-    EventList<Cupo> cupos;
+    EventList<adaptadorCupo> cupos;
     /**
      * Creates new form GUI
      */
@@ -32,10 +31,10 @@ public class GUI extends javax.swing.JFrame {
         Cupo cupo = new Cupo((long)0, new GregorianCalendar().getTime(), (long)1, (long)30, (long)1400);
         cupo.setPlaca(new UsuarioDiario("jhv12a", 4, 90, 1400));
         cupo.setLocker(new Locker("A", 4, 0));
-        cupos.add(cupo);
-        String[] campos = {"consecutivo", "placa", "ingreso", "locker"};
-        String[] columnas = {"#", "Placa", "Ingreso", "Locker"};
-        TableFormat formato = GlazedLists.tableFormat(Cupo.class, campos, columnas);
+        cupos.add(new adaptadorCupo(cupo));
+        String[] campos = {"consecutivo", "placa", "ingreso", "locker", "entradas"};
+        String[] columnas = {"#", "Placa", "Ingreso", "Locker", "Entradas"};
+        TableFormat formato = GlazedLists.tableFormat(adaptadorCupo.class, campos, columnas);
         DefaultEventTableModel<Cupo> modelo = new DefaultEventTableModel<>(cupos, formato);
         tablaDiario.setModel(modelo);
     }
