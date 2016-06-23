@@ -5,21 +5,30 @@
  */
 package GUI;
 
-import Adaptadores.adaptadorCupo;
+import Controladores.exceptions.NonexistentEntityException;
+import Controladores.exceptions.PreexistingEntityException;
+import Dialogos.RetiroDialogo;
+import Negocio.CobroDiario;
+import Negocio.Configuraciones;
 import Negocio.Cupo;
+import Negocio.CupoPK;
 import Negocio.Locker;
+import Negocio.Usuario;
 import Negocio.UsuarioDiario;
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.GlazedLists;
-import ca.odell.glazedlists.gui.TableFormat;
-import ca.odell.glazedlists.swing.AdvancedListSelectionModel;
-import ca.odell.glazedlists.swing.DefaultEventTableModel;
-import ca.odell.glazedlists.swing.GlazedListsSwing;
+import Utilidades.Auxi;
+import static Utilidades.Auxi.selector;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -28,27 +37,51 @@ import javax.swing.table.DefaultTableModel;
  * @author santiago pc
  */
 public class GUI extends javax.swing.JFrame {
-    EventList<adaptadorCupo> cupos;
     /**
      * Creates new form GUI
      */
+    Map<Long, Cupo> cuposActivos = new HashMap<>();
+    Cupo cupoActual = null;
     
     private void inicializarTablaDiario(){
-        cupos = new BasicEventList<>();
-        Cupo cupo = new Cupo((long)0, new GregorianCalendar().getTime(), (long)1, (long)30, (long)1400);
-        cupo.setPlaca(new UsuarioDiario("jhv12a", 4, 90, 1400));
-        cupo.setLocker(new Locker("A", 4, 0));
-        cupos.add(new adaptadorCupo(cupo));
-        String[] campos = {"consecutivo", "placa", "ingreso", "locker", "entradas"};
-        String[] columnas = {"#", "Placa", "Ingreso", "Locker", "Entradas"};
-        TableFormat formato = GlazedLists.tableFormat(adaptadorCupo.class, campos, columnas);
-        DefaultEventTableModel<Cupo> modelo = new DefaultEventTableModel<>(cupos, formato);
+        EntityManager em = Conection.getEmf().createEntityManager();
+        Query query = em.createQuery("select c from Cupo c where c.salida is NULL");
+        List<Cupo> cupos = query.getResultList();
+        String[] columnas = {"#", "Placa", "Ingreso", "Locker", "Cascos", "Tiempo", "Cobro",  "Entradas"};
+        Object[][] campos = new Object[cupos.size()][columnas.length];
+        int i=0;
+        for(Cupo cupo: cupos){
+            campos[i][0] = cupo;
+            campos[i][1] = cupo.getPlaca().getPlaca();
+            campos[i][2] = Auxi.formaterHora(cupo.getCupoPK().getIngreso());
+            if(cupo.getLocker()==null){
+                campos[i][3] = "Ninguno";
+                campos[i][4] = "-";
+            }else{
+                campos[i][3] = cupo.getLocker();
+                campos[i][4] = cupo.getLocker().getAlojamiento();
+            }
+            campos[i][5] = "";
+            campos[i][6] = "";
+            campos[i][7] = cupo.getPlaca().getEntradas();
+            i++;
+            cuposActivos.put(cupo.getCupoPK().getConsecutivo(), cupo);
+        }
+        DefaultTableModel modelo = new DefaultTableModel(campos, columnas);
         tablaDiario.setModel(modelo);
     }
     
     public GUI() {
         initComponents();
         inicializarTablaDiario();
+        Timer sincro = new Timer("sincro", true);
+        TimerTask tareaSincro = new TimerTask() {
+            @Override
+            public void run() {
+                mantenerTablaDiario();
+            }
+        };
+        sincro.scheduleAtFixedRate(tareaSincro, 1000, 1000);
     }
 
     /**
@@ -64,6 +97,11 @@ public class GUI extends javax.swing.JFrame {
         panelDiario = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaDiario = new javax.swing.JTable();
+        jLabel4 = new javax.swing.JLabel();
+        placaDiario = new javax.swing.JTextField();
+        cascosDiario = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        actionDiario = new javax.swing.JButton();
         panelMensual = new javax.swing.JPanel();
         panelAdmin = new javax.swing.JTabbedPane();
         panelLockers = new javax.swing.JPanel();
@@ -77,6 +115,11 @@ public class GUI extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         capLocker = new javax.swing.JTextField();
         actionLocker = new javax.swing.JButton();
+        configPanel = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tablaConfig = new javax.swing.JTable();
+        valorConfig = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -99,6 +142,37 @@ public class GUI extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(tablaDiario);
 
+        jLabel4.setText("Placa");
+
+        placaDiario.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        placaDiario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                placaDiarioActionPerformed(evt);
+            }
+        });
+
+        cascosDiario.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        cascosDiario.setText("0");
+        cascosDiario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cascosDiarioActionPerformed(evt);
+            }
+        });
+
+        jLabel5.setText("Cascos");
+
+        actionDiario.setText("Registrar");
+        actionDiario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionDiarioActionPerformed(evt);
+            }
+        });
+        actionDiario.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                actionDiarioKeyPressed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelDiarioLayout = new javax.swing.GroupLayout(panelDiario);
         panelDiario.setLayout(panelDiarioLayout);
         panelDiarioLayout.setHorizontalGroup(
@@ -106,13 +180,38 @@ public class GUI extends javax.swing.JFrame {
             .addGroup(panelDiarioLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 570, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(199, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelDiarioLayout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(placaDiario))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelDiarioLayout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(cascosDiario, javax.swing.GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelDiarioLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(actionDiario)))
+                .addContainerGap())
         );
         panelDiarioLayout.setVerticalGroup(
             panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelDiarioLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 454, Short.MAX_VALUE)
+                .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelDiarioLayout.createSequentialGroup()
+                        .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4)
+                            .addComponent(placaDiario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel5)
+                            .addComponent(cascosDiario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(actionDiario)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 454, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -236,6 +335,66 @@ public class GUI extends javax.swing.JFrame {
 
         panelAdmin.addTab("Lockers", panelLockers);
 
+        configPanel.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentShown(java.awt.event.ComponentEvent evt) {
+                configPanelComponentShown(evt);
+            }
+        });
+
+        tablaConfig.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        tablaConfig.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaConfigMouseClicked(evt);
+            }
+        });
+        jScrollPane3.setViewportView(tablaConfig);
+
+        valorConfig.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        valorConfig.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                valorConfigActionPerformed(evt);
+            }
+        });
+
+        jLabel6.setText("Nuevo Valor");
+
+        javax.swing.GroupLayout configPanelLayout = new javax.swing.GroupLayout(configPanel);
+        configPanel.setLayout(configPanelLayout);
+        configPanelLayout.setHorizontalGroup(
+            configPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(configPanelLayout.createSequentialGroup()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 608, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(configPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(valorConfig)
+                    .addGroup(configPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel6)
+                        .addGap(0, 92, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        configPanelLayout.setVerticalGroup(
+            configPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
+            .addGroup(configPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel6)
+                .addGap(8, 8, 8)
+                .addComponent(valorConfig, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        panelAdmin.addTab("Configuracion", configPanel);
+
         Contenedor.addTab("Administracion", panelAdmin);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -253,7 +412,7 @@ public class GUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void ContenedorComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_ContenedorComponentShown
-        
+        placaDiario.requestFocus();
     }//GEN-LAST:event_ContenedorComponentShown
 
     private void panelAdminComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_panelAdminComponentShown
@@ -300,6 +459,78 @@ public class GUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_actionLockerActionPerformed
 
+    private void actionDiarioProceso(){
+        String ingreso = placaDiario.getText();        
+        switch(selector(ingreso)){
+            case 0:
+                ingresoDiario();
+                break;
+            case 1:
+                ingresoDiario();
+                break;
+            case 2:
+                ingresoDiario();
+                break;
+            case 3:
+                if(cuposActivos.containsKey(Long.parseLong(ingreso))){
+                    Cupo cupo = cuposActivos.remove(Long.parseLong(ingreso));
+                    retiroDiario(cupo);
+                    new RetiroDialogo(this, rootPaneCheckingEnabled, cupo);
+                    inicializarTablaDiario();
+                }else{
+                    JOptionPane.showMessageDialog(null, "Ese cupo no existe en el sistema.");
+                }
+                break;
+            default:
+                JOptionPane.showMessageDialog(null, "El ingreso no es un formato permitido.");
+        }
+        placaDiario.setText("");
+        cascosDiario.setText("0");
+        placaDiario.requestFocus();
+    }
+    
+    private void actionDiarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionDiarioActionPerformed
+            actionDiarioProceso();
+            inicializarTablaDiario();
+    }//GEN-LAST:event_actionDiarioActionPerformed
+
+    private void placaDiarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_placaDiarioActionPerformed
+        switch(selector(placaDiario.getText())){
+            case 1:
+                cascosDiario.requestFocus();
+                cascosDiario.selectAll();
+                break;
+            case 4:
+                JOptionPane.showMessageDialog(null, "Entrada erronea.");
+                placaDiario.requestFocus();
+                placaDiario.selectAll();
+                break;
+            default:
+                actionDiario.requestFocus();
+                break;                
+        }
+    }//GEN-LAST:event_placaDiarioActionPerformed
+
+    private void cascosDiarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cascosDiarioActionPerformed
+        actionDiario.requestFocus();
+    }//GEN-LAST:event_cascosDiarioActionPerformed
+
+    private void actionDiarioKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_actionDiarioKeyPressed
+        actionDiarioProceso();
+    }//GEN-LAST:event_actionDiarioKeyPressed
+
+    private void configPanelComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_configPanelComponentShown
+        inicializarTablaConfig();
+    }//GEN-LAST:event_configPanelComponentShown
+
+    private void tablaConfigMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaConfigMouseClicked
+        
+    }//GEN-LAST:event_tablaConfigMouseClicked
+
+    private void valorConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_valorConfigActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_valorConfigActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -337,26 +568,38 @@ public class GUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane Contenedor;
+    private javax.swing.JButton actionDiario;
     private javax.swing.JButton actionLocker;
     private javax.swing.JTextField aloLocker;
     private javax.swing.JTextField capLocker;
+    private javax.swing.JTextField cascosDiario;
+    private javax.swing.JPanel configPanel;
     private javax.swing.JTextField idLocker;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane panelAdmin;
     private javax.swing.JPanel panelDiario;
     private javax.swing.JPanel panelLockers;
     private javax.swing.JPanel panelMensual;
+    private javax.swing.JTextField placaDiario;
+    private javax.swing.JTable tablaConfig;
     private javax.swing.JTable tablaDiario;
     private javax.swing.JTable tablaLockers;
+    private javax.swing.JTextField valorConfig;
     // End of variables declaration//GEN-END:variables
 
     private void inicializarTablaLockers() {
-        List<Locker> lockerList = Conection.getLocker().findLockerEntities();
+        EntityManager em = Conection.getEmf().createEntityManager();
+        Query query = em.createQuery("select l from Locker l ORDER BY l.identificador");
+        List<Locker> lockerList = query.getResultList();
         String[] columnas = {"Identificador", "Alojamiento", "Capacidad"};
         Object[][] campos =  new Object[lockerList.size()][columnas.length];
         int i = 0;
@@ -368,5 +611,96 @@ public class GUI extends javax.swing.JFrame {
         }
         DefaultTableModel modelo = new DefaultTableModel(campos, columnas);
         tablaLockers.setModel(modelo);
+    }
+    
+    private void inicializarTablaConfig() {
+        EntityManager em = Conection.getEmf().createEntityManager();
+        Query query = em.createQuery("select c from Configuraciones c");
+        List<Configuraciones> confList = query.getResultList();
+        String[] columnas = {"Descripcion", "Valor"};
+        Object[][] campos =  new Object[confList.size()][columnas.length];
+        int i = 0;
+        for(Configuraciones conf: confList){
+            campos[i][0] = conf;
+            campos[i][1] = conf.getValor();
+            i++;
+        }
+        DefaultTableModel modelo = new DefaultTableModel(campos, columnas);
+        tablaConfig.setModel(modelo);
+    }
+
+    private void ingresoDiario() {
+        String placa = placaDiario.getText().toUpperCase();
+        int cascos = Integer.parseInt(cascosDiario.getText());
+        UsuarioDiario usuario = Conection.getUsuarioDiario().findUsuarioDiario(placa);
+        if (usuario == null) {
+            Usuario usuarioGeneral = Conection.getUsuario().findUsuario(placa);
+            if (usuarioGeneral == null) {
+                usuarioGeneral = new Usuario(placa, "Moto");
+                try {
+                    Conection.getUsuario().create(usuarioGeneral);
+                } catch (Exception ex) {
+                    Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            usuario = new UsuarioDiario(placa, 0, 0, 0);
+            usuario.setUsuario(usuarioGeneral);
+            try {
+                Conection.getUsuarioDiario().create(usuario);
+            } catch (PreexistingEntityException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        long consecutivo = Long.parseLong(Conection.getConfiguraciones().findConfiguraciones("consecutivoDiario").getValor());
+        Cupo cupo = new Cupo(new CupoPK(consecutivo, new GregorianCalendar().getTime()), 0, 0, 0);
+        cupo.setPlaca(usuario);
+        if(cascos>0){
+            EntityManager em = Conection.getEmf().createEntityManager();
+            Query query = em.createQuery("select l from Locker l where l.alojamiento = 0 and l.capacidad >= :capacidad ORDER BY l.identificador");
+            query.setParameter("capacidad", cascos);
+            List<Locker> lockers = query.getResultList();
+            if(lockers.size()>0){
+                Locker locker = lockers.get(0);
+                locker.setAlojamiento(cascos);
+                System.out.println("locker asignado: " + locker);
+                try {
+                    Conection.getLocker().edit(locker);
+                } catch (Exception ex) {
+                    Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                cupo.setLocker(locker);
+            }
+        }
+        try {
+            Conection.getCupo().create(cupo);
+        } catch (Exception ex) {
+            Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        consecutivo++;
+        Configuraciones cons = Conection.getConfiguraciones().findConfiguraciones("consecutivoDiario");
+        cons.setValor(String.valueOf(consecutivo));
+        try {
+            Conection.getConfiguraciones().edit(cons);
+        } catch (Exception ex) {
+            Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        inicializarTablaDiario();
+    }
+
+    private void retiroDiario(Cupo cupo) {
+        cupo.setSalida(new GregorianCalendar().getTime());
+        Auxi.calcularTiempoMoto(cupo);
+        cupoActual = cupo;        
+    }
+    
+    private void mantenerTablaDiario(){
+        for(int i=0; i<tablaDiario.getRowCount(); i++){
+            Cupo cupo = (Cupo)tablaDiario.getValueAt(i, 0);
+            String valores[] = Auxi.calcularTiempoMotoTentativo(cupo);
+            tablaDiario.setValueAt(valores[0], i, 5);
+            tablaDiario.setValueAt(valores[1], i, 6);
+        }
     }
 }
