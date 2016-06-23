@@ -21,7 +21,7 @@ import javax.persistence.EntityManagerFactory;
 
 /**
  *
- * @author Todesser
+ * @author santiago pc
  */
 public class LockerJpaController implements Serializable {
 
@@ -44,7 +44,7 @@ public class LockerJpaController implements Serializable {
             em.getTransaction().begin();
             List<Cupo> attachedCupoList = new ArrayList<Cupo>();
             for (Cupo cupoListCupoToAttach : locker.getCupoList()) {
-                cupoListCupoToAttach = em.getReference(cupoListCupoToAttach.getClass(), cupoListCupoToAttach.getConsecutivo());
+                cupoListCupoToAttach = em.getReference(cupoListCupoToAttach.getClass(), cupoListCupoToAttach.getCupoPK());
                 attachedCupoList.add(cupoListCupoToAttach);
             }
             locker.setCupoList(attachedCupoList);
@@ -81,7 +81,7 @@ public class LockerJpaController implements Serializable {
             List<Cupo> cupoListNew = locker.getCupoList();
             List<Cupo> attachedCupoListNew = new ArrayList<Cupo>();
             for (Cupo cupoListNewCupoToAttach : cupoListNew) {
-                cupoListNewCupoToAttach = em.getReference(cupoListNewCupoToAttach.getClass(), cupoListNewCupoToAttach.getConsecutivo());
+                cupoListNewCupoToAttach = em.getReference(cupoListNewCupoToAttach.getClass(), cupoListNewCupoToAttach.getCupoPK());
                 attachedCupoListNew.add(cupoListNewCupoToAttach);
             }
             cupoListNew = attachedCupoListNew;

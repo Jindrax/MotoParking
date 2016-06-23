@@ -12,6 +12,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -46,9 +47,11 @@ public class CobroDiario implements Serializable {
     @Basic(optional = false)
     @Column(name = "cobro")
     private long cobro;
-    @JoinColumn(name = "cupo_consecutivo", referencedColumnName = "consecutivo")
+    @JoinColumns({
+        @JoinColumn(name = "cupo_consecutivo", referencedColumnName = "consecutivo"),
+        @JoinColumn(name = "cupo_ingreso", referencedColumnName = "ingreso")})
     @ManyToOne(optional = false)
-    private Cupo cupoConsecutivo;
+    private Cupo cupo;
 
     public CobroDiario() {
     }
@@ -87,12 +90,12 @@ public class CobroDiario implements Serializable {
         this.cobro = cobro;
     }
 
-    public Cupo getCupoConsecutivo() {
-        return cupoConsecutivo;
+    public Cupo getCupo() {
+        return cupo;
     }
 
-    public void setCupoConsecutivo(Cupo cupoConsecutivo) {
-        this.cupoConsecutivo = cupoConsecutivo;
+    public void setCupo(Cupo cupo) {
+        this.cupo = cupo;
     }
 
     @Override

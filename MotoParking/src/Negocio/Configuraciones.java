@@ -87,7 +87,7 @@ public class Configuraciones implements Serializable {
 
     @Override
     public String toString() {
-        return "Negocio.Configuraciones[ descripcion=" + descripcion + " ]";
+        return descripcion;
     }
     
 }

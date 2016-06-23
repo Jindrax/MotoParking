@@ -23,7 +23,7 @@ import javax.persistence.EntityManagerFactory;
 
 /**
  *
- * @author Todesser
+ * @author santiago pc
  */
 public class UsuarioDiarioJpaController implements Serializable {
 
@@ -65,7 +65,7 @@ public class UsuarioDiarioJpaController implements Serializable {
             }
             List<Cupo> attachedCupoList = new ArrayList<Cupo>();
             for (Cupo cupoListCupoToAttach : usuarioDiario.getCupoList()) {
-                cupoListCupoToAttach = em.getReference(cupoListCupoToAttach.getClass(), cupoListCupoToAttach.getConsecutivo());
+                cupoListCupoToAttach = em.getReference(cupoListCupoToAttach.getClass(), cupoListCupoToAttach.getCupoPK());
                 attachedCupoList.add(cupoListCupoToAttach);
             }
             usuarioDiario.setCupoList(attachedCupoList);
@@ -133,7 +133,7 @@ public class UsuarioDiarioJpaController implements Serializable {
             }
             List<Cupo> attachedCupoListNew = new ArrayList<Cupo>();
             for (Cupo cupoListNewCupoToAttach : cupoListNew) {
-                cupoListNewCupoToAttach = em.getReference(cupoListNewCupoToAttach.getClass(), cupoListNewCupoToAttach.getConsecutivo());
+                cupoListNewCupoToAttach = em.getReference(cupoListNewCupoToAttach.getClass(), cupoListNewCupoToAttach.getCupoPK());
                 attachedCupoListNew.add(cupoListNewCupoToAttach);
             }
             cupoListNew = attachedCupoListNew;

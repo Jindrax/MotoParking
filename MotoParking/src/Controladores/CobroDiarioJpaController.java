@@ -20,7 +20,7 @@ import javax.persistence.EntityManagerFactory;
 
 /**
  *
- * @author Todesser
+ * @author santiago pc
  */
 public class CobroDiarioJpaController implements Serializable {
 
@@ -38,15 +38,15 @@ public class CobroDiarioJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Cupo cupoConsecutivo = cobroDiario.getCupoConsecutivo();
-            if (cupoConsecutivo != null) {
-                cupoConsecutivo = em.getReference(cupoConsecutivo.getClass(), cupoConsecutivo.getConsecutivo());
-                cobroDiario.setCupoConsecutivo(cupoConsecutivo);
+            Cupo cupo = cobroDiario.getCupo();
+            if (cupo != null) {
+                cupo = em.getReference(cupo.getClass(), cupo.getCupoPK());
+                cobroDiario.setCupo(cupo);
             }
             em.persist(cobroDiario);
-            if (cupoConsecutivo != null) {
-                cupoConsecutivo.getCobroDiarioList().add(cobroDiario);
-                cupoConsecutivo = em.merge(cupoConsecutivo);
+            if (cupo != null) {
+                cupo.getCobroDiarioList().add(cobroDiario);
+                cupo = em.merge(cupo);
             }
             em.getTransaction().commit();
         } catch (Exception ex) {
@@ -67,20 +67,20 @@ public class CobroDiarioJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             CobroDiario persistentCobroDiario = em.find(CobroDiario.class, cobroDiario.getConsecutivo());
-            Cupo cupoConsecutivoOld = persistentCobroDiario.getCupoConsecutivo();
-            Cupo cupoConsecutivoNew = cobroDiario.getCupoConsecutivo();
-            if (cupoConsecutivoNew != null) {
-                cupoConsecutivoNew = em.getReference(cupoConsecutivoNew.getClass(), cupoConsecutivoNew.getConsecutivo());
-                cobroDiario.setCupoConsecutivo(cupoConsecutivoNew);
+            Cupo cupoOld = persistentCobroDiario.getCupo();
+            Cupo cupoNew = cobroDiario.getCupo();
+            if (cupoNew != null) {
+                cupoNew = em.getReference(cupoNew.getClass(), cupoNew.getCupoPK());
+                cobroDiario.setCupo(cupoNew);
             }
             cobroDiario = em.merge(cobroDiario);
-            if (cupoConsecutivoOld != null && !cupoConsecutivoOld.equals(cupoConsecutivoNew)) {
-                cupoConsecutivoOld.getCobroDiarioList().remove(cobroDiario);
-                cupoConsecutivoOld = em.merge(cupoConsecutivoOld);
+            if (cupoOld != null && !cupoOld.equals(cupoNew)) {
+                cupoOld.getCobroDiarioList().remove(cobroDiario);
+                cupoOld = em.merge(cupoOld);
             }
-            if (cupoConsecutivoNew != null && !cupoConsecutivoNew.equals(cupoConsecutivoOld)) {
-                cupoConsecutivoNew.getCobroDiarioList().add(cobroDiario);
-                cupoConsecutivoNew = em.merge(cupoConsecutivoNew);
+            if (cupoNew != null && !cupoNew.equals(cupoOld)) {
+                cupoNew.getCobroDiarioList().add(cobroDiario);
+                cupoNew = em.merge(cupoNew);
             }
             em.getTransaction().commit();
         } catch (Exception ex) {
@@ -111,10 +111,10 @@ public class CobroDiarioJpaController implements Serializable {
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The cobroDiario with id " + id + " no longer exists.", enfe);
             }
-            Cupo cupoConsecutivo = cobroDiario.getCupoConsecutivo();
-            if (cupoConsecutivo != null) {
-                cupoConsecutivo.getCobroDiarioList().remove(cobroDiario);
-                cupoConsecutivo = em.merge(cupoConsecutivo);
+            Cupo cupo = cobroDiario.getCupo();
+            if (cupo != null) {
+                cupo.getCobroDiarioList().remove(cobroDiario);
+                cupo = em.merge(cupo);
             }
             em.remove(cobroDiario);
             em.getTransaction().commit();

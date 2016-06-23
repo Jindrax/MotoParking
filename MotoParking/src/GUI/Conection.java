@@ -11,6 +11,7 @@ import Controladores.ConfiguracionesJpaController;
 import Controladores.CupoJpaController;
 import Controladores.LockerJpaController;
 import Controladores.UsuarioDiarioJpaController;
+import Controladores.UsuarioJpaController;
 import Controladores.UsuarioMensualJpaController;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -26,6 +27,7 @@ public class Conection {
     private static ConfiguracionesJpaController configuraciones = new ConfiguracionesJpaController(emf);
     private static CupoJpaController cupo = new CupoJpaController(emf);
     private static LockerJpaController locker = new LockerJpaController(emf);
+    private static UsuarioJpaController usuario = new UsuarioJpaController(emf);
     private static UsuarioDiarioJpaController usuarioDiario = new UsuarioDiarioJpaController(emf);
     private static UsuarioMensualJpaController usuarioMensual = new UsuarioMensualJpaController(emf);
 
@@ -85,5 +87,17 @@ public class Conection {
         Conection.usuarioMensual = usuarioMensual;
     }
 
+    public static EntityManagerFactory getEmf(){
+        return emf;
+    }
+
+    public static UsuarioJpaController getUsuario() {
+        return usuario;
+    }
+
+    public static void setUsuario(UsuarioJpaController usuario) {
+        Conection.usuario = usuario;
+    }
+    
     
 }

@@ -17,6 +17,7 @@ import Negocio.Locker;
 import Negocio.UsuarioDiario;
 import Negocio.CobroDiario;
 import Negocio.Cupo;
+import Negocio.CupoPK;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -24,7 +25,7 @@ import javax.persistence.EntityManagerFactory;
 
 /**
  *
- * @author Todesser
+ * @author santiago pc
  */
 public class CupoJpaController implements Serializable {
 
@@ -38,6 +39,9 @@ public class CupoJpaController implements Serializable {
     }
 
     public void create(Cupo cupo) throws PreexistingEntityException, Exception {
+        if (cupo.getCupoPK() == null) {
+            cupo.setCupoPK(new CupoPK());
+        }
         if (cupo.getCobroDiarioList() == null) {
             cupo.setCobroDiarioList(new ArrayList<CobroDiario>());
         }
@@ -71,17 +75,17 @@ public class CupoJpaController implements Serializable {
                 placa = em.merge(placa);
             }
             for (CobroDiario cobroDiarioListCobroDiario : cupo.getCobroDiarioList()) {
-                Cupo oldCupoConsecutivoOfCobroDiarioListCobroDiario = cobroDiarioListCobroDiario.getCupoConsecutivo();
-                cobroDiarioListCobroDiario.setCupoConsecutivo(cupo);
+                Cupo oldCupoOfCobroDiarioListCobroDiario = cobroDiarioListCobroDiario.getCupo();
+                cobroDiarioListCobroDiario.setCupo(cupo);
                 cobroDiarioListCobroDiario = em.merge(cobroDiarioListCobroDiario);
-                if (oldCupoConsecutivoOfCobroDiarioListCobroDiario != null) {
-                    oldCupoConsecutivoOfCobroDiarioListCobroDiario.getCobroDiarioList().remove(cobroDiarioListCobroDiario);
-                    oldCupoConsecutivoOfCobroDiarioListCobroDiario = em.merge(oldCupoConsecutivoOfCobroDiarioListCobroDiario);
+                if (oldCupoOfCobroDiarioListCobroDiario != null) {
+                    oldCupoOfCobroDiarioListCobroDiario.getCobroDiarioList().remove(cobroDiarioListCobroDiario);
+                    oldCupoOfCobroDiarioListCobroDiario = em.merge(oldCupoOfCobroDiarioListCobroDiario);
                 }
             }
             em.getTransaction().commit();
         } catch (Exception ex) {
-            if (findCupo(cupo.getConsecutivo()) != null) {
+            if (findCupo(cupo.getCupoPK()) != null) {
                 throw new PreexistingEntityException("Cupo " + cupo + " already exists.", ex);
             }
             throw ex;
@@ -97,7 +101,7 @@ public class CupoJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Cupo persistentCupo = em.find(Cupo.class, cupo.getConsecutivo());
+            Cupo persistentCupo = em.find(Cupo.class, cupo.getCupoPK());
             Locker lockerOld = persistentCupo.getLocker();
             Locker lockerNew = cupo.getLocker();
             UsuarioDiario placaOld = persistentCupo.getPlaca();
@@ -110,7 +114,7 @@ public class CupoJpaController implements Serializable {
                     if (illegalOrphanMessages == null) {
                         illegalOrphanMessages = new ArrayList<String>();
                     }
-                    illegalOrphanMessages.add("You must retain CobroDiario " + cobroDiarioListOldCobroDiario + " since its cupoConsecutivo field is not nullable.");
+                    illegalOrphanMessages.add("You must retain CobroDiario " + cobroDiarioListOldCobroDiario + " since its cupo field is not nullable.");
                 }
             }
             if (illegalOrphanMessages != null) {
@@ -150,12 +154,12 @@ public class CupoJpaController implements Serializable {
             }
             for (CobroDiario cobroDiarioListNewCobroDiario : cobroDiarioListNew) {
                 if (!cobroDiarioListOld.contains(cobroDiarioListNewCobroDiario)) {
-                    Cupo oldCupoConsecutivoOfCobroDiarioListNewCobroDiario = cobroDiarioListNewCobroDiario.getCupoConsecutivo();
-                    cobroDiarioListNewCobroDiario.setCupoConsecutivo(cupo);
+                    Cupo oldCupoOfCobroDiarioListNewCobroDiario = cobroDiarioListNewCobroDiario.getCupo();
+                    cobroDiarioListNewCobroDiario.setCupo(cupo);
                     cobroDiarioListNewCobroDiario = em.merge(cobroDiarioListNewCobroDiario);
-                    if (oldCupoConsecutivoOfCobroDiarioListNewCobroDiario != null && !oldCupoConsecutivoOfCobroDiarioListNewCobroDiario.equals(cupo)) {
-                        oldCupoConsecutivoOfCobroDiarioListNewCobroDiario.getCobroDiarioList().remove(cobroDiarioListNewCobroDiario);
-                        oldCupoConsecutivoOfCobroDiarioListNewCobroDiario = em.merge(oldCupoConsecutivoOfCobroDiarioListNewCobroDiario);
+                    if (oldCupoOfCobroDiarioListNewCobroDiario != null && !oldCupoOfCobroDiarioListNewCobroDiario.equals(cupo)) {
+                        oldCupoOfCobroDiarioListNewCobroDiario.getCobroDiarioList().remove(cobroDiarioListNewCobroDiario);
+                        oldCupoOfCobroDiarioListNewCobroDiario = em.merge(oldCupoOfCobroDiarioListNewCobroDiario);
                     }
                 }
             }
@@ -163,7 +167,7 @@ public class CupoJpaController implements Serializable {
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
-                Long id = cupo.getConsecutivo();
+                CupoPK id = cupo.getCupoPK();
                 if (findCupo(id) == null) {
                     throw new NonexistentEntityException("The cupo with id " + id + " no longer exists.");
                 }
@@ -176,7 +180,7 @@ public class CupoJpaController implements Serializable {
         }
     }
 
-    public void destroy(Long id) throws IllegalOrphanException, NonexistentEntityException {
+    public void destroy(CupoPK id) throws IllegalOrphanException, NonexistentEntityException {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -184,7 +188,7 @@ public class CupoJpaController implements Serializable {
             Cupo cupo;
             try {
                 cupo = em.getReference(Cupo.class, id);
-                cupo.getConsecutivo();
+                cupo.getCupoPK();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The cupo with id " + id + " no longer exists.", enfe);
             }
@@ -194,7 +198,7 @@ public class CupoJpaController implements Serializable {
                 if (illegalOrphanMessages == null) {
                     illegalOrphanMessages = new ArrayList<String>();
                 }
-                illegalOrphanMessages.add("This Cupo (" + cupo + ") cannot be destroyed since the CobroDiario " + cobroDiarioListOrphanCheckCobroDiario + " in its cobroDiarioList field has a non-nullable cupoConsecutivo field.");
+                illegalOrphanMessages.add("This Cupo (" + cupo + ") cannot be destroyed since the CobroDiario " + cobroDiarioListOrphanCheckCobroDiario + " in its cobroDiarioList field has a non-nullable cupo field.");
             }
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
@@ -242,7 +246,7 @@ public class CupoJpaController implements Serializable {
         }
     }
 
-    public Cupo findCupo(Long id) {
+    public Cupo findCupo(CupoPK id) {
         EntityManager em = getEntityManager();
         try {
             return em.find(Cupo.class, id);

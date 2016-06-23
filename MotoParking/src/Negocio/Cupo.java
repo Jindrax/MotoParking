@@ -11,8 +11,8 @@ import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -33,8 +33,8 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Cupo.findAll", query = "SELECT c FROM Cupo c"),
-    @NamedQuery(name = "Cupo.findByConsecutivo", query = "SELECT c FROM Cupo c WHERE c.consecutivo = :consecutivo"),
-    @NamedQuery(name = "Cupo.findByIngreso", query = "SELECT c FROM Cupo c WHERE c.ingreso = :ingreso"),
+    @NamedQuery(name = "Cupo.findByConsecutivo", query = "SELECT c FROM Cupo c WHERE c.cupoPK.consecutivo = :consecutivo"),
+    @NamedQuery(name = "Cupo.findByIngreso", query = "SELECT c FROM Cupo c WHERE c.cupoPK.ingreso = :ingreso"),
     @NamedQuery(name = "Cupo.findBySalida", query = "SELECT c FROM Cupo c WHERE c.salida = :salida"),
     @NamedQuery(name = "Cupo.findByHoras", query = "SELECT c FROM Cupo c WHERE c.horas = :horas"),
     @NamedQuery(name = "Cupo.findByMinutos", query = "SELECT c FROM Cupo c WHERE c.minutos = :minutos"),
@@ -42,14 +42,8 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Cupo implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @Id
-    @Basic(optional = false)
-    @Column(name = "consecutivo")
-    private Long consecutivo;
-    @Basic(optional = false)
-    @Column(name = "ingreso")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date ingreso;
+    @EmbeddedId
+    protected CupoPK cupoPK;
     @Column(name = "salida")
     @Temporal(TemporalType.TIMESTAMP)
     private Date salida;
@@ -62,7 +56,7 @@ public class Cupo implements Serializable {
     @Basic(optional = false)
     @Column(name = "cobro_sugerido")
     private long cobroSugerido;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "cupoConsecutivo")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "cupo")
     private List<CobroDiario> cobroDiarioList;
     @JoinColumn(name = "locker", referencedColumnName = "identificador")
     @ManyToOne
@@ -74,32 +68,27 @@ public class Cupo implements Serializable {
     public Cupo() {
     }
 
-    public Cupo(Long consecutivo) {
-        this.consecutivo = consecutivo;
+    public Cupo(CupoPK cupoPK) {
+        this.cupoPK = cupoPK;
     }
 
-    public Cupo(Long consecutivo, Date ingreso, long horas, long minutos, long cobroSugerido) {
-        this.consecutivo = consecutivo;
-        this.ingreso = ingreso;
+    public Cupo(CupoPK cupoPK, long horas, long minutos, long cobroSugerido) {
+        this.cupoPK = cupoPK;
         this.horas = horas;
         this.minutos = minutos;
         this.cobroSugerido = cobroSugerido;
     }
 
-    public Long getConsecutivo() {
-        return consecutivo;
+    public Cupo(long consecutivo, Date ingreso) {
+        this.cupoPK = new CupoPK(consecutivo, ingreso);
     }
 
-    public void setConsecutivo(Long consecutivo) {
-        this.consecutivo = consecutivo;
+    public CupoPK getCupoPK() {
+        return cupoPK;
     }
 
-    public Date getIngreso() {
-        return ingreso;
-    }
-
-    public void setIngreso(Date ingreso) {
-        this.ingreso = ingreso;
+    public void setCupoPK(CupoPK cupoPK) {
+        this.cupoPK = cupoPK;
     }
 
     public Date getSalida() {
@@ -162,7 +151,7 @@ public class Cupo implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (consecutivo != null ? consecutivo.hashCode() : 0);
+        hash += (cupoPK != null ? cupoPK.hashCode() : 0);
         return hash;
     }
 
@@ -173,7 +162,7 @@ public class Cupo implements Serializable {
             return false;
         }
         Cupo other = (Cupo) object;
-        if ((this.consecutivo == null && other.consecutivo != null) || (this.consecutivo != null && !this.consecutivo.equals(other.consecutivo))) {
+        if ((this.cupoPK == null && other.cupoPK != null) || (this.cupoPK != null && !this.cupoPK.equals(other.cupoPK))) {
             return false;
         }
         return true;
@@ -181,7 +170,7 @@ public class Cupo implements Serializable {
 
     @Override
     public String toString() {
-        return "Negocio.Cupo[ consecutivo=" + consecutivo + " ]";
+        return String.valueOf(cupoPK.getConsecutivo());
     }
     
 }
