@@ -5,18 +5,26 @@
  */
 package GUI;
 
+import Controladores.exceptions.IllegalOrphanException;
 import Controladores.exceptions.NonexistentEntityException;
 import Controladores.exceptions.PreexistingEntityException;
+import Dialogos.MensualidadDialogo;
 import Dialogos.RetiroDialogo;
+import Impresion.PrintNow;
+import Negocio.Baneado;
 import Negocio.CobroDiario;
+import Negocio.CobroMensual;
 import Negocio.Configuraciones;
 import Negocio.Cupo;
 import Negocio.CupoPK;
 import Negocio.Locker;
 import Negocio.Usuario;
 import Negocio.UsuarioDiario;
+import Negocio.UsuarioMensual;
 import Utilidades.Auxi;
-import static Utilidades.Auxi.selector;
+import java.awt.Color;
+import java.awt.Font;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -30,7 +38,10 @@ import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import org.joda.time.LocalDate;
 
 /**
  *
@@ -69,11 +80,32 @@ public class GUI extends javax.swing.JFrame {
         }
         DefaultTableModel modelo = new DefaultTableModel(campos, columnas);
         tablaDiario.setModel(modelo);
+        tablaDiario.getTableHeader().setFont(new Font("Arial", Font.PLAIN, 24));
+        tablaDiario.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        int tamano[] = {70, 350, 120, 100, 100, 100, 100, 120};
+        for(i=0; i<tablaDiario.getColumnCount(); i++){
+            TableColumn columna = tablaDiario.getColumnModel().getColumn(i);
+            columna.setPreferredWidth(tamano[i]);
+        }
     }
     
     public GUI() {
         initComponents();
         inicializarTablaDiario();
+        SimpleDateFormat formato = new SimpleDateFormat("dd-MM-yyyy");
+        Date fechaActual = LocalDate.now().toDate();
+        Configuraciones fecha = Conection.getConfiguraciones().findConfiguraciones("fechaActual"),
+                consecutivo = Conection.getConfiguraciones().findConfiguraciones("consecutivoDiario");
+        if(fecha.getValor().compareTo(formato.format(fechaActual))!=0){
+            fecha.setValor(formato.format(fechaActual));
+            consecutivo.setValor("1");
+        }
+        try {
+            Conection.getConfiguraciones().edit(fecha);
+            Conection.getConfiguraciones().edit(consecutivo);
+        } catch (Exception ex) {
+            Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
         Timer sincro = new Timer("sincro", true);
         TimerTask tareaSincro = new TimerTask() {
             @Override
@@ -102,8 +134,52 @@ public class GUI extends javax.swing.JFrame {
         cascosDiario = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         actionDiario = new javax.swing.JButton();
-        panelMensual = new javax.swing.JPanel();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        tablaMorosos = new javax.swing.JTable();
+        jPanel2 = new javax.swing.JPanel();
+        placaCobroMensual = new javax.swing.JTextField();
+        actionCobroMensual = new javax.swing.JButton();
+        jLabel26 = new javax.swing.JLabel();
+        jScrollPane8 = new javax.swing.JScrollPane();
+        observacinoesDiario = new javax.swing.JTextArea();
+        actionAnularDiario = new javax.swing.JButton();
+        jLabel17 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
         panelAdmin = new javax.swing.JTabbedPane();
+        historialPanel = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        tablaHistorial = new javax.swing.JTable();
+        fechaSelector = new org.jdesktop.swingx.JXDatePicker();
+        jLabel6 = new javax.swing.JLabel();
+        iniconsHistorial = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        finconsHistorial = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        totalHistorial = new javax.swing.JLabel();
+        actionHistorial = new javax.swing.JButton();
+        panelMensual = new javax.swing.JPanel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        tablaMensual = new javax.swing.JTable();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        placaMensual = new javax.swing.JTextField();
+        documentoMensual = new javax.swing.JTextField();
+        nombreMensual = new javax.swing.JTextField();
+        telefonoMensual = new javax.swing.JTextField();
+        mensualidadMensual = new javax.swing.JTextField();
+        actionMensual = new javax.swing.JButton();
+        ingresoMensual = new org.jdesktop.swingx.JXDatePicker();
+        cobroMensual = new org.jdesktop.swingx.JXDatePicker();
+        jLabel14 = new javax.swing.JLabel();
+        jLabel15 = new javax.swing.JLabel();
+        jScrollPane7 = new javax.swing.JScrollPane();
+        tablaCobroMensual = new javax.swing.JTable();
+        jSeparator1 = new javax.swing.JSeparator();
+        selectorMensual = new org.jdesktop.swingx.JXDatePicker();
+        jLabel25 = new javax.swing.JLabel();
         panelLockers = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tablaLockers = new javax.swing.JTable();
@@ -119,16 +195,59 @@ public class GUI extends javax.swing.JFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         tablaConfig = new javax.swing.JTable();
         valorConfig = new javax.swing.JTextField();
-        jLabel6 = new javax.swing.JLabel();
+        descConfig = new javax.swing.JLabel();
+        actionImport = new javax.swing.JButton();
+        userPanel = new javax.swing.JPanel();
+        jLabel18 = new javax.swing.JLabel();
+        placaClientes = new javax.swing.JTextField();
+        actionClientes = new javax.swing.JButton();
+        jLabel19 = new javax.swing.JLabel();
+        entradasClientes = new javax.swing.JTextField();
+        jLabel20 = new javax.swing.JLabel();
+        minutosClientes = new javax.swing.JTextField();
+        jLabel21 = new javax.swing.JLabel();
+        cobradoClientes = new javax.swing.JTextField();
+        jLabel22 = new javax.swing.JLabel();
+        jScrollPane9 = new javax.swing.JScrollPane();
+        observacionesClientes = new javax.swing.JTextArea();
+        actionGuardarClientes = new javax.swing.JButton();
+        actionBanClientes = new javax.swing.JButton();
+        jScrollPane10 = new javax.swing.JScrollPane();
+        razonClientes = new javax.swing.JTextArea();
+        jLabel23 = new javax.swing.JLabel();
+        actionUnbanClientes = new javax.swing.JButton();
+        jLabel24 = new javax.swing.JLabel();
+        banDesdeClientes = new javax.swing.JLabel();
+        jScrollPane11 = new javax.swing.JScrollPane();
+        tablaClientes = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(1440, 860));
+        setResizable(false);
+        setSize(new java.awt.Dimension(1440, 860));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowActivated(java.awt.event.WindowEvent evt) {
+                formWindowActivated(evt);
+            }
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
+        Contenedor.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
         Contenedor.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentShown(java.awt.event.ComponentEvent evt) {
                 ContenedorComponentShown(evt);
             }
         });
 
+        panelDiario.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentShown(java.awt.event.ComponentEvent evt) {
+                panelDiarioComponentShown(evt);
+            }
+        });
+
+        tablaDiario.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
         tablaDiario.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -140,10 +259,13 @@ public class GUI extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tablaDiario.setRowHeight(30);
         jScrollPane1.setViewportView(tablaDiario);
 
+        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         jLabel4.setText("Placa");
 
+        placaDiario.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         placaDiario.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         placaDiario.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -151,6 +273,7 @@ public class GUI extends javax.swing.JFrame {
             }
         });
 
+        cascosDiario.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         cascosDiario.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         cascosDiario.setText("0");
         cascosDiario.addActionListener(new java.awt.event.ActionListener() {
@@ -159,19 +282,94 @@ public class GUI extends javax.swing.JFrame {
             }
         });
 
+        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         jLabel5.setText("Cascos");
 
+        actionDiario.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
         actionDiario.setText("Registrar");
         actionDiario.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 actionDiarioActionPerformed(evt);
             }
         });
-        actionDiario.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                actionDiarioKeyPressed(evt);
+
+        tablaMorosos.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        tablaMorosos.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        tablaMorosos.setRowHeight(30);
+        jScrollPane6.setViewportView(tablaMorosos);
+
+        placaCobroMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        placaCobroMensual.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        placaCobroMensual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                placaCobroMensualActionPerformed(evt);
             }
         });
+
+        actionCobroMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        actionCobroMensual.setText("Cobrar Mensualidad");
+        actionCobroMensual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionCobroMensualActionPerformed(evt);
+            }
+        });
+
+        jLabel26.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel26.setText("Placa");
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(4, 4, 4)
+                .addComponent(jLabel26)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(placaCobroMensual))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addGap(0, 94, Short.MAX_VALUE)
+                .addComponent(actionCobroMensual))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(placaCobroMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel26))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(actionCobroMensual)
+                .addContainerGap(177, Short.MAX_VALUE))
+        );
+
+        observacinoesDiario.setEditable(false);
+        observacinoesDiario.setColumns(20);
+        observacinoesDiario.setRows(5);
+        jScrollPane8.setViewportView(observacinoesDiario);
+
+        actionAnularDiario.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        actionAnularDiario.setText("Anular");
+        actionAnularDiario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionAnularDiarioActionPerformed(evt);
+            }
+        });
+
+        jLabel17.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        jLabel17.setText("Observaciones:");
+
+        jLabel16.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel16.setText("Clientes mensuales en estado de mora:");
 
         javax.swing.GroupLayout panelDiarioLayout = new javax.swing.GroupLayout(panelDiario);
         panelDiario.setLayout(panelDiarioLayout);
@@ -179,7 +377,11 @@ public class GUI extends javax.swing.JFrame {
             panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelDiarioLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 570, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1066, Short.MAX_VALUE)
+                        .addComponent(jScrollPane6))
+                    .addComponent(jLabel16))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelDiarioLayout.createSequentialGroup()
@@ -189,10 +391,16 @@ public class GUI extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelDiarioLayout.createSequentialGroup()
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(cascosDiario, javax.swing.GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE))
+                        .addComponent(cascosDiario, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelDiarioLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(actionDiario)))
+                        .addComponent(actionAnularDiario)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(actionDiario))
+                    .addComponent(jScrollPane8)
+                    .addGroup(panelDiarioLayout.createSequentialGroup()
+                        .addComponent(jLabel17)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         panelDiarioLayout.setVerticalGroup(
@@ -209,32 +417,351 @@ public class GUI extends javax.swing.JFrame {
                             .addComponent(jLabel5)
                             .addComponent(cascosDiario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(actionDiario)
+                        .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(actionDiario)
+                            .addComponent(actionAnularDiario))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel17)
+                        .addGap(3, 3, 3)
+                        .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 454, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 488, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel16)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
         Contenedor.addTab("Diario", panelDiario);
 
-        javax.swing.GroupLayout panelMensualLayout = new javax.swing.GroupLayout(panelMensual);
-        panelMensual.setLayout(panelMensualLayout);
-        panelMensualLayout.setHorizontalGroup(
-            panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 779, Short.MAX_VALUE)
-        );
-        panelMensualLayout.setVerticalGroup(
-            panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 476, Short.MAX_VALUE)
-        );
-
-        Contenedor.addTab("Mensual", panelMensual);
-
+        panelAdmin.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
         panelAdmin.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentShown(java.awt.event.ComponentEvent evt) {
                 panelAdminComponentShown(evt);
             }
         });
+
+        historialPanel.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentShown(java.awt.event.ComponentEvent evt) {
+                historialPanelComponentShown(evt);
+            }
+        });
+
+        tablaHistorial.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        tablaHistorial.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        tablaHistorial.setRowHeight(30);
+        jScrollPane4.setViewportView(tablaHistorial);
+
+        fechaSelector.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        fechaSelector.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fechaSelectorActionPerformed(evt);
+            }
+        });
+
+        jLabel6.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        jLabel6.setText("Desde");
+
+        iniconsHistorial.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        iniconsHistorial.setText("jLabel7");
+
+        jLabel7.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        jLabel7.setText("Hasta");
+
+        finconsHistorial.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        finconsHistorial.setText("jLabel8");
+
+        jLabel8.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        jLabel8.setText("Total");
+
+        totalHistorial.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        totalHistorial.setText("jLabel9");
+
+        actionHistorial.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        actionHistorial.setText("Imprimir resumen");
+        actionHistorial.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionHistorialActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout historialPanelLayout = new javax.swing.GroupLayout(historialPanel);
+        historialPanel.setLayout(historialPanelLayout);
+        historialPanelLayout.setHorizontalGroup(
+            historialPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(historialPanelLayout.createSequentialGroup()
+                .addGroup(historialPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane4)
+                    .addGroup(historialPanelLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(actionHistorial)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(fechaSelector, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
+            .addGroup(historialPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(iniconsHistorial)
+                .addGap(46, 46, 46)
+                .addComponent(jLabel7)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(finconsHistorial)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 774, Short.MAX_VALUE)
+                .addComponent(jLabel8)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(totalHistorial)
+                .addGap(170, 170, 170))
+        );
+        historialPanelLayout.setVerticalGroup(
+            historialPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, historialPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(historialPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(fechaSelector, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(actionHistorial))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 630, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 50, Short.MAX_VALUE)
+                .addGroup(historialPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(iniconsHistorial)
+                    .addComponent(jLabel7)
+                    .addComponent(finconsHistorial)
+                    .addComponent(jLabel8)
+                    .addComponent(totalHistorial))
+                .addContainerGap())
+        );
+
+        panelAdmin.addTab("Historial", historialPanel);
+
+        panelMensual.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentShown(java.awt.event.ComponentEvent evt) {
+                panelMensualComponentShown(evt);
+            }
+        });
+
+        tablaMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        tablaMensual.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        tablaMensual.setRowHeight(30);
+        tablaMensual.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaMensualMouseClicked(evt);
+            }
+        });
+        jScrollPane5.setViewportView(tablaMensual);
+
+        jLabel9.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel9.setText("Placa");
+
+        jLabel10.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel10.setText("Cedula");
+
+        jLabel11.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel11.setText("Nombre");
+
+        jLabel12.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel12.setText("Telefono");
+
+        jLabel13.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel13.setText("Mensualidad");
+
+        placaMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        placaMensual.setMinimumSize(new java.awt.Dimension(6, 30));
+        placaMensual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                placaMensualActionPerformed(evt);
+            }
+        });
+
+        documentoMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        documentoMensual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                documentoMensualActionPerformed(evt);
+            }
+        });
+
+        nombreMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        nombreMensual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nombreMensualActionPerformed(evt);
+            }
+        });
+
+        telefonoMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        telefonoMensual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                telefonoMensualActionPerformed(evt);
+            }
+        });
+
+        mensualidadMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        mensualidadMensual.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        mensualidadMensual.setText("0");
+        mensualidadMensual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mensualidadMensualActionPerformed(evt);
+            }
+        });
+
+        actionMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        actionMensual.setText("Añadir/Editar");
+        actionMensual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionMensualActionPerformed(evt);
+            }
+        });
+
+        ingresoMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+
+        cobroMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+
+        jLabel14.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel14.setText("Ingreso");
+
+        jLabel15.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel15.setText("Cobro");
+
+        tablaCobroMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        tablaCobroMensual.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        tablaCobroMensual.setRowHeight(30);
+        jScrollPane7.setViewportView(tablaCobroMensual);
+
+        jSeparator1.setForeground(new java.awt.Color(0, 0, 0));
+
+        selectorMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        selectorMensual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                selectorMensualActionPerformed(evt);
+            }
+        });
+
+        jLabel25.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel25.setText("Cobros de mensualidades:");
+
+        javax.swing.GroupLayout panelMensualLayout = new javax.swing.GroupLayout(panelMensual);
+        panelMensual.setLayout(panelMensualLayout);
+        panelMensualLayout.setHorizontalGroup(
+            panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelMensualLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1107, Short.MAX_VALUE)
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(panelMensualLayout.createSequentialGroup()
+                        .addComponent(jLabel25)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addGap(18, 18, 18)
+                .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelMensualLayout.createSequentialGroup()
+                        .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel13, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel14)
+                            .addComponent(jLabel15)
+                            .addComponent(jLabel12)
+                            .addComponent(jLabel11)
+                            .addComponent(jLabel10)
+                            .addComponent(jLabel9))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(cobroMensual, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 144, Short.MAX_VALUE)
+                            .addComponent(telefonoMensual)
+                            .addComponent(mensualidadMensual)
+                            .addComponent(ingresoMensual, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(placaMensual, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(documentoMensual)
+                            .addComponent(nombreMensual))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jSeparator1)
+                    .addComponent(selectorMensual, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(actionMensual, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        panelMensualLayout.setVerticalGroup(
+            panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelMensualLayout.createSequentialGroup()
+                .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelMensualLayout.createSequentialGroup()
+                        .addGap(19, 19, 19)
+                        .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel9)
+                            .addComponent(placaMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel10)
+                            .addComponent(documentoMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel11)
+                            .addComponent(nombreMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel12)
+                            .addComponent(telefonoMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel13)
+                            .addComponent(mensualidadMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(ingresoMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel14))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(cobroMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel15))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(actionMensual))
+                    .addGroup(panelMensualLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 383, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelMensualLayout.createSequentialGroup()
+                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(selectorMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(321, Short.MAX_VALUE))
+                    .addGroup(panelMensualLayout.createSequentialGroup()
+                        .addComponent(jLabel25)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))))
+        );
+
+        panelAdmin.addTab("Mensual", panelMensual);
 
         jScrollPane2.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -242,6 +769,7 @@ public class GUI extends javax.swing.JFrame {
             }
         });
 
+        tablaLockers.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
         tablaLockers.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -253,6 +781,7 @@ public class GUI extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tablaLockers.setRowHeight(30);
         tablaLockers.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tablaLockersMouseClicked(evt);
@@ -263,13 +792,23 @@ public class GUI extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(tablaLockers);
 
+        jLabel1.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
         jLabel1.setText("Identificacion");
 
+        idLocker.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+
+        jLabel2.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
         jLabel2.setText("Alojamiento");
 
+        aloLocker.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+
+        jLabel3.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
         jLabel3.setText("Capacidad");
 
-        actionLocker.setText("jButton1");
+        capLocker.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+
+        actionLocker.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        actionLocker.setText("Añadir/Editar");
         actionLocker.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 actionLockerActionPerformed(evt);
@@ -291,11 +830,11 @@ public class GUI extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(aloLocker, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE))
+                        .addComponent(aloLocker, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(capLocker, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)))
+                        .addComponent(capLocker, javax.swing.GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -323,24 +862,26 @@ public class GUI extends javax.swing.JFrame {
         panelLockersLayout.setHorizontalGroup(
             panelLockersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelLockersLayout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 490, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 1120, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panelLockersLayout.setVerticalGroup(
             panelLockersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 774, Short.MAX_VALUE)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         panelAdmin.addTab("Lockers", panelLockers);
 
+        configPanel.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         configPanel.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentShown(java.awt.event.ComponentEvent evt) {
                 configPanelComponentShown(evt);
             }
         });
 
+        tablaConfig.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
         tablaConfig.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -352,6 +893,7 @@ public class GUI extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tablaConfig.setRowHeight(30);
         tablaConfig.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tablaConfigMouseClicked(evt);
@@ -359,6 +901,7 @@ public class GUI extends javax.swing.JFrame {
         });
         jScrollPane3.setViewportView(tablaConfig);
 
+        valorConfig.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
         valorConfig.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         valorConfig.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -366,34 +909,224 @@ public class GUI extends javax.swing.JFrame {
             }
         });
 
-        jLabel6.setText("Nuevo Valor");
+        descConfig.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        descConfig.setText("Nuevo Valor");
+
+        actionImport.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        actionImport.setText("Importar Data");
 
         javax.swing.GroupLayout configPanelLayout = new javax.swing.GroupLayout(configPanel);
         configPanel.setLayout(configPanelLayout);
         configPanelLayout.setHorizontalGroup(
             configPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(configPanelLayout.createSequentialGroup()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 608, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 997, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(configPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(valorConfig)
                     .addGroup(configPanelLayout.createSequentialGroup()
-                        .addComponent(jLabel6)
-                        .addGap(0, 92, Short.MAX_VALUE)))
+                        .addComponent(descConfig)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(actionImport, javax.swing.GroupLayout.DEFAULT_SIZE, 417, Short.MAX_VALUE))
                 .addContainerGap())
         );
         configPanelLayout.setVerticalGroup(
             configPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 774, Short.MAX_VALUE)
             .addGroup(configPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel6)
+                .addComponent(descConfig)
                 .addGap(8, 8, 8)
                 .addComponent(valorConfig, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(actionImport)
+                .addContainerGap())
         );
 
-        panelAdmin.addTab("Configuracion", configPanel);
+        panelAdmin.addTab("Configuracion", null, configPanel, "");
+
+        jLabel18.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel18.setText("Placa");
+
+        placaClientes.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        placaClientes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                placaClientesActionPerformed(evt);
+            }
+        });
+
+        actionClientes.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        actionClientes.setText("Buscar");
+        actionClientes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionClientesActionPerformed(evt);
+            }
+        });
+
+        jLabel19.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel19.setText("Entradas");
+
+        entradasClientes.setEditable(false);
+        entradasClientes.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+
+        jLabel20.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel20.setText("Minutos");
+
+        minutosClientes.setEditable(false);
+        minutosClientes.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+
+        jLabel21.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel21.setText("Cobrado");
+
+        cobradoClientes.setEditable(false);
+        cobradoClientes.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+
+        jLabel22.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel22.setText("Observaciones");
+
+        observacionesClientes.setColumns(20);
+        observacionesClientes.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        observacionesClientes.setRows(5);
+        jScrollPane9.setViewportView(observacionesClientes);
+
+        actionGuardarClientes.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        actionGuardarClientes.setText("Guardar");
+        actionGuardarClientes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionGuardarClientesActionPerformed(evt);
+            }
+        });
+
+        actionBanClientes.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        actionBanClientes.setText("Banear");
+        actionBanClientes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionBanClientesActionPerformed(evt);
+            }
+        });
+
+        razonClientes.setColumns(20);
+        razonClientes.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        razonClientes.setRows(5);
+        jScrollPane10.setViewportView(razonClientes);
+
+        jLabel23.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel23.setText("Razon Baneo");
+
+        actionUnbanClientes.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        actionUnbanClientes.setText("Desbanear");
+        actionUnbanClientes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionUnbanClientesActionPerformed(evt);
+            }
+        });
+
+        jLabel24.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel24.setText("Baneado desde:");
+
+        banDesdeClientes.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        banDesdeClientes.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        banDesdeClientes.setText("0");
+
+        tablaClientes.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        tablaClientes.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {},
+                {},
+                {},
+                {}
+            },
+            new String [] {
+
+            }
+        ));
+        tablaClientes.setRowHeight(30);
+        jScrollPane11.setViewportView(tablaClientes);
+
+        javax.swing.GroupLayout userPanelLayout = new javax.swing.GroupLayout(userPanel);
+        userPanel.setLayout(userPanelLayout);
+        userPanelLayout.setHorizontalGroup(
+            userPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(userPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(userPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(userPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(placaClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(actionClientes))
+                    .addGroup(userPanelLayout.createSequentialGroup()
+                        .addGroup(userPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel20)
+                            .addComponent(jLabel21)
+                            .addComponent(jLabel19))
+                        .addGap(18, 18, 18)
+                        .addGroup(userPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(cobradoClientes, javax.swing.GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE)
+                            .addComponent(minutosClientes)
+                            .addComponent(entradasClientes)))
+                    .addComponent(jLabel22)
+                    .addComponent(jScrollPane9)
+                    .addComponent(actionGuardarClientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(actionBanClientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel23)
+                    .addComponent(jScrollPane10)
+                    .addComponent(actionUnbanClientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(userPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel24)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(banDesdeClientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane11, javax.swing.GroupLayout.DEFAULT_SIZE, 1106, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        userPanelLayout.setVerticalGroup(
+            userPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(userPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(userPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(userPanelLayout.createSequentialGroup()
+                        .addGroup(userPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel18)
+                            .addComponent(placaClientes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(actionClientes))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(userPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel19)
+                            .addComponent(entradasClientes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(userPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel20)
+                            .addComponent(minutosClientes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(userPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel21)
+                            .addComponent(cobradoClientes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel22)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(actionGuardarClientes)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel23)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(userPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel24)
+                            .addComponent(banDesdeClientes))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(actionBanClientes)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(actionUnbanClientes)
+                        .addGap(0, 67, Short.MAX_VALUE))
+                    .addComponent(jScrollPane11))
+                .addContainerGap())
+        );
+
+        panelAdmin.addTab("Clientes", userPanel);
 
         Contenedor.addTab("Administracion", panelAdmin);
 
@@ -401,7 +1134,9 @@ public class GUI extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(Contenedor)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(Contenedor, javax.swing.GroupLayout.PREFERRED_SIZE, 1440, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -457,11 +1192,13 @@ public class GUI extends javax.swing.JFrame {
                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        inicializarTablaLockers();
     }//GEN-LAST:event_actionLockerActionPerformed
 
     private void actionDiarioProceso(){
-        String ingreso = placaDiario.getText();        
-        switch(selector(ingreso)){
+        String ingreso = placaDiario.getText();
+        int seleccion = Auxi.selector(ingreso);        
+        switch(seleccion){
             case 0:
                 ingresoDiario();
                 break;
@@ -478,27 +1215,65 @@ public class GUI extends javax.swing.JFrame {
                     new RetiroDialogo(this, rootPaneCheckingEnabled, cupo);
                     inicializarTablaDiario();
                 }else{
-                    JOptionPane.showMessageDialog(null, "Ese cupo no existe en el sistema.");
+                    JOptionPane.showMessageDialog(null, "Ese cupo no existe en el sistema.");                    
                 }
                 break;
             default:
+                System.out.println(seleccion);
                 JOptionPane.showMessageDialog(null, "El ingreso no es un formato permitido.");
+                break;
         }
         placaDiario.setText("");
         cascosDiario.setText("0");
         placaDiario.requestFocus();
     }
     
+    private boolean estadoUsuario(String placa){
+        UsuarioDiario user = Conection.getUsuarioDiario().findUsuarioDiario(placa);
+        if(user!=null){
+            if(user.getUsuario().getBaneado()!=null){
+                observacinoesDiario.setText(user.getUsuario().getBaneado().getRazon());
+                JOptionPane.showMessageDialog(null, "El usuario se encuentra impedido en el sistema.");
+                placaDiario.setText("");
+                placaDiario.requestFocus();
+                return false;
+            }else{
+                if(user.getUsuario().getObservacion()!=null){
+                    observacinoesDiario.setText(user.getUsuario().getObservacion());
+                    return true;
+                }else{
+                    observacinoesDiario.setText("");
+                    return true;
+                }
+            }
+        }
+        return true;
+    }
+    
     private void actionDiarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionDiarioActionPerformed
-            actionDiarioProceso();
-            inicializarTablaDiario();
+            if(estadoUsuario(placaDiario.getText())){
+                actionDiarioProceso();
+                observacinoesDiario.setText("");
+                inicializarTablaDiario();
+            }
     }//GEN-LAST:event_actionDiarioActionPerformed
 
     private void placaDiarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_placaDiarioActionPerformed
-        switch(selector(placaDiario.getText())){
+        switch(Auxi.selector(placaDiario.getText())){
             case 1:
                 cascosDiario.requestFocus();
                 cascosDiario.selectAll();
+                Usuario usuario = Conection.getUsuario().findUsuario(placaDiario.getText());
+                if(usuario!=null){
+                    if(usuario.getBaneado()!=null){
+                        observacinoesDiario.setText(usuario.getBaneado().getRazon());
+                        JOptionPane.showMessageDialog(null, "El usuario esta baneado del sistema, revisar razon.");
+                        placaDiario.requestFocus();
+                        placaDiario.setText("");
+                    }else{
+                        observacinoesDiario.setText(usuario.getObservacion());
+                    }
+                }
                 break;
             case 4:
                 JOptionPane.showMessageDialog(null, "Entrada erronea.");
@@ -515,21 +1290,305 @@ public class GUI extends javax.swing.JFrame {
         actionDiario.requestFocus();
     }//GEN-LAST:event_cascosDiarioActionPerformed
 
-    private void actionDiarioKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_actionDiarioKeyPressed
-        actionDiarioProceso();
-    }//GEN-LAST:event_actionDiarioKeyPressed
-
     private void configPanelComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_configPanelComponentShown
         inicializarTablaConfig();
     }//GEN-LAST:event_configPanelComponentShown
 
     private void tablaConfigMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaConfigMouseClicked
-        
+        if(tablaConfig.getSelectedRow() != -1){
+            Configuraciones config = (Configuraciones)tablaConfig.getValueAt(tablaConfig.getSelectedRow(), 0); 
+            descConfig.setText(config.getDescripcion());
+            valorConfig.setText(config.getValor());
+        }
     }//GEN-LAST:event_tablaConfigMouseClicked
 
     private void valorConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_valorConfigActionPerformed
-        // TODO add your handling code here:
+        Configuraciones config = Conection.getConfiguraciones().findConfiguraciones(descConfig.getText());
+        config.setValor(valorConfig.getText());
+        try {
+            Conection.getConfiguraciones().edit(config);
+        } catch (Exception ex) {
+            Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        inicializarTablaConfig();
     }//GEN-LAST:event_valorConfigActionPerformed
+
+    private void historialPanelComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_historialPanelComponentShown
+        fechaSelector.setDate(new Date());
+        inicializarTablaHistorial(fechaSelector.getDate());        
+    }//GEN-LAST:event_historialPanelComponentShown
+
+    private void fechaSelectorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fechaSelectorActionPerformed
+        inicializarTablaHistorial(fechaSelector.getDate());
+    }//GEN-LAST:event_fechaSelectorActionPerformed
+
+    private void placaCobroMensualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_placaCobroMensualActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_placaCobroMensualActionPerformed
+
+    private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
+        
+    }//GEN-LAST:event_formWindowActivated
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        inicializarTablaMorosos();
+    }//GEN-LAST:event_formWindowOpened
+
+    private void actionCobroMensualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionCobroMensualActionPerformed
+        UsuarioMensual usuario = Conection.getUsuarioMensual().findUsuarioMensual(placaCobroMensual.getText());
+        new MensualidadDialogo(this, true, usuario);
+        inicializarTablaMorosos();
+    }//GEN-LAST:event_actionCobroMensualActionPerformed
+
+    private void panelDiarioComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_panelDiarioComponentShown
+        placaDiario.requestFocus();
+    }//GEN-LAST:event_panelDiarioComponentShown
+
+    private void actionHistorialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionHistorialActionPerformed
+        EntityManager em = Conection.getEmf().createEntityManager();
+        Query query = em.createQuery("SELECT c FROM CobroMensual c WHERE c.cobroMensualPK.fecha = :fecha");
+        query.setParameter("fecha", fechaSelector.getDate());
+        List<CobroMensual> cobroList = query.getResultList();
+        PrintNow.printResumenDia(fechaSelector.getDate(), iniconsHistorial.getText(), finconsHistorial.getText(), totalHistorial.getText(), cobroList);
+    }//GEN-LAST:event_actionHistorialActionPerformed
+
+    private void panelMensualComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_panelMensualComponentShown
+        inicializarTablaMensual();
+        selectorMensual.setDate(new Date());
+        inicializarTablaCobroMensual(selectorMensual.getDate());
+    }//GEN-LAST:event_panelMensualComponentShown
+
+    private void actionMensualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionMensualActionPerformed
+        UsuarioMensual usuarioMensual = Conection.getUsuarioMensual().findUsuarioMensual(placaMensual.getText());
+        if(usuarioMensual == null){
+            Usuario usuario = Conection.getUsuario().findUsuario(placaMensual.getText());
+            if(usuario == null){
+                usuario = new Usuario(placaMensual.getText());
+                usuario.setTipo("Moto");
+                usuario.setObservacion("");
+                try {
+                    Conection.getUsuario().create(usuario);
+                } catch (Exception ex) {
+                    Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            usuarioMensual = new UsuarioMensual(placaMensual.getText());
+            usuarioMensual.setDocumento(documentoMensual.getText());
+            usuarioMensual.setNombre(nombreMensual.getText());
+            usuarioMensual.setTelefono(telefonoMensual.getText());
+            usuarioMensual.setMensualidad(Long.parseLong(mensualidadMensual.getText()));
+            usuarioMensual.setFechaIngreso(ingresoMensual.getDate());
+            usuarioMensual.setSigCobro(cobroMensual.getDate());
+            usuarioMensual.setUsuario(usuario);
+            try {
+                Conection.getUsuarioMensual().create(usuarioMensual);
+            } catch (PreexistingEntityException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }else{
+            usuarioMensual.setDocumento(documentoMensual.getText());
+            usuarioMensual.setNombre(nombreMensual.getText());
+            usuarioMensual.setTelefono(telefonoMensual.getText());
+            usuarioMensual.setMensualidad(Long.parseLong(mensualidadMensual.getText()));
+            usuarioMensual.setFechaIngreso(ingresoMensual.getDate());
+            usuarioMensual.setSigCobro(cobroMensual.getDate());
+            try {
+                Conection.getUsuarioMensual().edit(usuarioMensual);
+            } catch (NonexistentEntityException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        placaMensual.setText("");
+        documentoMensual.setText("");
+        nombreMensual.setText("");
+        telefonoMensual.setText("");
+        ingresoMensual.setDate(new Date());
+        cobroMensual.setDate(new Date());
+        inicializarTablaMensual();
+        inicializarTablaMorosos();
+    }//GEN-LAST:event_actionMensualActionPerformed
+
+    private void mensualidadMensualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mensualidadMensualActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_mensualidadMensualActionPerformed
+
+    private void tablaMensualMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaMensualMouseClicked
+        if(tablaMensual.getSelectedRow()!=-1){
+            UsuarioMensual usuario = (UsuarioMensual)tablaMensual.getValueAt(tablaMensual.getSelectedRow(), 0);
+            placaMensual.setText(usuario.getPlaca());
+            documentoMensual.setText(usuario.getDocumento());
+            nombreMensual.setText(usuario.getNombre());
+            telefonoMensual.setText(usuario.getTelefono());
+            mensualidadMensual.setText(String.valueOf(usuario.getMensualidad()));
+            ingresoMensual.setDate(usuario.getFechaIngreso());
+            cobroMensual.setDate(usuario.getSigCobro());
+        }
+    }//GEN-LAST:event_tablaMensualMouseClicked
+
+    private void selectorMensualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectorMensualActionPerformed
+        inicializarTablaCobroMensual(selectorMensual.getDate());
+    }//GEN-LAST:event_selectorMensualActionPerformed
+
+    private void actionAnularDiarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionAnularDiarioActionPerformed
+        if(tablaDiario.getSelectedRow()!=-1){
+            Cupo cupo = (Cupo)tablaDiario.getValueAt(tablaDiario.getSelectedRow(), 0);
+            cuposActivos.remove(cupo.getCupoPK().getConsecutivo());
+            if(cupo.getLocker()!=null){
+                Locker locker = cupo.getLocker();
+                locker.setAlojamiento(0);
+                try {
+                    Conection.getLocker().edit(locker);
+                } catch (Exception ex) {
+                    Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            try {
+                Conection.getCupo().destroy(cupo.getCupoPK());
+            } catch (IllegalOrphanException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (NonexistentEntityException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            inicializarTablaDiario();
+            JOptionPane.showMessageDialog(null, "Elemento anulado existosamente.");
+        }else{
+            JOptionPane.showMessageDialog(null, "Debe seleccionar un elemento primero.");
+        }
+    }//GEN-LAST:event_actionAnularDiarioActionPerformed
+
+    private void placaClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_placaClientesActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_placaClientesActionPerformed
+
+    private void actionClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionClientesActionPerformed
+        UsuarioDiario usuario = Conection.getUsuarioDiario().findUsuarioDiario(placaClientes.getText());
+        if(usuario != null){
+            entradasClientes.setText(String.valueOf(usuario.getEntradas()));
+            minutosClientes.setText(String.valueOf(usuario.getMinutosRegistrados()));
+            cobradoClientes.setText(String.valueOf(usuario.getCobroTotal()));
+            observacionesClientes.setText(usuario.getUsuario().getObservacion());
+            if(usuario.getUsuario().getBaneado()!=null){
+                razonClientes.setText(usuario.getUsuario().getBaneado().getRazon());
+                banDesdeClientes.setText(Auxi.formaterFecha(usuario.getUsuario().getBaneado().getFecha()));
+            }
+            inicializarTablaClientes(usuario);
+        }else{
+            JOptionPane.showMessageDialog(null, "El usuario buscado no existe.");
+            placaClientes.setText("");
+            placaClientes.requestFocus();
+        }
+    }//GEN-LAST:event_actionClientesActionPerformed
+
+    private void actionGuardarClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionGuardarClientesActionPerformed
+        UsuarioDiario usuario = Conection.getUsuarioDiario().findUsuarioDiario(placaClientes.getText());
+        if(usuario != null){
+            Usuario user = usuario.getUsuario();
+            user.setObservacion(observacionesClientes.getText());
+            try {
+                Conection.getUsuario().edit(user);
+            } catch (NonexistentEntityException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            placaClientes.setText("");
+            entradasClientes.setText("");
+            minutosClientes.setText("");
+            cobradoClientes.setText("");
+            observacionesClientes.setText("");
+            razonClientes.setText("");
+            banDesdeClientes.setText("");
+            placaClientes.requestFocus();
+        }else{
+            JOptionPane.showMessageDialog(null, "Usuario invalido.");
+        }
+    }//GEN-LAST:event_actionGuardarClientesActionPerformed
+
+    private void actionBanClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionBanClientesActionPerformed
+        UsuarioDiario usuario = Conection.getUsuarioDiario().findUsuarioDiario(placaClientes.getText());
+        if(usuario != null){
+            Usuario user = usuario.getUsuario();
+            Baneado ban = new Baneado();
+            ban.setPlaca(user.getPlaca());
+            ban.setUsuario(user);
+            ban.setRazon(razonClientes.getText());
+            ban.setFecha(new Date());
+            try {
+                Conection.getBaneado().create(ban);
+                user.setBaneado(ban);
+                Conection.getUsuario().edit(user);
+            } catch (PreexistingEntityException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            placaClientes.setText("");
+            entradasClientes.setText("");
+            minutosClientes.setText("");
+            cobradoClientes.setText("");
+            observacionesClientes.setText("");
+            razonClientes.setText("");
+            banDesdeClientes.setText("");
+            placaClientes.requestFocus();
+        }else{
+            JOptionPane.showMessageDialog(null, "Usuario invalido.");
+        }
+    }//GEN-LAST:event_actionBanClientesActionPerformed
+
+    private void actionUnbanClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionUnbanClientesActionPerformed
+        UsuarioDiario usuario = Conection.getUsuarioDiario().findUsuarioDiario(placaClientes.getText());
+        if(usuario != null){
+            Usuario user = usuario.getUsuario();
+            if(user.getBaneado()!=null){
+                Baneado ban = user.getBaneado();
+                user.setBaneado(null);
+                try {
+                    Conection.getBaneado().destroy(ban.getPlaca());
+                    Conection.getUsuario().edit(user);
+                } catch (NonexistentEntityException ex) {
+                    Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                    Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+                }                
+            }else{
+                JOptionPane.showMessageDialog(null, "El usuario no ha estado baneado.");
+            }
+            placaClientes.setText("");
+            entradasClientes.setText("");
+            minutosClientes.setText("");
+            cobradoClientes.setText("");
+            observacionesClientes.setText("");
+            razonClientes.setText("");
+            banDesdeClientes.setText("");
+            placaClientes.requestFocus();
+        }else{
+            JOptionPane.showMessageDialog(null, "Usuario invalido.");
+        }
+    }//GEN-LAST:event_actionUnbanClientesActionPerformed
+
+    private void placaMensualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_placaMensualActionPerformed
+        documentoMensual.requestFocus();
+        documentoMensual.selectAll();
+    }//GEN-LAST:event_placaMensualActionPerformed
+
+    private void documentoMensualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_documentoMensualActionPerformed
+        nombreMensual.requestFocus();
+        nombreMensual.selectAll();
+    }//GEN-LAST:event_documentoMensualActionPerformed
+
+    private void nombreMensualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nombreMensualActionPerformed
+        telefonoMensual.requestFocus();
+        telefonoMensual.selectAll();
+    }//GEN-LAST:event_nombreMensualActionPerformed
+
+    private void telefonoMensualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_telefonoMensualActionPerformed
+        mensualidadMensual.requestFocus();
+        mensualidadMensual.selectAll();
+    }//GEN-LAST:event_telefonoMensualActionPerformed
 
     /**
      * @param args the command line arguments
@@ -542,7 +1601,7 @@ public class GUI extends javax.swing.JFrame {
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
+                if ("Windows".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
@@ -568,31 +1627,99 @@ public class GUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane Contenedor;
+    private javax.swing.JButton actionAnularDiario;
+    private javax.swing.JButton actionBanClientes;
+    private javax.swing.JButton actionClientes;
+    private javax.swing.JButton actionCobroMensual;
     private javax.swing.JButton actionDiario;
+    private javax.swing.JButton actionGuardarClientes;
+    private javax.swing.JButton actionHistorial;
+    private javax.swing.JButton actionImport;
     private javax.swing.JButton actionLocker;
+    private javax.swing.JButton actionMensual;
+    private javax.swing.JButton actionUnbanClientes;
     private javax.swing.JTextField aloLocker;
+    private javax.swing.JLabel banDesdeClientes;
     private javax.swing.JTextField capLocker;
     private javax.swing.JTextField cascosDiario;
+    private javax.swing.JTextField cobradoClientes;
+    private org.jdesktop.swingx.JXDatePicker cobroMensual;
     private javax.swing.JPanel configPanel;
+    private javax.swing.JLabel descConfig;
+    private javax.swing.JTextField documentoMensual;
+    private javax.swing.JTextField entradasClientes;
+    private org.jdesktop.swingx.JXDatePicker fechaSelector;
+    private javax.swing.JLabel finconsHistorial;
+    private javax.swing.JPanel historialPanel;
     private javax.swing.JTextField idLocker;
+    private org.jdesktop.swingx.JXDatePicker ingresoMensual;
+    private javax.swing.JLabel iniconsHistorial;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane10;
+    private javax.swing.JScrollPane jScrollPane11;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JScrollPane jScrollPane7;
+    private javax.swing.JScrollPane jScrollPane8;
+    private javax.swing.JScrollPane jScrollPane9;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JTextField mensualidadMensual;
+    private javax.swing.JTextField minutosClientes;
+    private javax.swing.JTextField nombreMensual;
+    private javax.swing.JTextArea observacinoesDiario;
+    private javax.swing.JTextArea observacionesClientes;
     private javax.swing.JTabbedPane panelAdmin;
     private javax.swing.JPanel panelDiario;
     private javax.swing.JPanel panelLockers;
     private javax.swing.JPanel panelMensual;
+    private javax.swing.JTextField placaClientes;
+    private javax.swing.JTextField placaCobroMensual;
     private javax.swing.JTextField placaDiario;
+    private javax.swing.JTextField placaMensual;
+    private javax.swing.JTextArea razonClientes;
+    private org.jdesktop.swingx.JXDatePicker selectorMensual;
+    private javax.swing.JTable tablaClientes;
+    private javax.swing.JTable tablaCobroMensual;
     private javax.swing.JTable tablaConfig;
     private javax.swing.JTable tablaDiario;
+    private javax.swing.JTable tablaHistorial;
     private javax.swing.JTable tablaLockers;
+    private javax.swing.JTable tablaMensual;
+    private javax.swing.JTable tablaMorosos;
+    private javax.swing.JTextField telefonoMensual;
+    private javax.swing.JLabel totalHistorial;
+    private javax.swing.JPanel userPanel;
     private javax.swing.JTextField valorConfig;
     // End of variables declaration//GEN-END:variables
 
@@ -611,6 +1738,7 @@ public class GUI extends javax.swing.JFrame {
         }
         DefaultTableModel modelo = new DefaultTableModel(campos, columnas);
         tablaLockers.setModel(modelo);
+        tablaLockers.getTableHeader().setFont(new Font("Arial", Font.PLAIN, 24));
     }
     
     private void inicializarTablaConfig() {
@@ -627,6 +1755,7 @@ public class GUI extends javax.swing.JFrame {
         }
         DefaultTableModel modelo = new DefaultTableModel(campos, columnas);
         tablaConfig.setModel(modelo);
+        tablaConfig.getTableHeader().setFont(new Font("Arial", Font.PLAIN, 24));
     }
 
     private void ingresoDiario() {
@@ -636,7 +1765,7 @@ public class GUI extends javax.swing.JFrame {
         if (usuario == null) {
             Usuario usuarioGeneral = Conection.getUsuario().findUsuario(placa);
             if (usuarioGeneral == null) {
-                usuarioGeneral = new Usuario(placa, "Moto");
+                usuarioGeneral = new Usuario(placa, "Moto", "");
                 try {
                     Conection.getUsuario().create(usuarioGeneral);
                 } catch (Exception ex) {
@@ -664,14 +1793,15 @@ public class GUI extends javax.swing.JFrame {
             if(lockers.size()>0){
                 Locker locker = lockers.get(0);
                 locker.setAlojamiento(cascos);
-                System.out.println("locker asignado: " + locker);
                 try {
                     Conection.getLocker().edit(locker);
                 } catch (Exception ex) {
                     Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 cupo.setLocker(locker);
-            }
+            }else{
+                JOptionPane.showMessageDialog(null, "No existen lockers disponibles.");
+            }            
         }
         try {
             Conection.getCupo().create(cupo);
@@ -686,6 +1816,7 @@ public class GUI extends javax.swing.JFrame {
         } catch (Exception ex) {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
+        PrintNow.imprimirReciboEntrada(cupo);
         inicializarTablaDiario();
     }
 
@@ -702,5 +1833,133 @@ public class GUI extends javax.swing.JFrame {
             tablaDiario.setValueAt(valores[0], i, 5);
             tablaDiario.setValueAt(valores[1], i, 6);
         }
+    }
+
+    private void inicializarTablaHistorial(Date date) {
+        EntityManager em = Conection.getEmf().createEntityManager();
+        Query query = em.createQuery("SELECT c FROM CobroDiario c WHERE c.fecha = :fecha");
+        query.setParameter("fecha", date);
+        List<CobroDiario> cobros = query.getResultList();
+        List<Long> cons = new ArrayList<>();
+        long total=0;
+        int i=0;
+        String[] columnas = {"Consecutivo", "Placa", "Entrada", "Salida", "Cobrado", "Locker"};
+        Object[][] campos = new Object[cobros.size()][columnas.length];
+        for(CobroDiario cobro: cobros){
+            campos[i][0] = cobro.getConsecutivo();
+            campos[i][1] = cobro.getCupo().getPlaca().getPlaca();
+            campos[i][2] = Auxi.formaterHora(cobro.getCupo().getCupoPK().getIngreso());
+            campos[i][3] = Auxi.formaterHora(cobro.getCupo().getSalida());
+            campos[i][4] = cobro.getCobro();
+            if(cobro.getCupo().getLocker()!=null){
+                campos[i][5] = cobro.getCupo().getLocker();
+            }else{
+                campos[i][5] = "Ninguno";
+            }
+            cons.add(cobro.getConsecutivo());
+            total += cobro.getCobro();
+            i++;
+        }
+        DefaultTableModel modelo = new DefaultTableModel(campos, columnas);
+        tablaHistorial.setModel(modelo);
+        if(cons.size()>0){
+            iniconsHistorial.setText(String.valueOf(cons.get(0)));
+            finconsHistorial.setText(String.valueOf(cons.get(cons.size()-1)));
+        }else{
+            iniconsHistorial.setText("N/A");
+            finconsHistorial.setText("N/A");
+        }
+        totalHistorial.setText(String.valueOf(total));
+        tablaHistorial.getTableHeader().setFont(new Font("Arial", Font.PLAIN, 24));
+    }
+    
+    private void inicializarTablaMensual() {
+        EntityManager em = Conection.getEmf().createEntityManager();
+        Query query = em.createQuery("SELECT u FROM UsuarioMensual u");
+        List<UsuarioMensual> userList = query.getResultList();
+        String[] columnas = {"Placa", "Cedula", "Nombre", "Telefono", "Ingreso", "Cobro", "Mensualidad"};
+        Object[][] campos =  new Object[userList.size()][columnas.length];
+        int i = 0;
+        for(UsuarioMensual user: userList){
+            campos[i][0] = user;
+            campos[i][1] = user.getDocumento();
+            campos[i][2] = user.getNombre();
+            campos[i][3] = user.getTelefono();
+            campos[i][4] = Auxi.formaterFecha(user.getFechaIngreso());
+            campos[i][5] = Auxi.formaterFecha(user.getSigCobro());
+            campos[i][6] = user.getMensualidad();
+            i++;
+        }
+        DefaultTableModel modelo = new DefaultTableModel(campos, columnas);
+        tablaMensual.setModel(modelo);
+        tablaMensual.getTableHeader().setFont(new Font("Arial", Font.PLAIN, 24));
+    }
+    
+    private void inicializarTablaMorosos() {
+        EntityManager em = Conection.getEmf().createEntityManager();
+        Query query = em.createQuery("SELECT u FROM UsuarioMensual u WHERE u.sigCobro <= CURRENT_DATE");
+        List<UsuarioMensual> userList = query.getResultList();
+        String[] columnas = {"Placa", "Cedula", "Nombre", "Telefono", "Cobro", "Mensualidad"};
+        Object[][] campos =  new Object[userList.size()][columnas.length];
+        int i = 0;
+        for(UsuarioMensual user: userList){
+            campos[i][0] = user;
+            campos[i][1] = user.getDocumento();
+            campos[i][2] = user.getNombre();
+            campos[i][3] = user.getTelefono();
+            campos[i][4] = Auxi.formaterFecha(user.getSigCobro());
+            campos[i][5] = user.getMensualidad();
+            i++;
+        }
+        DefaultTableModel modelo = new DefaultTableModel(campos, columnas);
+        tablaMorosos.setModel(modelo);
+        tablaMorosos.getTableHeader().setFont(new Font("Arial", Font.PLAIN, 24));
+    }
+    
+    private void inicializarTablaCobroMensual(Date date) {
+        EntityManager em = Conection.getEmf().createEntityManager();
+        Query query = em.createQuery("SELECT c FROM CobroMensual c WHERE c.cobroMensualPK.fecha = :fecha");
+        query.setParameter("fecha", date);
+        List<CobroMensual> cobroList = query.getResultList();
+        String[] columnas = {"Placa", "Fecha", "Nombre", "Desde", "Hasta", "Cobro"};
+        Object[][] campos =  new Object[cobroList.size()][columnas.length];
+        int i = 0;
+        for(CobroMensual cobro: cobroList){
+            campos[i][0] = cobro.getCobroMensualPK().getPlaca();
+            campos[i][1] = Auxi.formaterFecha(cobro.getCobroMensualPK().getFecha());
+            campos[i][2] = cobro.getUsuarioMensual().getNombre();
+            campos[i][3] = Auxi.formaterFecha(cobro.getDesde());
+            campos[i][4] = Auxi.formaterFecha(cobro.getHasta());
+            campos[i][5] = cobro.getCobro();
+            i++;
+        }
+        DefaultTableModel modelo = new DefaultTableModel(campos, columnas);
+        tablaCobroMensual.setModel(modelo);
+        tablaCobroMensual.getTableHeader().setFont(new Font("Arial", Font.PLAIN, 24));
+    }
+    private void inicializarTablaClientes(UsuarioDiario user) {
+        List<Cupo> cupoList = user.getCupoList();
+        String[] columnas = {"Fecha", "Ingreso", "Salido", "Horas", "Minutos", "Locker", "Sugerido", "Cobro"};
+        Object[][] campos =  new Object[cupoList.size()][columnas.length];
+        int i = 0;
+        for(Cupo cupo: cupoList){
+            CobroDiario cobro = cupo.getCobroDiarioList().get(0);
+            campos[i][0] = Auxi.formaterFecha(cobro.getFecha());
+            campos[i][1] = Auxi.formaterHora(cupo.getCupoPK().getIngreso());
+            campos[i][2] = Auxi.formaterHora(cupo.getSalida());
+            campos[i][3] = cupo.getHoras();
+            campos[i][4] = cupo.getMinutos();
+            if(cupo.getLocker()!=null){
+                campos[i][5] = cupo.getLocker().getIdentificador();
+            }else{
+                campos[i][5] = "Ninguno";
+            }            
+            campos[i][6] = cupo.getCobroSugerido();
+            campos[i][7] = cobro.getCobro();
+            i++;
+        }
+        DefaultTableModel modelo = new DefaultTableModel(campos, columnas);
+        tablaClientes.setModel(modelo);
+        tablaClientes.getTableHeader().setFont(new Font("Arial", Font.PLAIN, 24));
     }
 }
