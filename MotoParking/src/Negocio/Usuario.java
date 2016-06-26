@@ -31,6 +31,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Usuario.findByObservacion", query = "SELECT u FROM Usuario u WHERE u.observacion = :observacion")})
 public class Usuario implements Serializable {
 
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "usuario")
+    private UsuarioMensual usuarioMensual;
+
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -113,6 +116,14 @@ public class Usuario implements Serializable {
     @Override
     public String toString() {
         return "Negocio.Usuario[ placa=" + placa + " ]";
+    }
+
+    public UsuarioMensual getUsuarioMensual() {
+        return usuarioMensual;
+    }
+
+    public void setUsuarioMensual(UsuarioMensual usuarioMensual) {
+        this.usuarioMensual = usuarioMensual;
     }
     
 }

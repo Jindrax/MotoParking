@@ -88,6 +88,7 @@ public class AutenticarDialogo extends javax.swing.JDialog {
             panel.setEnabledAt(2, false);
             panel.setEnabledAt(3, false);
             panel.setEnabledAt(4, false);
+            panel.setSelectedIndex(0);
         }else{
             panel.setEnabledAt(1, true);
             panel.setEnabledAt(2, true);

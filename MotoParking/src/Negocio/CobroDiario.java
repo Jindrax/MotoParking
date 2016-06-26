@@ -120,7 +120,7 @@ public class CobroDiario implements Serializable {
 
     @Override
     public String toString() {
-        return "Negocio.CobroDiario[ consecutivo=" + consecutivo + " ]";
+        return String.valueOf(consecutivo);
     }
     
 }

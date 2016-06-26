@@ -143,7 +143,7 @@ public class PrintNow {
         addLinea("Placa:", Font.BOLD, 14);
         addLinea(String.valueOf(cupo.getPlaca().getPlaca()), Font.BOLD, 14);
         if (cupo.getLocker() != null) {
-                addLinea("Casco(s): " + String.valueOf(cupo.getLocker().getIdentificador()) + "-" + String.valueOf(cupo.getLocker().getAlojamiento()), Font.BOLD, 14);
+                addLinea("Casco(s): " + String.valueOf(cupo.getLocker().getIdentificador()), Font.BOLD, 14);
             } else {
                 addLinea("Ningun Casco", Font.BOLD, 14);
             }
@@ -193,7 +193,7 @@ public class PrintNow {
             addLinea(nombre, Font.BOLD, 10);
         }
         addLinea("Ha pagado a:");
-        addLinea("OpyTrans LTDA.");
+        addLinea("MotoParqueo 259.");
         addLinea("$" + String.valueOf(mensualidad), Font.BOLD, 10);
         addLinea("Por servicio de parqueadero de:");
         addLinea("moto placa:");

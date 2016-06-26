@@ -134,7 +134,7 @@ public class CobroMensual implements Serializable {
 
     @Override
     public String toString() {
-        return "Negocio.CobroMensual[ cobroMensualPK=" + cobroMensualPK + " ]";
+        return cobroMensualPK.getPlaca();
     }
     
 }

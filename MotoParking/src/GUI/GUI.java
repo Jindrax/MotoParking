@@ -27,7 +27,6 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.swing.DefaultEventListModel;
 import ca.odell.glazedlists.swing.GlazedListsSwing;
-import java.awt.Color;
 import java.awt.Font;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -60,7 +59,8 @@ public class GUI extends javax.swing.JFrame {
      */
     Map<Long, Cupo> cuposActivos = new HashMap<>();
     Cupo cupoActual = null;
-    private EventList<String> colaEntrada;
+    EventList<String> colaEntrada;
+    EventList<String> mensuales;
     
     private void inicializarTablaDiario(){
         EntityManager em = Conection.getEmf().createEntityManager();
@@ -128,6 +128,8 @@ public class GUI extends javax.swing.JFrame {
 	DefaultEventListModel<String> modelo = GlazedListsSwing.eventListModel(colaEntrada);
 	listaEspera.setModel(modelo);
 	AutoCompleteDecorator.decorate(placaDiario, colaEntrada, false);
+        mensuales = new BasicEventList<>();
+	AutoCompleteDecorator.decorate(placaCobroMensual, mensuales, false);
     }
 
     /**
@@ -162,6 +164,7 @@ public class GUI extends javax.swing.JFrame {
         jLabel27 = new javax.swing.JLabel();
         jScrollPane12 = new javax.swing.JScrollPane();
         listaEspera = new javax.swing.JList<>();
+        actionCobroMensual1 = new javax.swing.JButton();
         panelAdmin = new javax.swing.JTabbedPane();
         historialPanel = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
@@ -174,6 +177,7 @@ public class GUI extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         totalHistorial = new javax.swing.JLabel();
         actionHistorial = new javax.swing.JButton();
+        actionHistorial1 = new javax.swing.JButton();
         panelMensual = new javax.swing.JPanel();
         jScrollPane5 = new javax.swing.JScrollPane();
         tablaMensual = new javax.swing.JTable();
@@ -197,6 +201,8 @@ public class GUI extends javax.swing.JFrame {
         jSeparator1 = new javax.swing.JSeparator();
         selectorMensual = new org.jdesktop.swingx.JXDatePicker();
         jLabel25 = new javax.swing.JLabel();
+        actionMensual1 = new javax.swing.JButton();
+        actionMensual2 = new javax.swing.JButton();
         userPanel = new javax.swing.JPanel();
         jLabel18 = new javax.swing.JLabel();
         placaClientes = new javax.swing.JTextField();
@@ -426,6 +432,14 @@ public class GUI extends javax.swing.JFrame {
         listaEspera.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane12.setViewportView(listaEspera);
 
+        actionCobroMensual1.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        actionCobroMensual1.setText("Imprimir Tickete");
+        actionCobroMensual1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionCobroMensual1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelDiarioLayout = new javax.swing.GroupLayout(panelDiario);
         panelDiario.setLayout(panelDiarioLayout);
         panelDiarioLayout.setHorizontalGroup(
@@ -453,12 +467,13 @@ public class GUI extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(actionDiario))
                     .addComponent(jScrollPane8)
+                    .addComponent(jScrollPane12)
                     .addGroup(panelDiarioLayout.createSequentialGroup()
                         .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel17)
                             .addComponent(jLabel27))
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane12))
+                    .addComponent(actionCobroMensual1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         panelDiarioLayout.setVerticalGroup(
@@ -485,7 +500,9 @@ public class GUI extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel27)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane12, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                        .addComponent(jScrollPane12, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(actionCobroMensual1))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 454, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel16)
@@ -555,10 +572,18 @@ public class GUI extends javax.swing.JFrame {
         totalHistorial.setText("jLabel9");
 
         actionHistorial.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        actionHistorial.setText("Imprimir resumen");
+        actionHistorial.setText("Imprimir Resumen");
         actionHistorial.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 actionHistorialActionPerformed(evt);
+            }
+        });
+
+        actionHistorial1.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        actionHistorial1.setText("Imprimir Recibo");
+        actionHistorial1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionHistorial1ActionPerformed(evt);
             }
         });
 
@@ -584,6 +609,8 @@ public class GUI extends javax.swing.JFrame {
                     .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, historialPanelLayout.createSequentialGroup()
                         .addComponent(actionHistorial)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(actionHistorial1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(fechaSelector, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
@@ -594,7 +621,8 @@ public class GUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(historialPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(fechaSelector, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(actionHistorial))
+                    .addComponent(actionHistorial)
+                    .addComponent(actionHistorial1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 630, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
@@ -735,6 +763,22 @@ public class GUI extends javax.swing.JFrame {
         jLabel25.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
         jLabel25.setText("Cobros de mensualidades:");
 
+        actionMensual1.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        actionMensual1.setText("Imprimir Recibo");
+        actionMensual1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionMensual1ActionPerformed(evt);
+            }
+        });
+
+        actionMensual2.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        actionMensual2.setText("Eliminar");
+        actionMensual2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionMensual2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelMensualLayout = new javax.swing.GroupLayout(panelMensual);
         panelMensual.setLayout(panelMensualLayout);
         panelMensualLayout.setHorizontalGroup(
@@ -742,12 +786,12 @@ public class GUI extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelMensualLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1107, Short.MAX_VALUE)
+                    .addComponent(jScrollPane7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1118, Short.MAX_VALUE)
                     .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(panelMensualLayout.createSequentialGroup()
                         .addComponent(jLabel25)
                         .addGap(0, 0, Short.MAX_VALUE)))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelMensualLayout.createSequentialGroup()
                         .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -767,16 +811,18 @@ public class GUI extends javax.swing.JFrame {
                             .addComponent(placaMensual, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(documentoMensual)
                             .addComponent(nombreMensual))
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addGap(0, 1, Short.MAX_VALUE))
                     .addComponent(jSeparator1)
                     .addComponent(selectorMensual, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(actionMensual, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(actionMensual, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(actionMensual1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(actionMensual2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         panelMensualLayout.setVerticalGroup(
             panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelMensualLayout.createSequentialGroup()
-                .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(panelMensualLayout.createSequentialGroup()
                         .addGap(19, 19, 19)
                         .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -807,7 +853,9 @@ public class GUI extends javax.swing.JFrame {
                             .addComponent(cobroMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel15))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(actionMensual))
+                        .addComponent(actionMensual)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(actionMensual2))
                     .addGroup(panelMensualLayout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 383, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -819,8 +867,10 @@ public class GUI extends javax.swing.JFrame {
                         .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(selectorMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(actionMensual1)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 294, Short.MAX_VALUE))
+                    .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 288, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -1017,6 +1067,11 @@ public class GUI extends javax.swing.JFrame {
         panelAdmin.addTab("Clientes", userPanel);
 
         panelLockers.setBackground(new java.awt.Color(255, 255, 0));
+        panelLockers.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentShown(java.awt.event.ComponentEvent evt) {
+                panelLockersComponentShown(evt);
+            }
+        });
 
         jScrollPane2.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -1226,7 +1281,6 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_ContenedorComponentShown
 
     private void panelAdminComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_panelAdminComponentShown
-        inicializarTablaLockers();
         new AutenticarDialogo(this, true, panelAdmin);
         fechaSelector.setDate(new Date());
         inicializarTablaHistorial(fechaSelector.getDate());
@@ -1417,6 +1471,7 @@ public class GUI extends javax.swing.JFrame {
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         inicializarTablaMorosos();
+        cargarListaMensuales();
     }//GEN-LAST:event_formWindowOpened
 
     private void actionCobroMensualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionCobroMensualActionPerformed
@@ -1444,7 +1499,7 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_actionHistorialActionPerformed
 
     private void panelMensualComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_panelMensualComponentShown
-        inicializarTablaMensual();
+        limpiarUsuariosMensuales();
         selectorMensual.setDate(new Date());
         inicializarTablaCobroMensual(selectorMensual.getDate());
     }//GEN-LAST:event_panelMensualComponentShown
@@ -1478,6 +1533,8 @@ public class GUI extends javax.swing.JFrame {
             } catch (Exception ex) {
                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
+            mensuales.add(usuarioMensual.getPlaca());
+            JOptionPane.showMessageDialog(null, "Cliente mensual añadido correctamente.");
         }else{
             usuarioMensual.setDocumento(documentoMensual.getText().toUpperCase());
             usuarioMensual.setNombre(nombreMensual.getText().toUpperCase());
@@ -1492,19 +1549,13 @@ public class GUI extends javax.swing.JFrame {
             } catch (Exception ex) {
                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
+            JOptionPane.showMessageDialog(null, "Cliente mensual modificado correctamente.");
         }
-        placaMensual.setText("");
-        documentoMensual.setText("");
-        nombreMensual.setText("");
-        telefonoMensual.setText("");
-        ingresoMensual.setDate(new Date());
-        cobroMensual.setDate(new Date());
-        inicializarTablaMensual();
-        inicializarTablaMorosos();
+        limpiarUsuariosMensuales();
     }//GEN-LAST:event_actionMensualActionPerformed
 
     private void mensualidadMensualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mensualidadMensualActionPerformed
-        // TODO add your handling code here:
+        actionMensual.requestFocus();
     }//GEN-LAST:event_mensualidadMensualActionPerformed
 
     private void tablaMensualMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaMensualMouseClicked
@@ -1701,6 +1752,58 @@ public class GUI extends javax.swing.JFrame {
         placaDiario.requestFocus();
     }//GEN-LAST:event_formWindowGainedFocus
 
+    private void panelLockersComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_panelLockersComponentShown
+        inicializarTablaLockers();
+    }//GEN-LAST:event_panelLockersComponentShown
+
+    private void actionMensual1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionMensual1ActionPerformed
+        if(tablaCobroMensual.getSelectedRow()!=-1){
+            CobroMensual cobro = (CobroMensual)tablaCobroMensual.getValueAt(tablaCobroMensual.getSelectedRow(), 0);
+            PrintNow.printReciboMensual(cobro);
+        }else{
+            JOptionPane.showMessageDialog(null, "Seleccione un cobro.");
+        }
+    }//GEN-LAST:event_actionMensual1ActionPerformed
+
+    private void actionHistorial1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionHistorial1ActionPerformed
+        if(tablaHistorial.getSelectedRow()!=-1){
+            CobroDiario cobro = (CobroDiario)tablaHistorial.getValueAt(tablaHistorial.getSelectedRow(), 0);
+            PrintNow.imprimirReciboSalida(cobro.getCupo(), cobro.getCobro());
+        }else{
+            JOptionPane.showMessageDialog(null, "Seleccione un elemento.");
+        }
+    }//GEN-LAST:event_actionHistorial1ActionPerformed
+
+    private void actionCobroMensual1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionCobroMensual1ActionPerformed
+        if(tablaDiario.getSelectedRow()!=-1){
+            Cupo cupo = (Cupo)tablaDiario.getValueAt(tablaDiario.getSelectedRow(), 0);
+            PrintNow.imprimirReciboEntrada(cupo);
+        }else{
+            JOptionPane.showMessageDialog(null, "Seleccione un elemento.");
+        }
+    }//GEN-LAST:event_actionCobroMensual1ActionPerformed
+
+    private void actionMensual2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionMensual2ActionPerformed
+        UsuarioMensual user = Conection.getUsuarioMensual().findUsuarioMensual(placaMensual.getText());
+        if(user!=null){
+            try {
+                for(CobroMensual cobro: user.getCobroMensualList()){
+                    Conection.getCobroMensual().destroy(cobro.getCobroMensualPK());
+                }
+                Conection.getUsuarioMensual().destroy(user.getPlaca());
+                mensuales.remove(user.getPlaca());
+                limpiarUsuariosMensuales();
+                JOptionPane.showMessageDialog(null, "Cliente mensual eliminado correctamente.");
+            } catch (IllegalOrphanException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (NonexistentEntityException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }            
+        }else{
+            JOptionPane.showMessageDialog(null, "Cliente mensual no encontrado.");
+        }
+    }//GEN-LAST:event_actionMensual2ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1742,12 +1845,16 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JButton actionBanClientes;
     private javax.swing.JButton actionClientes;
     private javax.swing.JButton actionCobroMensual;
+    private javax.swing.JButton actionCobroMensual1;
     private javax.swing.JButton actionDiario;
     private javax.swing.JButton actionGuardarClientes;
     private javax.swing.JButton actionHistorial;
+    private javax.swing.JButton actionHistorial1;
     private javax.swing.JButton actionImport;
     private javax.swing.JButton actionLocker;
     private javax.swing.JButton actionMensual;
+    private javax.swing.JButton actionMensual1;
+    private javax.swing.JButton actionMensual2;
     private javax.swing.JButton actionUnbanClientes;
     private javax.swing.JTextField aloLocker;
     private javax.swing.JLabel banDesdeClientes;
@@ -1930,7 +2037,7 @@ public class GUI extends javax.swing.JFrame {
         } catch (Exception ex) {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-        //PrintNow.imprimirReciboEntrada(cupo);
+        PrintNow.imprimirReciboEntrada(cupo);
         inicializarTablaDiario();
     }
 
@@ -1960,7 +2067,7 @@ public class GUI extends javax.swing.JFrame {
         String[] columnas = {"Consecutivo", "Placa", "Entrada", "Salida", "Cobrado", "Locker"};
         Object[][] campos = new Object[cobros.size()][columnas.length];
         for(CobroDiario cobro: cobros){
-            campos[i][0] = cobro.getConsecutivo();
+            campos[i][0] = cobro;
             campos[i][1] = cobro.getCupo().getPlaca().getPlaca();
             campos[i][2] = Auxi.formaterHora(cobro.getCupo().getCupoPK().getIngreso());
             campos[i][3] = Auxi.formaterHora(cobro.getCupo().getSalida());
@@ -2039,7 +2146,7 @@ public class GUI extends javax.swing.JFrame {
         Object[][] campos =  new Object[cobroList.size()][columnas.length];
         int i = 0;
         for(CobroMensual cobro: cobroList){
-            campos[i][0] = cobro.getCobroMensualPK().getPlaca();
+            campos[i][0] = cobro;
             campos[i][1] = Auxi.formaterFecha(cobro.getCobroMensualPK().getFecha());
             campos[i][2] = cobro.getUsuarioMensual().getNombre();
             campos[i][3] = Auxi.formaterFecha(cobro.getDesde());
@@ -2078,5 +2185,26 @@ public class GUI extends javax.swing.JFrame {
         DefaultTableModel modelo = new DefaultTableModel(campos, columnas);
         tablaClientes.setModel(modelo);
         tablaClientes.getTableHeader().setFont(new Font("Arial", Font.PLAIN, 24));
+    }
+
+    private void cargarListaMensuales() {
+        EntityManager em = Conection.getEmf().createEntityManager();
+        Query query = em.createQuery("SELECT m FROM UsuarioMensual m");
+        List<UsuarioMensual> mensualesList = query.getResultList();
+        for(UsuarioMensual cliente: mensualesList){
+            mensuales.add(cliente.getPlaca());
+        }
+    }
+
+    private void limpiarUsuariosMensuales() {
+        placaMensual.setText("");
+        documentoMensual.setText("");
+        nombreMensual.setText("");
+        telefonoMensual.setText("");
+        mensualidadMensual.setText("0");
+        ingresoMensual.setDate(new Date());
+        cobroMensual.setDate(new Date());
+        inicializarTablaMensual();
+        inicializarTablaMorosos();
     }
 }
