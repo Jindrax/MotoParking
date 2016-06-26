@@ -179,7 +179,7 @@ public class UsuarioMensual implements Serializable {
 
     @Override
     public String toString() {
-        return "Negocio.UsuarioMensual[ placa=" + placa + " ]";
+        return placa;
     }
     
 }

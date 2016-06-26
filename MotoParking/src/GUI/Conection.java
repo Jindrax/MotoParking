@@ -5,6 +5,7 @@
  */
 package GUI;
 
+import Controladores.BaneadoJpaController;
 import Controladores.CobroDiarioJpaController;
 import Controladores.CobroMensualJpaController;
 import Controladores.ConfiguracionesJpaController;
@@ -30,6 +31,7 @@ public class Conection {
     private static UsuarioJpaController usuario = new UsuarioJpaController(emf);
     private static UsuarioDiarioJpaController usuarioDiario = new UsuarioDiarioJpaController(emf);
     private static UsuarioMensualJpaController usuarioMensual = new UsuarioMensualJpaController(emf);
+    private static BaneadoJpaController baneado = new BaneadoJpaController(emf);
 
     public static CobroDiarioJpaController getCobroDiaro() {
         return cobroDiaro;
@@ -98,6 +100,12 @@ public class Conection {
     public static void setUsuario(UsuarioJpaController usuario) {
         Conection.usuario = usuario;
     }
-    
-    
+
+    public static BaneadoJpaController getBaneado() {
+        return baneado;
+    }
+
+    public static void setBaneado(BaneadoJpaController baneado) {
+        Conection.baneado = baneado;
+    }      
 }

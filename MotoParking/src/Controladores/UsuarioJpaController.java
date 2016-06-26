@@ -8,14 +8,13 @@ package Controladores;
 import Controladores.exceptions.IllegalOrphanException;
 import Controladores.exceptions.NonexistentEntityException;
 import Controladores.exceptions.PreexistingEntityException;
-import Negocio.Usuario;
 import java.io.Serializable;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import Negocio.UsuarioMensual;
-import Negocio.UsuarioDiario;
+import Negocio.Baneado;
+import Negocio.Usuario;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -23,7 +22,7 @@ import javax.persistence.EntityManagerFactory;
 
 /**
  *
- * @author santiago pc
+ * @author Jairo
  */
 public class UsuarioJpaController implements Serializable {
 
@@ -41,34 +40,20 @@ public class UsuarioJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            UsuarioMensual usuarioMensual = usuario.getUsuarioMensual();
-            if (usuarioMensual != null) {
-                usuarioMensual = em.getReference(usuarioMensual.getClass(), usuarioMensual.getPlaca());
-                usuario.setUsuarioMensual(usuarioMensual);
-            }
-            UsuarioDiario usuarioDiario = usuario.getUsuarioDiario();
-            if (usuarioDiario != null) {
-                usuarioDiario = em.getReference(usuarioDiario.getClass(), usuarioDiario.getPlaca());
-                usuario.setUsuarioDiario(usuarioDiario);
+            Baneado baneado = usuario.getBaneado();
+            if (baneado != null) {
+                baneado = em.getReference(baneado.getClass(), baneado.getPlaca());
+                usuario.setBaneado(baneado);
             }
             em.persist(usuario);
-            if (usuarioMensual != null) {
-                Usuario oldUsuarioOfUsuarioMensual = usuarioMensual.getUsuario();
-                if (oldUsuarioOfUsuarioMensual != null) {
-                    oldUsuarioOfUsuarioMensual.setUsuarioMensual(null);
-                    oldUsuarioOfUsuarioMensual = em.merge(oldUsuarioOfUsuarioMensual);
+            if (baneado != null) {
+                Usuario oldUsuarioOfBaneado = baneado.getUsuario();
+                if (oldUsuarioOfBaneado != null) {
+                    oldUsuarioOfBaneado.setBaneado(null);
+                    oldUsuarioOfBaneado = em.merge(oldUsuarioOfBaneado);
                 }
-                usuarioMensual.setUsuario(usuario);
-                usuarioMensual = em.merge(usuarioMensual);
-            }
-            if (usuarioDiario != null) {
-                Usuario oldUsuarioOfUsuarioDiario = usuarioDiario.getUsuario();
-                if (oldUsuarioOfUsuarioDiario != null) {
-                    oldUsuarioOfUsuarioDiario.setUsuarioDiario(null);
-                    oldUsuarioOfUsuarioDiario = em.merge(oldUsuarioOfUsuarioDiario);
-                }
-                usuarioDiario.setUsuario(usuario);
-                usuarioDiario = em.merge(usuarioDiario);
+                baneado.setUsuario(usuario);
+                baneado = em.merge(baneado);
             }
             em.getTransaction().commit();
         } catch (Exception ex) {
@@ -89,52 +74,31 @@ public class UsuarioJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             Usuario persistentUsuario = em.find(Usuario.class, usuario.getPlaca());
-            UsuarioMensual usuarioMensualOld = persistentUsuario.getUsuarioMensual();
-            UsuarioMensual usuarioMensualNew = usuario.getUsuarioMensual();
-            UsuarioDiario usuarioDiarioOld = persistentUsuario.getUsuarioDiario();
-            UsuarioDiario usuarioDiarioNew = usuario.getUsuarioDiario();
+            Baneado baneadoOld = persistentUsuario.getBaneado();
+            Baneado baneadoNew = usuario.getBaneado();
             List<String> illegalOrphanMessages = null;
-            if (usuarioMensualOld != null && !usuarioMensualOld.equals(usuarioMensualNew)) {
+            if (baneadoOld != null && !baneadoOld.equals(baneadoNew)) {
                 if (illegalOrphanMessages == null) {
                     illegalOrphanMessages = new ArrayList<String>();
                 }
-                illegalOrphanMessages.add("You must retain UsuarioMensual " + usuarioMensualOld + " since its usuario field is not nullable.");
-            }
-            if (usuarioDiarioOld != null && !usuarioDiarioOld.equals(usuarioDiarioNew)) {
-                if (illegalOrphanMessages == null) {
-                    illegalOrphanMessages = new ArrayList<String>();
-                }
-                illegalOrphanMessages.add("You must retain UsuarioDiario " + usuarioDiarioOld + " since its usuario field is not nullable.");
+                illegalOrphanMessages.add("You must retain Baneado " + baneadoOld + " since its usuario field is not nullable.");
             }
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
             }
-            if (usuarioMensualNew != null) {
-                usuarioMensualNew = em.getReference(usuarioMensualNew.getClass(), usuarioMensualNew.getPlaca());
-                usuario.setUsuarioMensual(usuarioMensualNew);
-            }
-            if (usuarioDiarioNew != null) {
-                usuarioDiarioNew = em.getReference(usuarioDiarioNew.getClass(), usuarioDiarioNew.getPlaca());
-                usuario.setUsuarioDiario(usuarioDiarioNew);
+            if (baneadoNew != null) {
+                baneadoNew = em.getReference(baneadoNew.getClass(), baneadoNew.getPlaca());
+                usuario.setBaneado(baneadoNew);
             }
             usuario = em.merge(usuario);
-            if (usuarioMensualNew != null && !usuarioMensualNew.equals(usuarioMensualOld)) {
-                Usuario oldUsuarioOfUsuarioMensual = usuarioMensualNew.getUsuario();
-                if (oldUsuarioOfUsuarioMensual != null) {
-                    oldUsuarioOfUsuarioMensual.setUsuarioMensual(null);
-                    oldUsuarioOfUsuarioMensual = em.merge(oldUsuarioOfUsuarioMensual);
+            if (baneadoNew != null && !baneadoNew.equals(baneadoOld)) {
+                Usuario oldUsuarioOfBaneado = baneadoNew.getUsuario();
+                if (oldUsuarioOfBaneado != null) {
+                    oldUsuarioOfBaneado.setBaneado(null);
+                    oldUsuarioOfBaneado = em.merge(oldUsuarioOfBaneado);
                 }
-                usuarioMensualNew.setUsuario(usuario);
-                usuarioMensualNew = em.merge(usuarioMensualNew);
-            }
-            if (usuarioDiarioNew != null && !usuarioDiarioNew.equals(usuarioDiarioOld)) {
-                Usuario oldUsuarioOfUsuarioDiario = usuarioDiarioNew.getUsuario();
-                if (oldUsuarioOfUsuarioDiario != null) {
-                    oldUsuarioOfUsuarioDiario.setUsuarioDiario(null);
-                    oldUsuarioOfUsuarioDiario = em.merge(oldUsuarioOfUsuarioDiario);
-                }
-                usuarioDiarioNew.setUsuario(usuario);
-                usuarioDiarioNew = em.merge(usuarioDiarioNew);
+                baneadoNew.setUsuario(usuario);
+                baneadoNew = em.merge(baneadoNew);
             }
             em.getTransaction().commit();
         } catch (Exception ex) {
@@ -166,19 +130,12 @@ public class UsuarioJpaController implements Serializable {
                 throw new NonexistentEntityException("The usuario with id " + id + " no longer exists.", enfe);
             }
             List<String> illegalOrphanMessages = null;
-            UsuarioMensual usuarioMensualOrphanCheck = usuario.getUsuarioMensual();
-            if (usuarioMensualOrphanCheck != null) {
+            Baneado baneadoOrphanCheck = usuario.getBaneado();
+            if (baneadoOrphanCheck != null) {
                 if (illegalOrphanMessages == null) {
                     illegalOrphanMessages = new ArrayList<String>();
                 }
-                illegalOrphanMessages.add("This Usuario (" + usuario + ") cannot be destroyed since the UsuarioMensual " + usuarioMensualOrphanCheck + " in its usuarioMensual field has a non-nullable usuario field.");
-            }
-            UsuarioDiario usuarioDiarioOrphanCheck = usuario.getUsuarioDiario();
-            if (usuarioDiarioOrphanCheck != null) {
-                if (illegalOrphanMessages == null) {
-                    illegalOrphanMessages = new ArrayList<String>();
-                }
-                illegalOrphanMessages.add("This Usuario (" + usuario + ") cannot be destroyed since the UsuarioDiario " + usuarioDiarioOrphanCheck + " in its usuarioDiario field has a non-nullable usuario field.");
+                illegalOrphanMessages.add("This Usuario (" + usuario + ") cannot be destroyed since the Baneado " + baneadoOrphanCheck + " in its baneado field has a non-nullable usuario field.");
             }
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);

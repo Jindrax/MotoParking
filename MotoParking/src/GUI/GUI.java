@@ -8,6 +8,7 @@ package GUI;
 import Controladores.exceptions.IllegalOrphanException;
 import Controladores.exceptions.NonexistentEntityException;
 import Controladores.exceptions.PreexistingEntityException;
+import Dialogos.AutenticarDialogo;
 import Dialogos.MensualidadDialogo;
 import Dialogos.RetiroDialogo;
 import Impresion.PrintNow;
@@ -22,6 +23,10 @@ import Negocio.Usuario;
 import Negocio.UsuarioDiario;
 import Negocio.UsuarioMensual;
 import Utilidades.Auxi;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.swing.DefaultEventListModel;
+import ca.odell.glazedlists.swing.GlazedListsSwing;
 import java.awt.Color;
 import java.awt.Font;
 import java.text.SimpleDateFormat;
@@ -37,10 +42,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import org.joda.time.LocalDate;
 
 /**
@@ -53,6 +60,7 @@ public class GUI extends javax.swing.JFrame {
      */
     Map<Long, Cupo> cuposActivos = new HashMap<>();
     Cupo cupoActual = null;
+    private EventList<String> colaEntrada;
     
     private void inicializarTablaDiario(){
         EntityManager em = Conection.getEmf().createEntityManager();
@@ -91,6 +99,8 @@ public class GUI extends javax.swing.JFrame {
     
     public GUI() {
         initComponents();
+        ImageIcon icono = new ImageIcon(getClass().getResource("/Recursos/IcoMotoParqueo.png"));
+        this.setIconImage(icono.getImage());
         inicializarTablaDiario();
         SimpleDateFormat formato = new SimpleDateFormat("dd-MM-yyyy");
         Date fechaActual = LocalDate.now().toDate();
@@ -114,6 +124,10 @@ public class GUI extends javax.swing.JFrame {
             }
         };
         sincro.scheduleAtFixedRate(tareaSincro, 1000, 1000);
+        colaEntrada = new BasicEventList<>();
+	DefaultEventListModel<String> modelo = GlazedListsSwing.eventListModel(colaEntrada);
+	listaEspera.setModel(modelo);
+	AutoCompleteDecorator.decorate(placaDiario, colaEntrada, false);
     }
 
     /**
@@ -145,6 +159,9 @@ public class GUI extends javax.swing.JFrame {
         actionAnularDiario = new javax.swing.JButton();
         jLabel17 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
+        jLabel27 = new javax.swing.JLabel();
+        jScrollPane12 = new javax.swing.JScrollPane();
+        listaEspera = new javax.swing.JList<>();
         panelAdmin = new javax.swing.JTabbedPane();
         historialPanel = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
@@ -180,23 +197,6 @@ public class GUI extends javax.swing.JFrame {
         jSeparator1 = new javax.swing.JSeparator();
         selectorMensual = new org.jdesktop.swingx.JXDatePicker();
         jLabel25 = new javax.swing.JLabel();
-        panelLockers = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        tablaLockers = new javax.swing.JTable();
-        jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        idLocker = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
-        aloLocker = new javax.swing.JTextField();
-        jLabel3 = new javax.swing.JLabel();
-        capLocker = new javax.swing.JTextField();
-        actionLocker = new javax.swing.JButton();
-        configPanel = new javax.swing.JPanel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        tablaConfig = new javax.swing.JTable();
-        valorConfig = new javax.swing.JTextField();
-        descConfig = new javax.swing.JLabel();
-        actionImport = new javax.swing.JButton();
         userPanel = new javax.swing.JPanel();
         jLabel18 = new javax.swing.JLabel();
         placaClientes = new javax.swing.JTextField();
@@ -220,11 +220,35 @@ public class GUI extends javax.swing.JFrame {
         banDesdeClientes = new javax.swing.JLabel();
         jScrollPane11 = new javax.swing.JScrollPane();
         tablaClientes = new javax.swing.JTable();
+        panelLockers = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tablaLockers = new javax.swing.JTable();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        idLocker = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        aloLocker = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        capLocker = new javax.swing.JTextField();
+        actionLocker = new javax.swing.JButton();
+        configPanel = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tablaConfig = new javax.swing.JTable();
+        valorConfig = new javax.swing.JTextField();
+        descConfig = new javax.swing.JLabel();
+        actionImport = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(1440, 860));
+        setTitle("MotoParqueo 259");
         setResizable(false);
         setSize(new java.awt.Dimension(1440, 860));
+        addWindowFocusListener(new java.awt.event.WindowFocusListener() {
+            public void windowGainedFocus(java.awt.event.WindowEvent evt) {
+                formWindowGainedFocus(evt);
+            }
+            public void windowLostFocus(java.awt.event.WindowEvent evt) {
+            }
+        });
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowActivated(java.awt.event.WindowEvent evt) {
                 formWindowActivated(evt);
@@ -234,6 +258,7 @@ public class GUI extends javax.swing.JFrame {
             }
         });
 
+        Contenedor.setBackground(new java.awt.Color(0, 0, 0));
         Contenedor.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
         Contenedor.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentShown(java.awt.event.ComponentEvent evt) {
@@ -241,13 +266,14 @@ public class GUI extends javax.swing.JFrame {
             }
         });
 
+        panelDiario.setBackground(new java.awt.Color(255, 255, 0));
         panelDiario.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentShown(java.awt.event.ComponentEvent evt) {
                 panelDiarioComponentShown(evt);
             }
         });
 
-        tablaDiario.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        tablaDiario.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         tablaDiario.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -267,6 +293,11 @@ public class GUI extends javax.swing.JFrame {
 
         placaDiario.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         placaDiario.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        placaDiario.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                placaDiarioMouseClicked(evt);
+            }
+        });
         placaDiario.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 placaDiarioActionPerformed(evt);
@@ -276,6 +307,11 @@ public class GUI extends javax.swing.JFrame {
         cascosDiario.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         cascosDiario.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         cascosDiario.setText("0");
+        cascosDiario.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                cascosDiarioMouseClicked(evt);
+            }
+        });
         cascosDiario.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cascosDiarioActionPerformed(evt);
@@ -293,7 +329,7 @@ public class GUI extends javax.swing.JFrame {
             }
         });
 
-        tablaMorosos.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        tablaMorosos.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         tablaMorosos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -308,8 +344,15 @@ public class GUI extends javax.swing.JFrame {
         tablaMorosos.setRowHeight(30);
         jScrollPane6.setViewportView(tablaMorosos);
 
+        jPanel2.setBackground(new java.awt.Color(255, 255, 0));
+
         placaCobroMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
         placaCobroMensual.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        placaCobroMensual.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                placaCobroMensualMouseClicked(evt);
+            }
+        });
         placaCobroMensual.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 placaCobroMensualActionPerformed(evt);
@@ -371,6 +414,18 @@ public class GUI extends javax.swing.JFrame {
         jLabel16.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
         jLabel16.setText("Clientes mensuales en estado de mora:");
 
+        jLabel27.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        jLabel27.setText("Lista de espera:");
+
+        listaEspera.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        listaEspera.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        listaEspera.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane12.setViewportView(listaEspera);
+
         javax.swing.GroupLayout panelDiarioLayout = new javax.swing.GroupLayout(panelDiario);
         panelDiario.setLayout(panelDiarioLayout);
         panelDiarioLayout.setHorizontalGroup(
@@ -399,8 +454,11 @@ public class GUI extends javax.swing.JFrame {
                         .addComponent(actionDiario))
                     .addComponent(jScrollPane8)
                     .addGroup(panelDiarioLayout.createSequentialGroup()
-                        .addComponent(jLabel17)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel17)
+                            .addComponent(jLabel27))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane12))
                 .addContainerGap())
         );
         panelDiarioLayout.setVerticalGroup(
@@ -424,8 +482,11 @@ public class GUI extends javax.swing.JFrame {
                         .addComponent(jLabel17)
                         .addGap(3, 3, 3)
                         .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 488, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel27)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane12, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 454, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel16)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -437,6 +498,7 @@ public class GUI extends javax.swing.JFrame {
 
         Contenedor.addTab("Diario", panelDiario);
 
+        panelAdmin.setBackground(new java.awt.Color(0, 0, 0));
         panelAdmin.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
         panelAdmin.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentShown(java.awt.event.ComponentEvent evt) {
@@ -444,13 +506,14 @@ public class GUI extends javax.swing.JFrame {
             }
         });
 
+        historialPanel.setBackground(new java.awt.Color(255, 255, 0));
         historialPanel.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentShown(java.awt.event.ComponentEvent evt) {
                 historialPanelComponentShown(evt);
             }
         });
 
-        tablaHistorial.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        tablaHistorial.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         tablaHistorial.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -488,6 +551,7 @@ public class GUI extends javax.swing.JFrame {
         jLabel8.setText("Total");
 
         totalHistorial.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        totalHistorial.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         totalHistorial.setText("jLabel9");
 
         actionHistorial.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
@@ -503,28 +567,26 @@ public class GUI extends javax.swing.JFrame {
         historialPanelLayout.setHorizontalGroup(
             historialPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(historialPanelLayout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(historialPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane4)
                     .addGroup(historialPanelLayout.createSequentialGroup()
-                        .addContainerGap()
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(iniconsHistorial)
+                        .addGap(46, 46, 46)
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(finconsHistorial)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 883, Short.MAX_VALUE)
+                        .addComponent(jLabel8)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(totalHistorial, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, historialPanelLayout.createSequentialGroup()
                         .addComponent(actionHistorial)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(fechaSelector, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
-            .addGroup(historialPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(iniconsHistorial)
-                .addGap(46, 46, 46)
-                .addComponent(jLabel7)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(finconsHistorial)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 774, Short.MAX_VALUE)
-                .addComponent(jLabel8)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(totalHistorial)
-                .addGap(170, 170, 170))
         );
         historialPanelLayout.setVerticalGroup(
             historialPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -535,7 +597,7 @@ public class GUI extends javax.swing.JFrame {
                     .addComponent(actionHistorial))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 630, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 50, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
                 .addGroup(historialPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
                     .addComponent(iniconsHistorial)
@@ -548,13 +610,14 @@ public class GUI extends javax.swing.JFrame {
 
         panelAdmin.addTab("Historial", historialPanel);
 
+        panelMensual.setBackground(new java.awt.Color(255, 255, 0));
         panelMensual.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentShown(java.awt.event.ComponentEvent evt) {
                 panelMensualComponentShown(evt);
             }
         });
 
-        tablaMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        tablaMensual.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         tablaMensual.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -645,7 +708,7 @@ public class GUI extends javax.swing.JFrame {
         jLabel15.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
         jLabel15.setText("Cobro");
 
-        tablaCobroMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        tablaCobroMensual.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         tablaCobroMensual.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -749,206 +812,31 @@ public class GUI extends javax.swing.JFrame {
                         .addContainerGap()
                         .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 383, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel25)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelMensualLayout.createSequentialGroup()
                         .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(selectorMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(321, Short.MAX_VALUE))
-                    .addGroup(panelMensualLayout.createSequentialGroup()
-                        .addComponent(jLabel25)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 294, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         panelAdmin.addTab("Mensual", panelMensual);
 
-        jScrollPane2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jScrollPane2MouseClicked(evt);
-            }
-        });
-
-        tablaLockers.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        tablaLockers.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        tablaLockers.setRowHeight(30);
-        tablaLockers.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tablaLockersMouseClicked(evt);
-            }
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                tablaLockersMouseReleased(evt);
-            }
-        });
-        jScrollPane2.setViewportView(tablaLockers);
-
-        jLabel1.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        jLabel1.setText("Identificacion");
-
-        idLocker.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-
-        jLabel2.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        jLabel2.setText("Alojamiento");
-
-        aloLocker.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-
-        jLabel3.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        jLabel3.setText("Capacidad");
-
-        capLocker.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-
-        actionLocker.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        actionLocker.setText("Añadir/Editar");
-        actionLocker.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                actionLockerActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(actionLocker, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(idLocker))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(aloLocker, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(capLocker, javax.swing.GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(idLocker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(aloLocker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(capLocker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(actionLocker)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        javax.swing.GroupLayout panelLockersLayout = new javax.swing.GroupLayout(panelLockers);
-        panelLockers.setLayout(panelLockersLayout);
-        panelLockersLayout.setHorizontalGroup(
-            panelLockersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelLockersLayout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 1120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        panelLockersLayout.setVerticalGroup(
-            panelLockersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 774, Short.MAX_VALUE)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-
-        panelAdmin.addTab("Lockers", panelLockers);
-
-        configPanel.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
-        configPanel.addComponentListener(new java.awt.event.ComponentAdapter() {
-            public void componentShown(java.awt.event.ComponentEvent evt) {
-                configPanelComponentShown(evt);
-            }
-        });
-
-        tablaConfig.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        tablaConfig.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        tablaConfig.setRowHeight(30);
-        tablaConfig.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tablaConfigMouseClicked(evt);
-            }
-        });
-        jScrollPane3.setViewportView(tablaConfig);
-
-        valorConfig.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        valorConfig.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        valorConfig.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                valorConfigActionPerformed(evt);
-            }
-        });
-
-        descConfig.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        descConfig.setText("Nuevo Valor");
-
-        actionImport.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        actionImport.setText("Importar Data");
-
-        javax.swing.GroupLayout configPanelLayout = new javax.swing.GroupLayout(configPanel);
-        configPanel.setLayout(configPanelLayout);
-        configPanelLayout.setHorizontalGroup(
-            configPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(configPanelLayout.createSequentialGroup()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 997, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(configPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(valorConfig)
-                    .addGroup(configPanelLayout.createSequentialGroup()
-                        .addComponent(descConfig)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(actionImport, javax.swing.GroupLayout.DEFAULT_SIZE, 417, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        configPanelLayout.setVerticalGroup(
-            configPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 774, Short.MAX_VALUE)
-            .addGroup(configPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(descConfig)
-                .addGap(8, 8, 8)
-                .addComponent(valorConfig, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(actionImport)
-                .addContainerGap())
-        );
-
-        panelAdmin.addTab("Configuracion", null, configPanel, "");
+        userPanel.setBackground(new java.awt.Color(255, 255, 0));
 
         jLabel18.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
         jLabel18.setText("Placa");
 
         placaClientes.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        placaClientes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                placaClientesMouseClicked(evt);
+            }
+        });
         placaClientes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 placaClientesActionPerformed(evt);
@@ -1028,7 +916,7 @@ public class GUI extends javax.swing.JFrame {
         banDesdeClientes.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         banDesdeClientes.setText("0");
 
-        tablaClientes.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        tablaClientes.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         tablaClientes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {},
@@ -1121,12 +1009,199 @@ public class GUI extends javax.swing.JFrame {
                         .addComponent(actionBanClientes)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(actionUnbanClientes)
-                        .addGap(0, 67, Short.MAX_VALUE))
+                        .addGap(0, 33, Short.MAX_VALUE))
                     .addComponent(jScrollPane11))
                 .addContainerGap())
         );
 
         panelAdmin.addTab("Clientes", userPanel);
+
+        panelLockers.setBackground(new java.awt.Color(255, 255, 0));
+
+        jScrollPane2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jScrollPane2MouseClicked(evt);
+            }
+        });
+
+        tablaLockers.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        tablaLockers.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        tablaLockers.setRowHeight(30);
+        tablaLockers.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaLockersMouseClicked(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                tablaLockersMouseReleased(evt);
+            }
+        });
+        jScrollPane2.setViewportView(tablaLockers);
+
+        jPanel1.setBackground(new java.awt.Color(255, 255, 0));
+
+        jLabel1.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel1.setText("Identificacion");
+
+        idLocker.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+
+        jLabel2.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel2.setText("Alojamiento");
+
+        aloLocker.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+
+        jLabel3.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel3.setText("Capacidad");
+
+        capLocker.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+
+        actionLocker.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        actionLocker.setText("Añadir/Editar");
+        actionLocker.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionLockerActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(actionLocker, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(idLocker))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(aloLocker, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(capLocker, javax.swing.GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(idLocker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(aloLocker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(capLocker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(actionLocker)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout panelLockersLayout = new javax.swing.GroupLayout(panelLockers);
+        panelLockers.setLayout(panelLockersLayout);
+        panelLockersLayout.setHorizontalGroup(
+            panelLockersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelLockersLayout.createSequentialGroup()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 1120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        panelLockersLayout.setVerticalGroup(
+            panelLockersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 740, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        panelAdmin.addTab("Lockers", panelLockers);
+
+        configPanel.setBackground(new java.awt.Color(255, 255, 0));
+        configPanel.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        configPanel.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentShown(java.awt.event.ComponentEvent evt) {
+                configPanelComponentShown(evt);
+            }
+        });
+
+        tablaConfig.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        tablaConfig.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        tablaConfig.setRowHeight(30);
+        tablaConfig.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaConfigMouseClicked(evt);
+            }
+        });
+        jScrollPane3.setViewportView(tablaConfig);
+
+        valorConfig.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        valorConfig.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        valorConfig.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                valorConfigActionPerformed(evt);
+            }
+        });
+
+        descConfig.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        descConfig.setText("Nuevo Valor");
+
+        actionImport.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        actionImport.setText("Importar Data");
+
+        javax.swing.GroupLayout configPanelLayout = new javax.swing.GroupLayout(configPanel);
+        configPanel.setLayout(configPanelLayout);
+        configPanelLayout.setHorizontalGroup(
+            configPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(configPanelLayout.createSequentialGroup()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 997, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(configPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(valorConfig)
+                    .addGroup(configPanelLayout.createSequentialGroup()
+                        .addComponent(descConfig)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(actionImport, javax.swing.GroupLayout.DEFAULT_SIZE, 417, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        configPanelLayout.setVerticalGroup(
+            configPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 740, Short.MAX_VALUE)
+            .addGroup(configPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(descConfig)
+                .addGap(8, 8, 8)
+                .addComponent(valorConfig, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(actionImport)
+                .addContainerGap())
+        );
+
+        panelAdmin.addTab("Configuracion", null, configPanel, "");
 
         Contenedor.addTab("Administracion", panelAdmin);
 
@@ -1152,6 +1227,9 @@ public class GUI extends javax.swing.JFrame {
 
     private void panelAdminComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_panelAdminComponentShown
         inicializarTablaLockers();
+        new AutenticarDialogo(this, true, panelAdmin);
+        fechaSelector.setDate(new Date());
+        inicializarTablaHistorial(fechaSelector.getDate());
     }//GEN-LAST:event_panelAdminComponentShown
 
     private void jScrollPane2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jScrollPane2MouseClicked
@@ -1287,7 +1365,14 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_placaDiarioActionPerformed
 
     private void cascosDiarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cascosDiarioActionPerformed
-        actionDiario.requestFocus();
+        if(cascosDiario.getText().compareTo("-")==0){
+            colaEntrada.add(placaDiario.getText().toUpperCase());
+            cascosDiario.setText("0");
+            placaDiario.setText("");
+            placaDiario.requestFocus();
+        }else{
+            actionDiario.requestFocus();
+        }
     }//GEN-LAST:event_cascosDiarioActionPerformed
 
     private void configPanelComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_configPanelComponentShown
@@ -1323,7 +1408,7 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_fechaSelectorActionPerformed
 
     private void placaCobroMensualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_placaCobroMensualActionPerformed
-        // TODO add your handling code here:
+        actionCobroMensualActionPerformed(evt);
     }//GEN-LAST:event_placaCobroMensualActionPerformed
 
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
@@ -1336,7 +1421,13 @@ public class GUI extends javax.swing.JFrame {
 
     private void actionCobroMensualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionCobroMensualActionPerformed
         UsuarioMensual usuario = Conection.getUsuarioMensual().findUsuarioMensual(placaCobroMensual.getText());
-        new MensualidadDialogo(this, true, usuario);
+        if(usuario!=null){
+            new MensualidadDialogo(this, true, usuario);
+        }else{
+            JOptionPane.showMessageDialog(null, "No existe ese cliente mensual.");
+        }
+        placaCobroMensual.setText("");
+        placaCobroMensual.requestFocus();
         inicializarTablaMorosos();
     }//GEN-LAST:event_actionCobroMensualActionPerformed
 
@@ -1359,11 +1450,11 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_panelMensualComponentShown
 
     private void actionMensualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionMensualActionPerformed
-        UsuarioMensual usuarioMensual = Conection.getUsuarioMensual().findUsuarioMensual(placaMensual.getText());
+        UsuarioMensual usuarioMensual = Conection.getUsuarioMensual().findUsuarioMensual(placaMensual.getText().toUpperCase());
         if(usuarioMensual == null){
-            Usuario usuario = Conection.getUsuario().findUsuario(placaMensual.getText());
+            Usuario usuario = Conection.getUsuario().findUsuario(placaMensual.getText().toUpperCase());
             if(usuario == null){
-                usuario = new Usuario(placaMensual.getText());
+                usuario = new Usuario(placaMensual.getText().toUpperCase());
                 usuario.setTipo("Moto");
                 usuario.setObservacion("");
                 try {
@@ -1372,11 +1463,11 @@ public class GUI extends javax.swing.JFrame {
                     Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            usuarioMensual = new UsuarioMensual(placaMensual.getText());
-            usuarioMensual.setDocumento(documentoMensual.getText());
-            usuarioMensual.setNombre(nombreMensual.getText());
-            usuarioMensual.setTelefono(telefonoMensual.getText());
-            usuarioMensual.setMensualidad(Long.parseLong(mensualidadMensual.getText()));
+            usuarioMensual = new UsuarioMensual(placaMensual.getText().toUpperCase());
+            usuarioMensual.setDocumento(documentoMensual.getText().toUpperCase());
+            usuarioMensual.setNombre(nombreMensual.getText().toUpperCase());
+            usuarioMensual.setTelefono(telefonoMensual.getText().toUpperCase());
+            usuarioMensual.setMensualidad(Long.parseLong(mensualidadMensual.getText().toUpperCase()));
             usuarioMensual.setFechaIngreso(ingresoMensual.getDate());
             usuarioMensual.setSigCobro(cobroMensual.getDate());
             usuarioMensual.setUsuario(usuario);
@@ -1388,10 +1479,10 @@ public class GUI extends javax.swing.JFrame {
                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         }else{
-            usuarioMensual.setDocumento(documentoMensual.getText());
-            usuarioMensual.setNombre(nombreMensual.getText());
-            usuarioMensual.setTelefono(telefonoMensual.getText());
-            usuarioMensual.setMensualidad(Long.parseLong(mensualidadMensual.getText()));
+            usuarioMensual.setDocumento(documentoMensual.getText().toUpperCase());
+            usuarioMensual.setNombre(nombreMensual.getText().toUpperCase());
+            usuarioMensual.setTelefono(telefonoMensual.getText().toUpperCase());
+            usuarioMensual.setMensualidad(Long.parseLong(mensualidadMensual.getText().toUpperCase()));
             usuarioMensual.setFechaIngreso(ingresoMensual.getDate());
             usuarioMensual.setSigCobro(cobroMensual.getDate());
             try {
@@ -1461,7 +1552,7 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_actionAnularDiarioActionPerformed
 
     private void placaClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_placaClientesActionPerformed
-        // TODO add your handling code here:
+        actionClientesActionPerformed(evt);
     }//GEN-LAST:event_placaClientesActionPerformed
 
     private void actionClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionClientesActionPerformed
@@ -1590,6 +1681,26 @@ public class GUI extends javax.swing.JFrame {
         mensualidadMensual.selectAll();
     }//GEN-LAST:event_telefonoMensualActionPerformed
 
+    private void placaClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_placaClientesMouseClicked
+        placaClientes.selectAll();
+    }//GEN-LAST:event_placaClientesMouseClicked
+
+    private void placaDiarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_placaDiarioMouseClicked
+        placaDiario.selectAll();
+    }//GEN-LAST:event_placaDiarioMouseClicked
+
+    private void cascosDiarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cascosDiarioMouseClicked
+        cascosDiario.selectAll();
+    }//GEN-LAST:event_cascosDiarioMouseClicked
+
+    private void placaCobroMensualMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_placaCobroMensualMouseClicked
+        placaCobroMensual.selectAll();
+    }//GEN-LAST:event_placaCobroMensualMouseClicked
+
+    private void formWindowGainedFocus(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowGainedFocus
+        placaDiario.requestFocus();
+    }//GEN-LAST:event_formWindowGainedFocus
+
     /**
      * @param args the command line arguments
      */
@@ -1673,6 +1784,7 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel26;
+    private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -1685,6 +1797,7 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane10;
     private javax.swing.JScrollPane jScrollPane11;
+    private javax.swing.JScrollPane jScrollPane12;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
@@ -1694,6 +1807,7 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane8;
     private javax.swing.JScrollPane jScrollPane9;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JList<String> listaEspera;
     private javax.swing.JTextField mensualidadMensual;
     private javax.swing.JTextField minutosClientes;
     private javax.swing.JTextField nombreMensual;
@@ -1816,7 +1930,7 @@ public class GUI extends javax.swing.JFrame {
         } catch (Exception ex) {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-        PrintNow.imprimirReciboEntrada(cupo);
+        //PrintNow.imprimirReciboEntrada(cupo);
         inicializarTablaDiario();
     }
 
@@ -1938,7 +2052,10 @@ public class GUI extends javax.swing.JFrame {
         tablaCobroMensual.getTableHeader().setFont(new Font("Arial", Font.PLAIN, 24));
     }
     private void inicializarTablaClientes(UsuarioDiario user) {
-        List<Cupo> cupoList = user.getCupoList();
+        EntityManager em = Conection.getEmf().createEntityManager();
+        Query query = em.createQuery("SELECT c FROM Cupo c WHERE c.placa = :placa AND c.salida IS NOT NULL ORDER BY c.salida DESC");
+        query.setParameter("placa", user);
+        List<Cupo> cupoList = query.getResultList();
         String[] columnas = {"Fecha", "Ingreso", "Salido", "Horas", "Minutos", "Locker", "Sugerido", "Cobro"};
         Object[][] campos =  new Object[cupoList.size()][columnas.length];
         int i = 0;

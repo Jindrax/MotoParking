@@ -7,10 +7,12 @@ package Dialogos;
 
 import Controladores.exceptions.NonexistentEntityException;
 import GUI.Conection;
+import Impresion.PrintNow;
 import Negocio.CobroDiario;
 import Negocio.Configuraciones;
 import Negocio.Cupo;
 import Negocio.Locker;
+import Negocio.UsuarioDiario;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,6 +28,7 @@ import org.joda.time.format.PeriodFormatterBuilder;
  */
 public class RetiroDialogo extends javax.swing.JDialog {
     Cupo cupo = null;
+    CobroDiario cobroDiario = null;
     /**
      * Creates new form RetiroDialogo
      */
@@ -44,8 +47,13 @@ public class RetiroDialogo extends javax.swing.JDialog {
             .appendMinutes()
             .toFormatter();
         String result = minutesAndSeconds.print(period);
-        tiempo.setText(result);
+        tiempo.setText(result);        
         cobroFinal.setText(String.valueOf(cupo.getCobroSugerido()));
+        if(cupo.getLocker()!=null){
+            locker.setText(String.format("%s : %d", cupo.getLocker().getIdentificador(), cupo.getLocker().getAlojamiento()));
+        }else{
+            locker.setText("Ninguno");
+        }
         this.setVisible(true);
     }
     
@@ -69,6 +77,9 @@ public class RetiroDialogo extends javax.swing.JDialog {
         tiempo = new javax.swing.JLabel();
         cobroFinal = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
+        placa1 = new javax.swing.JLabel();
+        locker = new javax.swing.JLabel();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Retiro de vehiculo del sistema.");
@@ -105,6 +116,22 @@ public class RetiroDialogo extends javax.swing.JDialog {
             }
         });
 
+        placa1.setFont(new java.awt.Font("Arial", 0, 48)); // NOI18N
+        placa1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        placa1.setText("Locker");
+
+        locker.setFont(new java.awt.Font("Arial", 0, 48)); // NOI18N
+        locker.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        locker.setText("A1");
+
+        jButton2.setFont(new java.awt.Font("Arial", 0, 48)); // NOI18N
+        jButton2.setText("Imprimir");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -112,12 +139,19 @@ public class RetiroDialogo extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(placa, javax.swing.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE)
-                        .addGap(18, 18, 18)
-                        .addComponent(tiempo, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(cobroFinal)
-                    .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(placa1, javax.swing.GroupLayout.DEFAULT_SIZE, 259, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(locker, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(placa, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(tiempo, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -127,10 +161,16 @@ public class RetiroDialogo extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(placa)
                     .addComponent(tiempo))
-                .addGap(18, 18, 18)
-                .addComponent(cobroFinal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(placa1)
+                    .addComponent(locker))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(cobroFinal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -150,6 +190,12 @@ public class RetiroDialogo extends javax.swing.JDialog {
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         cobroFinal.selectAll();
     }//GEN-LAST:event_formWindowOpened
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        retiroDiarioFinal(cupo);
+        PrintNow.imprimirReciboSalida(cupo, cobroDiario.getCobro());
+        this.dispose();
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -196,10 +242,14 @@ public class RetiroDialogo extends javax.swing.JDialog {
     private void retiroDiarioFinal(Cupo cupoActual) {
         Configuraciones consecutivo = Conection.getConfiguraciones().findConfiguraciones("consecutivo");
         CobroDiario cobro = new CobroDiario();
+        UsuarioDiario usuario = cupo.getPlaca();
         cobro.setConsecutivo(Long.parseLong(consecutivo.getValor()));
         cobro.setFecha(new Date());
         cobro.setCobro(Long.parseLong(cobroFinal.getText()));
         cobro.setCupo(cupoActual);
+        usuario.setEntradas(usuario.getEntradas()+1);
+        usuario.setMinutosRegistrados(usuario.getMinutosRegistrados() + cupo.getHoras()*60 + cupo.getMinutos());
+        usuario.setCobroTotal(usuario.getCobroTotal() + cobro.getCobro());
         try {
             Conection.getCupo().edit(cupoActual);
         } catch (NonexistentEntityException ex) {
@@ -208,6 +258,7 @@ public class RetiroDialogo extends javax.swing.JDialog {
             Logger.getLogger(RetiroDialogo.class.getName()).log(Level.SEVERE, null, ex);
         }
         try {
+            Conection.getUsuarioDiario().edit(usuario);
             Conection.getCobroDiaro().create(cobro);
         } catch (Exception ex) {
             Logger.getLogger(RetiroDialogo.class.getName()).log(Level.SEVERE, null, ex);
@@ -227,6 +278,7 @@ public class RetiroDialogo extends javax.swing.JDialog {
                 Logger.getLogger(RetiroDialogo.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        cobroDiario = cobro;
     }
     
     private void cancelar(Cupo cupoActual){
@@ -246,7 +298,10 @@ public class RetiroDialogo extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField cobroFinal;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JLabel locker;
     private javax.swing.JLabel placa;
+    private javax.swing.JLabel placa1;
     private javax.swing.JLabel tiempo;
     // End of variables declaration//GEN-END:variables
 }

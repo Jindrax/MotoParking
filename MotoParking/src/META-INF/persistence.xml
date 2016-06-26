@@ -10,6 +10,7 @@
     <class>Negocio.Locker</class>
     <class>Negocio.CobroMensual</class>
     <class>Negocio.UsuarioMensual</class>
+    <class>Negocio.Baneado</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/motoparqueo?zeroDateTimeBehavior=convertToNull"/>
       <property name="javax.persistence.jdbc.user" value="root"/>

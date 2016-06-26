@@ -13,7 +13,6 @@ import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import Negocio.Usuario;
 import Negocio.Cupo;
 import Negocio.UsuarioDiario;
 import java.util.ArrayList;
@@ -23,7 +22,7 @@ import javax.persistence.EntityManagerFactory;
 
 /**
  *
- * @author santiago pc
+ * @author Jairo
  */
 public class UsuarioDiarioJpaController implements Serializable {
 
@@ -36,33 +35,14 @@ public class UsuarioDiarioJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(UsuarioDiario usuarioDiario) throws IllegalOrphanException, PreexistingEntityException, Exception {
+    public void create(UsuarioDiario usuarioDiario) throws PreexistingEntityException, Exception {
         if (usuarioDiario.getCupoList() == null) {
             usuarioDiario.setCupoList(new ArrayList<Cupo>());
-        }
-        List<String> illegalOrphanMessages = null;
-        Usuario usuarioOrphanCheck = usuarioDiario.getUsuario();
-        if (usuarioOrphanCheck != null) {
-            UsuarioDiario oldUsuarioDiarioOfUsuario = usuarioOrphanCheck.getUsuarioDiario();
-            if (oldUsuarioDiarioOfUsuario != null) {
-                if (illegalOrphanMessages == null) {
-                    illegalOrphanMessages = new ArrayList<String>();
-                }
-                illegalOrphanMessages.add("The Usuario " + usuarioOrphanCheck + " already has an item of type UsuarioDiario whose usuario column cannot be null. Please make another selection for the usuario field.");
-            }
-        }
-        if (illegalOrphanMessages != null) {
-            throw new IllegalOrphanException(illegalOrphanMessages);
         }
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Usuario usuario = usuarioDiario.getUsuario();
-            if (usuario != null) {
-                usuario = em.getReference(usuario.getClass(), usuario.getPlaca());
-                usuarioDiario.setUsuario(usuario);
-            }
             List<Cupo> attachedCupoList = new ArrayList<Cupo>();
             for (Cupo cupoListCupoToAttach : usuarioDiario.getCupoList()) {
                 cupoListCupoToAttach = em.getReference(cupoListCupoToAttach.getClass(), cupoListCupoToAttach.getCupoPK());
@@ -70,10 +50,6 @@ public class UsuarioDiarioJpaController implements Serializable {
             }
             usuarioDiario.setCupoList(attachedCupoList);
             em.persist(usuarioDiario);
-            if (usuario != null) {
-                usuario.setUsuarioDiario(usuarioDiario);
-                usuario = em.merge(usuario);
-            }
             for (Cupo cupoListCupo : usuarioDiario.getCupoList()) {
                 UsuarioDiario oldPlacaOfCupoListCupo = cupoListCupo.getPlaca();
                 cupoListCupo.setPlaca(usuarioDiario);
@@ -102,20 +78,9 @@ public class UsuarioDiarioJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             UsuarioDiario persistentUsuarioDiario = em.find(UsuarioDiario.class, usuarioDiario.getPlaca());
-            Usuario usuarioOld = persistentUsuarioDiario.getUsuario();
-            Usuario usuarioNew = usuarioDiario.getUsuario();
             List<Cupo> cupoListOld = persistentUsuarioDiario.getCupoList();
             List<Cupo> cupoListNew = usuarioDiario.getCupoList();
             List<String> illegalOrphanMessages = null;
-            if (usuarioNew != null && !usuarioNew.equals(usuarioOld)) {
-                UsuarioDiario oldUsuarioDiarioOfUsuario = usuarioNew.getUsuarioDiario();
-                if (oldUsuarioDiarioOfUsuario != null) {
-                    if (illegalOrphanMessages == null) {
-                        illegalOrphanMessages = new ArrayList<String>();
-                    }
-                    illegalOrphanMessages.add("The Usuario " + usuarioNew + " already has an item of type UsuarioDiario whose usuario column cannot be null. Please make another selection for the usuario field.");
-                }
-            }
             for (Cupo cupoListOldCupo : cupoListOld) {
                 if (!cupoListNew.contains(cupoListOldCupo)) {
                     if (illegalOrphanMessages == null) {
@@ -127,10 +92,6 @@ public class UsuarioDiarioJpaController implements Serializable {
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
             }
-            if (usuarioNew != null) {
-                usuarioNew = em.getReference(usuarioNew.getClass(), usuarioNew.getPlaca());
-                usuarioDiario.setUsuario(usuarioNew);
-            }
             List<Cupo> attachedCupoListNew = new ArrayList<Cupo>();
             for (Cupo cupoListNewCupoToAttach : cupoListNew) {
                 cupoListNewCupoToAttach = em.getReference(cupoListNewCupoToAttach.getClass(), cupoListNewCupoToAttach.getCupoPK());
@@ -139,14 +100,6 @@ public class UsuarioDiarioJpaController implements Serializable {
             cupoListNew = attachedCupoListNew;
             usuarioDiario.setCupoList(cupoListNew);
             usuarioDiario = em.merge(usuarioDiario);
-            if (usuarioOld != null && !usuarioOld.equals(usuarioNew)) {
-                usuarioOld.setUsuarioDiario(null);
-                usuarioOld = em.merge(usuarioOld);
-            }
-            if (usuarioNew != null && !usuarioNew.equals(usuarioOld)) {
-                usuarioNew.setUsuarioDiario(usuarioDiario);
-                usuarioNew = em.merge(usuarioNew);
-            }
             for (Cupo cupoListNewCupo : cupoListNew) {
                 if (!cupoListOld.contains(cupoListNewCupo)) {
                     UsuarioDiario oldPlacaOfCupoListNewCupo = cupoListNewCupo.getPlaca();
@@ -197,11 +150,6 @@ public class UsuarioDiarioJpaController implements Serializable {
             }
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
-            }
-            Usuario usuario = usuarioDiario.getUsuario();
-            if (usuario != null) {
-                usuario.setUsuarioDiario(null);
-                usuario = em.merge(usuario);
             }
             em.remove(usuarioDiario);
             em.getTransaction().commit();
