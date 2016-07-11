@@ -22,6 +22,7 @@ import Negocio.Locker;
 import Negocio.Usuario;
 import Negocio.UsuarioDiario;
 import Negocio.UsuarioMensual;
+import Utilidades.Autenticador;
 import Utilidades.Auxi;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
@@ -64,7 +65,7 @@ public class GUI extends javax.swing.JFrame {
     
     private void inicializarTablaDiario(){
         EntityManager em = Conection.getEmf().createEntityManager();
-        Query query = em.createQuery("select c from Cupo c where c.salida is NULL");
+        Query query = em.createQuery("select c from Cupo c where c.salida is NULL ORDER BY c.cupoPK.consecutivo DESC");
         List<Cupo> cupos = query.getResultList();
         String[] columnas = {"#", "Placa", "Ingreso", "Locker", "Cascos", "Tiempo", "Cobro",  "Entradas"};
         Object[][] campos = new Object[cupos.size()][columnas.length];
@@ -165,6 +166,7 @@ public class GUI extends javax.swing.JFrame {
         jScrollPane12 = new javax.swing.JScrollPane();
         listaEspera = new javax.swing.JList<>();
         actionCobroMensual1 = new javax.swing.JButton();
+        actionCobroMensual2 = new javax.swing.JButton();
         panelAdmin = new javax.swing.JTabbedPane();
         historialPanel = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
@@ -178,6 +180,7 @@ public class GUI extends javax.swing.JFrame {
         totalHistorial = new javax.swing.JLabel();
         actionHistorial = new javax.swing.JButton();
         actionHistorial1 = new javax.swing.JButton();
+        actionModHistorial = new javax.swing.JButton();
         panelMensual = new javax.swing.JPanel();
         jScrollPane5 = new javax.swing.JScrollPane();
         tablaMensual = new javax.swing.JTable();
@@ -292,6 +295,11 @@ public class GUI extends javax.swing.JFrame {
             }
         ));
         tablaDiario.setRowHeight(30);
+        tablaDiario.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaDiarioMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tablaDiario);
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
@@ -386,24 +394,28 @@ public class GUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(placaCobroMensual))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGap(0, 94, Short.MAX_VALUE)
+                .addGap(0, 64, Short.MAX_VALUE)
                 .addComponent(actionCobroMensual))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(placaCobroMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel26))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(actionCobroMensual)
-                .addContainerGap(177, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
-        observacinoesDiario.setEditable(false);
+        jScrollPane8.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        jScrollPane8.setHorizontalScrollBar(null);
+
         observacinoesDiario.setColumns(20);
+        observacinoesDiario.setLineWrap(true);
         observacinoesDiario.setRows(5);
+        observacinoesDiario.setWrapStyleWord(true);
         jScrollPane8.setViewportView(observacinoesDiario);
 
         actionAnularDiario.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
@@ -430,6 +442,11 @@ public class GUI extends javax.swing.JFrame {
             public String getElementAt(int i) { return strings[i]; }
         });
         listaEspera.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        listaEspera.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                listaEsperaValueChanged(evt);
+            }
+        });
         jScrollPane12.setViewportView(listaEspera);
 
         actionCobroMensual1.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
@@ -437,6 +454,14 @@ public class GUI extends javax.swing.JFrame {
         actionCobroMensual1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 actionCobroMensual1ActionPerformed(evt);
+            }
+        });
+
+        actionCobroMensual2.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        actionCobroMensual2.setText("Guardar Observacion");
+        actionCobroMensual2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionCobroMensual2ActionPerformed(evt);
             }
         });
 
@@ -453,34 +478,42 @@ public class GUI extends javax.swing.JFrame {
                     .addComponent(jLabel16))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane12, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(panelDiarioLayout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(placaDiario))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelDiarioLayout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(cascosDiario, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE))
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelDiarioLayout.createSequentialGroup()
-                        .addComponent(actionAnularDiario)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(actionDiario))
-                    .addComponent(jScrollPane8)
-                    .addComponent(jScrollPane12)
+                        .addComponent(jLabel27)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(panelDiarioLayout.createSequentialGroup()
                         .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel17)
-                            .addComponent(jLabel27))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(actionCobroMensual1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                            .addGroup(panelDiarioLayout.createSequentialGroup()
+                                .addComponent(jLabel4)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(placaDiario))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelDiarioLayout.createSequentialGroup()
+                                .addComponent(jLabel5)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(cascosDiario, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE))
+                            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelDiarioLayout.createSequentialGroup()
+                                .addComponent(actionAnularDiario)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(actionDiario))
+                            .addComponent(jScrollPane8)
+                            .addGroup(panelDiarioLayout.createSequentialGroup()
+                                .addComponent(jLabel17)
+                                .addGap(0, 151, Short.MAX_VALUE))
+                            .addComponent(actionCobroMensual1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(actionCobroMensual2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap())))
         );
         panelDiarioLayout.setVerticalGroup(
             panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelDiarioLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelDiarioLayout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel16))
                     .addGroup(panelDiarioLayout.createSequentialGroup()
                         .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel4)
@@ -498,18 +531,18 @@ public class GUI extends javax.swing.JFrame {
                         .addGap(3, 3, 3)
                         .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(actionCobroMensual2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel27)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane12, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(actionCobroMensual1))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 454, Short.MAX_VALUE))
+                        .addComponent(jScrollPane12, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel16)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(panelDiarioLayout.createSequentialGroup()
+                        .addComponent(actionCobroMensual1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
@@ -587,6 +620,14 @@ public class GUI extends javax.swing.JFrame {
             }
         });
 
+        actionModHistorial.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        actionModHistorial.setText("Modificar");
+        actionModHistorial.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionModHistorialActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout historialPanelLayout = new javax.swing.GroupLayout(historialPanel);
         historialPanel.setLayout(historialPanelLayout);
         historialPanelLayout.setHorizontalGroup(
@@ -602,7 +643,7 @@ public class GUI extends javax.swing.JFrame {
                         .addComponent(jLabel7)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(finconsHistorial)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 883, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 833, Short.MAX_VALUE)
                         .addComponent(jLabel8)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(totalHistorial, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -611,9 +652,11 @@ public class GUI extends javax.swing.JFrame {
                         .addComponent(actionHistorial)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(actionHistorial1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(actionModHistorial)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 554, Short.MAX_VALUE)
                         .addComponent(fechaSelector, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                .addGap(30, 30, 30))
         );
         historialPanelLayout.setVerticalGroup(
             historialPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -622,10 +665,11 @@ public class GUI extends javax.swing.JFrame {
                 .addGroup(historialPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(fechaSelector, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(actionHistorial)
-                    .addComponent(actionHistorial1))
+                    .addComponent(actionHistorial1)
+                    .addComponent(actionModHistorial))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 630, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 617, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(historialPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
                     .addComponent(iniconsHistorial)
@@ -786,7 +830,7 @@ public class GUI extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelMensualLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1118, Short.MAX_VALUE)
+                    .addComponent(jScrollPane7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1069, Short.MAX_VALUE)
                     .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(panelMensualLayout.createSequentialGroup()
                         .addComponent(jLabel25)
@@ -811,13 +855,13 @@ public class GUI extends javax.swing.JFrame {
                             .addComponent(placaMensual, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(documentoMensual)
                             .addComponent(nombreMensual))
-                        .addGap(0, 1, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(jSeparator1)
                     .addComponent(selectorMensual, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(actionMensual, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(actionMensual1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(actionMensual2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                .addGap(30, 30, 30))
         );
         panelMensualLayout.setVerticalGroup(
             panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -870,7 +914,7 @@ public class GUI extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(actionMensual1)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 288, Short.MAX_VALUE))
+                    .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 256, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -924,7 +968,9 @@ public class GUI extends javax.swing.JFrame {
 
         observacionesClientes.setColumns(20);
         observacionesClientes.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        observacionesClientes.setLineWrap(true);
         observacionesClientes.setRows(5);
+        observacionesClientes.setWrapStyleWord(true);
         jScrollPane9.setViewportView(observacionesClientes);
 
         actionGuardarClientes.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
@@ -945,7 +991,9 @@ public class GUI extends javax.swing.JFrame {
 
         razonClientes.setColumns(20);
         razonClientes.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        razonClientes.setLineWrap(true);
         razonClientes.setRows(5);
+        razonClientes.setWrapStyleWord(true);
         jScrollPane10.setViewportView(razonClientes);
 
         jLabel23.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
@@ -1016,8 +1064,8 @@ public class GUI extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(banDesdeClientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane11, javax.swing.GroupLayout.DEFAULT_SIZE, 1106, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jScrollPane11, javax.swing.GroupLayout.DEFAULT_SIZE, 1056, Short.MAX_VALUE)
+                .addGap(30, 30, 30))
         );
         userPanelLayout.setVerticalGroup(
             userPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1059,7 +1107,7 @@ public class GUI extends javax.swing.JFrame {
                         .addComponent(actionBanClientes)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(actionUnbanClientes)
-                        .addGap(0, 33, Short.MAX_VALUE))
+                        .addGap(0, 1, Short.MAX_VALUE))
                     .addComponent(jScrollPane11))
                 .addContainerGap())
         );
@@ -1142,12 +1190,12 @@ public class GUI extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(aloLocker, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE))
+                        .addComponent(aloLocker, javax.swing.GroupLayout.DEFAULT_SIZE, 99, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(capLocker, javax.swing.GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addComponent(capLocker, javax.swing.GroupLayout.DEFAULT_SIZE, 109, Short.MAX_VALUE)))
+                .addGap(30, 30, 30))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1180,7 +1228,7 @@ public class GUI extends javax.swing.JFrame {
         );
         panelLockersLayout.setVerticalGroup(
             panelLockersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 740, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 708, Short.MAX_VALUE)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
@@ -1236,16 +1284,16 @@ public class GUI extends javax.swing.JFrame {
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 997, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(configPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(valorConfig)
                     .addGroup(configPanelLayout.createSequentialGroup()
                         .addComponent(descConfig)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(actionImport, javax.swing.GroupLayout.DEFAULT_SIZE, 417, Short.MAX_VALUE))
+                        .addGap(0, 257, Short.MAX_VALUE))
+                    .addComponent(valorConfig)
+                    .addComponent(actionImport, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         configPanelLayout.setVerticalGroup(
             configPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 740, Short.MAX_VALUE)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 708, Short.MAX_VALUE)
             .addGroup(configPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(descConfig)
@@ -1264,9 +1312,7 @@ public class GUI extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(Contenedor, javax.swing.GroupLayout.PREFERRED_SIZE, 1440, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(Contenedor, javax.swing.GroupLayout.PREFERRED_SIZE, 1410, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1282,6 +1328,7 @@ public class GUI extends javax.swing.JFrame {
 
     private void panelAdminComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_panelAdminComponentShown
         new AutenticarDialogo(this, true, panelAdmin);
+        actionModHistorial.setEnabled(Autenticador.estado);
         fechaSelector.setDate(new Date());
         inicializarTablaHistorial(fechaSelector.getDate());
     }//GEN-LAST:event_panelAdminComponentShown
@@ -1349,6 +1396,9 @@ public class GUI extends javax.swing.JFrame {
                 }else{
                     JOptionPane.showMessageDialog(null, "Ese cupo no existe en el sistema.");                    
                 }
+                break;
+            case 5:
+                JOptionPane.showMessageDialog(null, "El cliente es un cliente mensual.");
                 break;
             default:
                 System.out.println(seleccion);
@@ -1454,7 +1504,7 @@ public class GUI extends javax.swing.JFrame {
 
     private void historialPanelComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_historialPanelComponentShown
         fechaSelector.setDate(new Date());
-        inicializarTablaHistorial(fechaSelector.getDate());        
+        inicializarTablaHistorial(fechaSelector.getDate());
     }//GEN-LAST:event_historialPanelComponentShown
 
     private void fechaSelectorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fechaSelectorActionPerformed
@@ -1596,6 +1646,7 @@ public class GUI extends javax.swing.JFrame {
                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
             inicializarTablaDiario();
+            tablaDiario.clearSelection();
             JOptionPane.showMessageDialog(null, "Elemento anulado existosamente.");
         }else{
             JOptionPane.showMessageDialog(null, "Debe seleccionar un elemento primero.");
@@ -1778,6 +1829,7 @@ public class GUI extends javax.swing.JFrame {
         if(tablaDiario.getSelectedRow()!=-1){
             Cupo cupo = (Cupo)tablaDiario.getValueAt(tablaDiario.getSelectedRow(), 0);
             PrintNow.imprimirReciboEntrada(cupo);
+            tablaDiario.clearSelection();
         }else{
             JOptionPane.showMessageDialog(null, "Seleccione un elemento.");
         }
@@ -1803,6 +1855,52 @@ public class GUI extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Cliente mensual no encontrado.");
         }
     }//GEN-LAST:event_actionMensual2ActionPerformed
+
+    private void tablaDiarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaDiarioMouseClicked
+        if(tablaDiario.getSelectedRow()!=-1){
+            Cupo cupo = (Cupo)tablaDiario.getValueAt(tablaDiario.getSelectedRow(), 0);
+            observacinoesDiario.setText(cupo.getPlaca().getUsuario().getObservacion());
+        }
+    }//GEN-LAST:event_tablaDiarioMouseClicked
+
+    private void actionCobroMensual2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionCobroMensual2ActionPerformed
+        if(tablaDiario.getSelectedRow()!=-1){
+            Cupo cupo = (Cupo)tablaDiario.getValueAt(tablaDiario.getSelectedRow(), 0);
+            Usuario user = cupo.getPlaca().getUsuario();
+            user.setObservacion(observacinoesDiario.getText());
+            try {
+                Conection.getUsuario().edit(user);
+            } catch (NonexistentEntityException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            observacinoesDiario.setText("");
+            tablaDiario.clearSelection();
+        }        
+    }//GEN-LAST:event_actionCobroMensual2ActionPerformed
+
+    private void listaEsperaValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listaEsperaValueChanged
+        colaEntrada.remove(listaEspera.getSelectedValue());
+    }//GEN-LAST:event_listaEsperaValueChanged
+
+    private void actionModHistorialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionModHistorialActionPerformed
+        if(tablaHistorial.getSelectedRow()!=-1){
+            CobroDiario cobro = (CobroDiario)tablaHistorial.getValueAt(tablaHistorial.getSelectedRow(), 0);
+            Cupo cupo = cobro.getCupo();
+            String valorIngreso = JOptionPane.showInputDialog("Ingrese el valor correspondiente: ", cupo.getCobroSugerido());
+            if(valorIngreso!=null){
+                cobro.setCobro(Long.parseLong(valorIngreso));
+                try {
+                    Conection.getCobroDiaro().edit(cobro);
+                } catch (Exception ex) {
+                    Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                JOptionPane.showMessageDialog(null, "Cobro modificado correctamente.");
+            }
+            inicializarTablaHistorial(fechaSelector.getDate());
+        }
+    }//GEN-LAST:event_actionModHistorialActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1846,6 +1944,7 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JButton actionClientes;
     private javax.swing.JButton actionCobroMensual;
     private javax.swing.JButton actionCobroMensual1;
+    private javax.swing.JButton actionCobroMensual2;
     private javax.swing.JButton actionDiario;
     private javax.swing.JButton actionGuardarClientes;
     private javax.swing.JButton actionHistorial;
@@ -1855,6 +1954,7 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JButton actionMensual;
     private javax.swing.JButton actionMensual1;
     private javax.swing.JButton actionMensual2;
+    private javax.swing.JButton actionModHistorial;
     private javax.swing.JButton actionUnbanClientes;
     private javax.swing.JTextField aloLocker;
     private javax.swing.JLabel banDesdeClientes;
@@ -2037,6 +2137,7 @@ public class GUI extends javax.swing.JFrame {
         } catch (Exception ex) {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
+        colaEntrada.remove(placa);
         PrintNow.imprimirReciboEntrada(cupo);
         inicializarTablaDiario();
     }
@@ -2058,7 +2159,7 @@ public class GUI extends javax.swing.JFrame {
 
     private void inicializarTablaHistorial(Date date) {
         EntityManager em = Conection.getEmf().createEntityManager();
-        Query query = em.createQuery("SELECT c FROM CobroDiario c WHERE c.fecha = :fecha");
+        Query query = em.createQuery("SELECT c FROM CobroDiario c WHERE c.fecha = :fecha ORDER BY c.consecutivo DESC");
         query.setParameter("fecha", date);
         List<CobroDiario> cobros = query.getResultList();
         List<Long> cons = new ArrayList<>();
@@ -2084,8 +2185,8 @@ public class GUI extends javax.swing.JFrame {
         DefaultTableModel modelo = new DefaultTableModel(campos, columnas);
         tablaHistorial.setModel(modelo);
         if(cons.size()>0){
-            iniconsHistorial.setText(String.valueOf(cons.get(0)));
-            finconsHistorial.setText(String.valueOf(cons.get(cons.size()-1)));
+            finconsHistorial.setText(String.valueOf(cons.get(0)));
+            iniconsHistorial.setText(String.valueOf(cons.get(cons.size()-1)));
         }else{
             iniconsHistorial.setText("N/A");
             finconsHistorial.setText("N/A");

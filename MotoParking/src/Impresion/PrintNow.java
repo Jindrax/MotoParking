@@ -24,6 +24,7 @@ import java.util.StringTokenizer;
 import javax.imageio.ImageIO;
 
 import Impresion.LineaRecibo;
+import Negocio.Configuraciones;
 
 public class PrintNow {
 
@@ -83,7 +84,11 @@ public class PrintNow {
     
     public static void pie() {
         addLinea("Contacto:");
-        addLinea("3004626139" + "  " + "3167417496");
+        Configuraciones contacto = Conection.getConfiguraciones().findConfiguraciones("contacto");
+        StringTokenizer token = new StringTokenizer(contacto.getValor(), "//");
+        while(token.hasMoreTokens()){
+            addLinea(token.nextToken());
+        }        
         addLinea("Cll. 9 #2-59");
     }
 
@@ -193,7 +198,7 @@ public class PrintNow {
             addLinea(nombre, Font.BOLD, 10);
         }
         addLinea("Ha pagado a:");
-        addLinea("MotoParqueo 259.");
+        addLinea("Luz Stella Garcia Campos");
         addLinea("$" + String.valueOf(mensualidad), Font.BOLD, 10);
         addLinea("Por servicio de parqueadero de:");
         addLinea("moto placa:");

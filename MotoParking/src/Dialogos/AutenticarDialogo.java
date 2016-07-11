@@ -7,6 +7,7 @@ package Dialogos;
 
 import GUI.Conection;
 import Negocio.Configuraciones;
+import Utilidades.Autenticador;
 import javax.swing.JTabbedPane;
 
 /**
@@ -89,11 +90,13 @@ public class AutenticarDialogo extends javax.swing.JDialog {
             panel.setEnabledAt(3, false);
             panel.setEnabledAt(4, false);
             panel.setSelectedIndex(0);
+            Autenticador.estado = false;
         }else{
             panel.setEnabledAt(1, true);
             panel.setEnabledAt(2, true);
             panel.setEnabledAt(3, true);
             panel.setEnabledAt(4, true);
+            Autenticador.estado = true;
         }
         this.dispose();
     }//GEN-LAST:event_passTextActionPerformed

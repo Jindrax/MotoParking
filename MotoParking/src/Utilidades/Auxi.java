@@ -36,9 +36,15 @@ public class Auxi {
                 return 1;
             }
             if (!esNumero(inicio) && !esNumero(fin)) {
+                if(Conection.getUsuarioMensual().findUsuarioMensual(ingreso)!=null){
+                    return 5;
+                }
                 return 1;
             }
             if (ingreso.length()==5){
+                if(Conection.getUsuarioMensual().findUsuarioMensual(ingreso)!=null){
+                    return 5;
+                }
                 return 1;
             }
             if (!esNumero(inicio) && esNumero(fin)) {
@@ -68,7 +74,7 @@ public class Auxi {
                 cupo.setCobroSugerido(Long.parseLong(unaHora.getValor()));
             }
         } else if (minutos < 30) {
-            cupo.setCobroSugerido((Long.parseLong(porHora.getValor()) * horas) + Long.parseLong(porHora.getValor()) / 2);
+            cupo.setCobroSugerido(Long.parseLong(porHora.getValor()) * (horas + 1));
         } else {
             cupo.setCobroSugerido(Long.parseLong(porHora.getValor()) * (horas + 1));
         }
@@ -101,7 +107,7 @@ public class Auxi {
                 cobro = Long.parseLong(unaHora.getValor());
             }
         } else if (minutos < 30) {
-            cobro = Long.parseLong(porHora.getValor()) * horas + (Long.parseLong(porHora.getValor()) / 2);
+            cobro = Long.parseLong(porHora.getValor()) * (horas + 1);
         } else {
             cobro = Long.parseLong(porHora.getValor()) * (horas + 1);
         }
