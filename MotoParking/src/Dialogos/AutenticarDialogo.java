@@ -44,7 +44,7 @@ public class AutenticarDialogo extends javax.swing.JDialog {
         jLabel2 = new javax.swing.JLabel();
         passText = new javax.swing.JTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Ingrese su informacion de autenticacion");
 
         jLabel2.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N

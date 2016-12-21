@@ -10,6 +10,7 @@ import Negocio.Configuraciones;
 import Negocio.Cupo;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Pattern;
 import org.joda.time.Interval;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
@@ -29,31 +30,39 @@ public class Auxi {
     }
 
     public static int selector(String ingreso) {
-        try {
-            char inicio = ingreso.charAt(0),
-                    fin = ingreso.charAt(ingreso.length() - 1);
-            if (ingreso.length() > 6) {
+        String moto = "[A-Za-z][A-Za-z][A-Za-z][0-9][0-9][A-Za-z]?";
+        String carro = "[A-Za-z][A-Za-z][A-Za-z][0-9][0-9][0-9]";
+        String cedula = "(C|c)(C|c)[0-9]+";
+        String ticket = "[0-9]+";
+        if(Pattern.matches(moto, ingreso)){
+            if(Conection.getUsuarioMensual().findUsuarioMensual(ingreso)!=null){
+                return 5;
+            }else{
+                System.out.println("Moto");
                 return 1;
             }
-            if (!esNumero(inicio) && !esNumero(fin)) {
-                if(Conection.getUsuarioMensual().findUsuarioMensual(ingreso)!=null){
-                    return 5;
-                }
-                return 1;
-            }
-            if (ingreso.length()==5){
-                if(Conection.getUsuarioMensual().findUsuarioMensual(ingreso)!=null){
-                    return 5;
-                }
-                return 1;
-            }
-            if (!esNumero(inicio) && esNumero(fin)) {
+        }
+        if(Pattern.matches(carro, ingreso)){
+            if(Conection.getUsuarioMensual().findUsuarioMensual(ingreso)!=null){
+                return 5;
+            }else{
+                System.out.println("Carro");
                 return 2;
             }
-            return 3;
-        } catch (StringIndexOutOfBoundsException ex) {
+        }
+        if(Pattern.matches(cedula, ingreso)){
+            if(Conection.getUsuarioMensual().findUsuarioMensual(ingreso)!=null){
+                return 5;
+            }else{
+                System.out.println("Cedula");
+                return 3;
+            }
+        }
+        if(Pattern.matches(ticket, ingreso)){
+            System.out.println("Ticket");
             return 4;
         }
+        return 0;
     }
 
     public static void calcularTiempoMoto(Cupo cupo) {
@@ -62,9 +71,29 @@ public class Auxi {
         long minutos = intervalo.toDuration().getStandardMinutes();
         minutos -= horas * 60;
         Configuraciones mediaHora, unaHora, porHora;
-        mediaHora = Conection.getConfiguraciones().findConfiguraciones("mediaHoraMoto");
-        unaHora = Conection.getConfiguraciones().findConfiguraciones("unaHoraMoto");
-        porHora = Conection.getConfiguraciones().findConfiguraciones("porHoraMoto");
+        int tipo = selector(cupo.getPlaca().getPlaca());
+        switch(tipo){
+            case 1:
+                mediaHora = Conection.getConfiguraciones().findConfiguraciones("mediaHoraMoto");
+                unaHora = Conection.getConfiguraciones().findConfiguraciones("unaHoraMoto");
+                porHora = Conection.getConfiguraciones().findConfiguraciones("porHoraMoto");
+                break;
+            case 2:
+                mediaHora = Conection.getConfiguraciones().findConfiguraciones("mediaHoraCarro");
+                unaHora = Conection.getConfiguraciones().findConfiguraciones("unaHoraCarro");
+                porHora = Conection.getConfiguraciones().findConfiguraciones("porHoraCarro");
+                break;
+            case 3:
+                mediaHora = Conection.getConfiguraciones().findConfiguraciones("mediaHoraMoto");
+                unaHora = Conection.getConfiguraciones().findConfiguraciones("unaHoraMoto");
+                porHora = Conection.getConfiguraciones().findConfiguraciones("porHoraMoto");
+                break;
+            default:
+                mediaHora = new Configuraciones("mhDef", "0");
+                unaHora = new Configuraciones("uhDef", "0");
+                porHora = new Configuraciones("phDef", "0");
+                break;                
+        }        
         cupo.setHoras(horas);
         cupo.setMinutos(minutos);
         if (horas == 0) {
@@ -95,9 +124,29 @@ public class Auxi {
         long cobro = 0;
         minutos -= horas * 60;
         Configuraciones mediaHora, unaHora, porHora;
-        mediaHora = Conection.getConfiguraciones().findConfiguraciones("mediaHoraMoto");
-        unaHora = Conection.getConfiguraciones().findConfiguraciones("unaHoraMoto");
-        porHora = Conection.getConfiguraciones().findConfiguraciones("porHoraMoto");
+        int tipo = selector(cupo.getPlaca().getPlaca());
+        switch(tipo){
+            case 1:
+                mediaHora = Conection.getConfiguraciones().findConfiguraciones("mediaHoraMoto");
+                unaHora = Conection.getConfiguraciones().findConfiguraciones("unaHoraMoto");
+                porHora = Conection.getConfiguraciones().findConfiguraciones("porHoraMoto");
+                break;
+            case 2:
+                mediaHora = Conection.getConfiguraciones().findConfiguraciones("mediaHoraCarro");
+                unaHora = Conection.getConfiguraciones().findConfiguraciones("unaHoraCarro");
+                porHora = Conection.getConfiguraciones().findConfiguraciones("porHoraCarro");
+                break;
+            case 3:
+                mediaHora = Conection.getConfiguraciones().findConfiguraciones("mediaHoraMoto");
+                unaHora = Conection.getConfiguraciones().findConfiguraciones("unaHoraMoto");
+                porHora = Conection.getConfiguraciones().findConfiguraciones("porHoraMoto");
+                break;
+            default:
+                mediaHora = new Configuraciones("mhDef", "0");
+                unaHora = new Configuraciones("uhDef", "0");
+                porHora = new Configuraciones("phDef", "0");
+                break;                
+        }
         cupo.setHoras(horas);
         cupo.setMinutos(minutos);
         if (horas == 0) {

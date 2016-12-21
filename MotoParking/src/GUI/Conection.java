@@ -22,16 +22,16 @@ import javax.persistence.Persistence;
  * @author Todesser
  */
 public class Conection {
-    private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("MotoParkingPU");
-    private static CobroDiarioJpaController cobroDiaro = new CobroDiarioJpaController(emf);
-    private static CobroMensualJpaController cobroMensual = new CobroMensualJpaController(emf);
-    private static ConfiguracionesJpaController configuraciones = new ConfiguracionesJpaController(emf);
-    private static CupoJpaController cupo = new CupoJpaController(emf);
-    private static LockerJpaController locker = new LockerJpaController(emf);
-    private static UsuarioJpaController usuario = new UsuarioJpaController(emf);
-    private static UsuarioDiarioJpaController usuarioDiario = new UsuarioDiarioJpaController(emf);
-    private static UsuarioMensualJpaController usuarioMensual = new UsuarioMensualJpaController(emf);
-    private static BaneadoJpaController baneado = new BaneadoJpaController(emf);
+    private static final EntityManagerFactory EMF = Persistence.createEntityManagerFactory("MotoParkingPU");
+    private static CobroDiarioJpaController cobroDiaro = new CobroDiarioJpaController(EMF);
+    private static CobroMensualJpaController cobroMensual = new CobroMensualJpaController(EMF);
+    private static ConfiguracionesJpaController configuraciones = new ConfiguracionesJpaController(EMF);
+    private static CupoJpaController cupo = new CupoJpaController(EMF);
+    private static LockerJpaController locker = new LockerJpaController(EMF);
+    private static UsuarioJpaController usuario = new UsuarioJpaController(EMF);
+    private static UsuarioDiarioJpaController usuarioDiario = new UsuarioDiarioJpaController(EMF);
+    private static UsuarioMensualJpaController usuarioMensual = new UsuarioMensualJpaController(EMF);
+    private static BaneadoJpaController baneado = new BaneadoJpaController(EMF);
 
     public static CobroDiarioJpaController getCobroDiaro() {
         return cobroDiaro;
@@ -89,8 +89,8 @@ public class Conection {
         Conection.usuarioMensual = usuarioMensual;
     }
 
-    public static EntityManagerFactory getEmf(){
-        return emf;
+    public static EntityManagerFactory getEMF(){
+        return EMF;
     }
 
     public static UsuarioJpaController getUsuario() {
