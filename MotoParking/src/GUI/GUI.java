@@ -64,10 +64,10 @@ public class GUI extends javax.swing.JFrame {
     EventList<String> mensuales;
     
     private void inicializarTablaDiario(){
-        EntityManager em = Conection.getEmf().createEntityManager();
+        EntityManager em = Conection.getEMF().createEntityManager();
         Query query = em.createQuery("select c from Cupo c where c.salida is NULL ORDER BY c.cupoPK.consecutivo DESC");
         List<Cupo> cupos = query.getResultList();
-        String[] columnas = {"#", "Placa", "Ingreso", "Locker", "Cascos", "Tiempo", "Cobro",  "Entradas"};
+        String[] columnas = {"#", "Placa", "Ingreso", "Locker", "Cascos", "Entradas"};
         Object[][] campos = new Object[cupos.size()][columnas.length];
         int i=0;
         for(Cupo cupo: cupos){
@@ -81,9 +81,7 @@ public class GUI extends javax.swing.JFrame {
                 campos[i][3] = cupo.getLocker();
                 campos[i][4] = cupo.getLocker().getAlojamiento();
             }
-            campos[i][5] = "";
-            campos[i][6] = "";
-            campos[i][7] = cupo.getPlaca().getEntradas();
+            campos[i][5] = cupo.getPlaca().getEntradas();
             i++;
             cuposActivos.put(cupo.getCupoPK().getConsecutivo(), cupo);
         }
@@ -91,14 +89,14 @@ public class GUI extends javax.swing.JFrame {
         tablaDiario.setModel(modelo);
         tablaDiario.getTableHeader().setFont(new Font("Arial", Font.PLAIN, 24));
         tablaDiario.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        int tamano[] = {70, 350, 120, 100, 100, 100, 100, 120};
+        int tamano[] = {70, 350, 120, 100, 100, 120};
         for(i=0; i<tablaDiario.getColumnCount(); i++){
             TableColumn columna = tablaDiario.getColumnModel().getColumn(i);
             columna.setPreferredWidth(tamano[i]);
         }
     }
     
-    public GUI() {
+    public GUI(){
         initComponents();
         ImageIcon icono = new ImageIcon(getClass().getResource("/Recursos/IcoMotoParqueo.png"));
         this.setIconImage(icono.getImage());
@@ -107,6 +105,11 @@ public class GUI extends javax.swing.JFrame {
         Date fechaActual = LocalDate.now().toDate();
         Configuraciones fecha = Conection.getConfiguraciones().findConfiguraciones("fechaActual"),
                 consecutivo = Conection.getConfiguraciones().findConfiguraciones("consecutivoDiario");
+        if(fecha==null){
+            inicializarBase();
+            fecha = Conection.getConfiguraciones().findConfiguraciones("fechaActual");
+            consecutivo = Conection.getConfiguraciones().findConfiguraciones("consecutivoDiario");
+        }
         if(fecha.getValor().compareTo(formato.format(fechaActual))!=0){
             fecha.setValor(formato.format(fechaActual));
             consecutivo.setValor("1");
@@ -117,14 +120,6 @@ public class GUI extends javax.swing.JFrame {
         } catch (Exception ex) {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-        Timer sincro = new Timer("sincro", true);
-        TimerTask tareaSincro = new TimerTask() {
-            @Override
-            public void run() {
-                mantenerTablaDiario();
-            }
-        };
-        sincro.scheduleAtFixedRate(tareaSincro, 1000, 1000);
         colaEntrada = new BasicEventList<>();
 	DefaultEventListModel<String> modelo = GlazedListsSwing.eventListModel(colaEntrada);
 	listaEspera.setModel(modelo);
@@ -141,32 +136,44 @@ public class GUI extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         Contenedor = new javax.swing.JTabbedPane();
         panelDiario = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        ScrollDiario = new javax.swing.JScrollPane();
         tablaDiario = new javax.swing.JTable();
-        jLabel4 = new javax.swing.JLabel();
-        placaDiario = new javax.swing.JTextField();
-        cascosDiario = new javax.swing.JTextField();
-        jLabel5 = new javax.swing.JLabel();
-        actionDiario = new javax.swing.JButton();
-        jScrollPane6 = new javax.swing.JScrollPane();
-        tablaMorosos = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
-        placaCobroMensual = new javax.swing.JTextField();
-        actionCobroMensual = new javax.swing.JButton();
-        jLabel26 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        jSeparator2 = new javax.swing.JSeparator();
+        jPanel5 = new javax.swing.JPanel();
+        jPanel4 = new javax.swing.JPanel();
         jScrollPane8 = new javax.swing.JScrollPane();
         observacinoesDiario = new javax.swing.JTextArea();
-        actionAnularDiario = new javax.swing.JButton();
+        actionCobroMensual2 = new javax.swing.JButton();
         jLabel17 = new javax.swing.JLabel();
-        jLabel16 = new javax.swing.JLabel();
-        jLabel27 = new javax.swing.JLabel();
+        jPanel7 = new javax.swing.JPanel();
         jScrollPane12 = new javax.swing.JScrollPane();
         listaEspera = new javax.swing.JList<>();
+        jLabel27 = new javax.swing.JLabel();
+        jPanel6 = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
+        placaDiario = new javax.swing.JTextField();
+        actionDiario = new javax.swing.JButton();
+        cascosDiario = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        seltiempo = new javax.swing.JLabel();
+        selcobro = new javax.swing.JLabel();
+        actionAnularDiario = new javax.swing.JButton();
         actionCobroMensual1 = new javax.swing.JButton();
-        actionCobroMensual2 = new javax.swing.JButton();
+        selplaca = new javax.swing.JLabel();
+        PanelPlacaMensual = new javax.swing.JPanel();
+        placaCobroMensual = new javax.swing.JTextField();
+        jLabel26 = new javax.swing.JLabel();
+        actionCobroMensual = new javax.swing.JButton();
+        ScrollMensual = new javax.swing.JScrollPane();
+        tablaMorosos = new javax.swing.JTable();
+        jSeparator3 = new javax.swing.JSeparator();
         panelAdmin = new javax.swing.JTabbedPane();
         historialPanel = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
@@ -184,28 +191,29 @@ public class GUI extends javax.swing.JFrame {
         panelMensual = new javax.swing.JPanel();
         jScrollPane5 = new javax.swing.JScrollPane();
         tablaMensual = new javax.swing.JTable();
-        jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
-        jLabel13 = new javax.swing.JLabel();
-        placaMensual = new javax.swing.JTextField();
-        documentoMensual = new javax.swing.JTextField();
-        nombreMensual = new javax.swing.JTextField();
-        telefonoMensual = new javax.swing.JTextField();
-        mensualidadMensual = new javax.swing.JTextField();
-        actionMensual = new javax.swing.JButton();
-        ingresoMensual = new org.jdesktop.swingx.JXDatePicker();
-        cobroMensual = new org.jdesktop.swingx.JXDatePicker();
-        jLabel14 = new javax.swing.JLabel();
-        jLabel15 = new javax.swing.JLabel();
         jScrollPane7 = new javax.swing.JScrollPane();
         tablaCobroMensual = new javax.swing.JTable();
         jSeparator1 = new javax.swing.JSeparator();
         selectorMensual = new org.jdesktop.swingx.JXDatePicker();
         jLabel25 = new javax.swing.JLabel();
         actionMensual1 = new javax.swing.JButton();
+        jPanel8 = new javax.swing.JPanel();
+        nombreMensual = new javax.swing.JTextField();
+        jLabel9 = new javax.swing.JLabel();
         actionMensual2 = new javax.swing.JButton();
+        jLabel14 = new javax.swing.JLabel();
+        cobroMensual = new org.jdesktop.swingx.JXDatePicker();
+        jLabel11 = new javax.swing.JLabel();
+        actionMensual = new javax.swing.JButton();
+        jLabel10 = new javax.swing.JLabel();
+        ingresoMensual = new org.jdesktop.swingx.JXDatePicker();
+        mensualidadMensual = new javax.swing.JTextField();
+        documentoMensual = new javax.swing.JTextField();
+        jLabel15 = new javax.swing.JLabel();
+        placaMensual = new javax.swing.JTextField();
+        telefonoMensual = new javax.swing.JTextField();
+        jLabel13 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
         userPanel = new javax.swing.JPanel();
         jLabel18 = new javax.swing.JLabel();
         placaClientes = new javax.swing.JTextField();
@@ -249,7 +257,7 @@ public class GUI extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("MotoParqueo 259");
-        setResizable(false);
+        setPreferredSize(new java.awt.Dimension(1440, 860));
         setSize(new java.awt.Dimension(1440, 860));
         addWindowFocusListener(new java.awt.event.WindowFocusListener() {
             public void windowGainedFocus(java.awt.event.WindowEvent evt) {
@@ -276,9 +284,16 @@ public class GUI extends javax.swing.JFrame {
         });
 
         panelDiario.setBackground(new java.awt.Color(255, 255, 0));
+        panelDiario.setPreferredSize(new java.awt.Dimension(1406, 860));
         panelDiario.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentShown(java.awt.event.ComponentEvent evt) {
                 panelDiarioComponentShown(evt);
+            }
+        });
+
+        ScrollDiario.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                ScrollDiarioMouseClicked(evt);
             }
         });
 
@@ -300,114 +315,34 @@ public class GUI extends javax.swing.JFrame {
                 tablaDiarioMouseClicked(evt);
             }
         });
-        jScrollPane1.setViewportView(tablaDiario);
-
-        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
-        jLabel4.setText("Placa");
-
-        placaDiario.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
-        placaDiario.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        placaDiario.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                placaDiarioMouseClicked(evt);
-            }
-        });
-        placaDiario.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                placaDiarioActionPerformed(evt);
-            }
-        });
-
-        cascosDiario.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
-        cascosDiario.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        cascosDiario.setText("0");
-        cascosDiario.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                cascosDiarioMouseClicked(evt);
-            }
-        });
-        cascosDiario.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cascosDiarioActionPerformed(evt);
-            }
-        });
-
-        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
-        jLabel5.setText("Cascos");
-
-        actionDiario.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        actionDiario.setText("Registrar");
-        actionDiario.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                actionDiarioActionPerformed(evt);
-            }
-        });
-
-        tablaMorosos.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        tablaMorosos.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        tablaMorosos.setRowHeight(30);
-        jScrollPane6.setViewportView(tablaMorosos);
+        ScrollDiario.setViewportView(tablaDiario);
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 0));
-
-        placaCobroMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        placaCobroMensual.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        placaCobroMensual.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                placaCobroMensualMouseClicked(evt);
-            }
-        });
-        placaCobroMensual.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                placaCobroMensualActionPerformed(evt);
-            }
-        });
-
-        actionCobroMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        actionCobroMensual.setText("Cobrar Mensualidad");
-        actionCobroMensual.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                actionCobroMensualActionPerformed(evt);
-            }
-        });
-
-        jLabel26.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        jLabel26.setText("Placa");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(4, 4, 4)
-                .addComponent(jLabel26)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(placaCobroMensual))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGap(0, 64, Short.MAX_VALUE)
-                .addComponent(actionCobroMensual))
+            .addGap(0, 0, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(placaCobroMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel26))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(actionCobroMensual)
-                .addContainerGap())
+            .addGap(0, 0, Short.MAX_VALUE)
         );
+
+        jLabel16.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel16.setText("Clientes mensuales en estado de mora:");
+
+        jSeparator2.setForeground(new java.awt.Color(0, 0, 0));
+
+        jPanel5.setBackground(new java.awt.Color(255, 255, 0));
+        java.awt.GridBagLayout jPanel5Layout = new java.awt.GridBagLayout();
+        jPanel5Layout.columnWidths = new int[] {0, 5, 0};
+        jPanel5Layout.rowHeights = new int[] {0};
+        jPanel5.setLayout(jPanel5Layout);
+
+        jPanel4.setBackground(new java.awt.Color(255, 255, 0));
+        jPanel4.setLayout(new java.awt.GridBagLayout());
 
         jScrollPane8.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         jScrollPane8.setHorizontalScrollBar(null);
@@ -418,22 +353,47 @@ public class GUI extends javax.swing.JFrame {
         observacinoesDiario.setWrapStyleWord(true);
         jScrollPane8.setViewportView(observacinoesDiario);
 
-        actionAnularDiario.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        actionAnularDiario.setText("Anular");
-        actionAnularDiario.addActionListener(new java.awt.event.ActionListener() {
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipadx = 290;
+        gridBagConstraints.ipady = 175;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        jPanel4.add(jScrollPane8, gridBagConstraints);
+
+        actionCobroMensual2.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        actionCobroMensual2.setText("Guardar Observacion");
+        actionCobroMensual2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                actionAnularDiarioActionPerformed(evt);
+                actionCobroMensual2ActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 50;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        jPanel4.add(actionCobroMensual2, gridBagConstraints);
 
         jLabel17.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         jLabel17.setText("Observaciones:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        jPanel4.add(jLabel17, gridBagConstraints);
 
-        jLabel16.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        jLabel16.setText("Clientes mensuales en estado de mora:");
+        jPanel7.setBackground(new java.awt.Color(255, 255, 0));
+        jPanel7.setPreferredSize(new java.awt.Dimension(150, 181));
+        jPanel7.setLayout(new java.awt.GridBagLayout());
 
-        jLabel27.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
-        jLabel27.setText("Lista de espera:");
+        jScrollPane12.setPreferredSize(new java.awt.Dimension(50, 250));
 
         listaEspera.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
         listaEspera.setModel(new javax.swing.AbstractListModel<String>() {
@@ -449,101 +409,294 @@ public class GUI extends javax.swing.JFrame {
         });
         jScrollPane12.setViewportView(listaEspera);
 
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipadx = 281;
+        gridBagConstraints.ipady = 330;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        jPanel7.add(jScrollPane12, gridBagConstraints);
+
+        jLabel27.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        jLabel27.setText("Lista de espera:");
+        jPanel7.add(jLabel27, new java.awt.GridBagConstraints());
+
+        jPanel6.setBackground(new java.awt.Color(255, 255, 0));
+        jPanel6.setLayout(new java.awt.GridBagLayout());
+
+        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        jLabel4.setText("Placa");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        jPanel6.add(jLabel4, gridBagConstraints);
+
+        placaDiario.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        placaDiario.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        placaDiario.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                placaDiarioMouseClicked(evt);
+            }
+        });
+        placaDiario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                placaDiarioActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 129;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
+        jPanel6.add(placaDiario, gridBagConstraints);
+
+        actionDiario.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        actionDiario.setText("Registrar");
+        actionDiario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionDiarioActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.gridheight = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipadx = 69;
+        gridBagConstraints.ipady = 2;
+        gridBagConstraints.weightx = 0.5;
+        jPanel6.add(actionDiario, gridBagConstraints);
+
+        cascosDiario.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        cascosDiario.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        cascosDiario.setText("0");
+        cascosDiario.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                cascosDiarioMouseClicked(evt);
+            }
+        });
+        cascosDiario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cascosDiarioActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 111;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
+        jPanel6.add(cascosDiario, gridBagConstraints);
+
+        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        jLabel5.setText("Cascos");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 0.1;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 8);
+        jPanel6.add(jLabel5, gridBagConstraints);
+
+        jPanel3.setBackground(new java.awt.Color(255, 255, 0));
+        jPanel3.setLayout(new java.awt.GridBagLayout());
+
+        seltiempo.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        seltiempo.setText("Tiempo");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
+        jPanel3.add(seltiempo, gridBagConstraints);
+
+        selcobro.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        selcobro.setText("Cobro");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
+        jPanel3.add(selcobro, gridBagConstraints);
+
+        actionAnularDiario.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        actionAnularDiario.setText("Anular");
+        actionAnularDiario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionAnularDiarioActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 103;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 5, 0);
+        jPanel3.add(actionAnularDiario, gridBagConstraints);
+
         actionCobroMensual1.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        actionCobroMensual1.setText("Imprimir Tickete");
+        actionCobroMensual1.setText("Ticket");
         actionCobroMensual1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 actionCobroMensual1ActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 111;
+        gridBagConstraints.weightx = 1.0;
+        jPanel3.add(actionCobroMensual1, gridBagConstraints);
 
-        actionCobroMensual2.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        actionCobroMensual2.setText("Guardar Observacion");
-        actionCobroMensual2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                actionCobroMensual2ActionPerformed(evt);
+        selplaca.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+        selplaca.setText("Placa");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
+        jPanel3.add(selplaca, gridBagConstraints);
+
+        PanelPlacaMensual.setBackground(new java.awt.Color(255, 255, 0));
+        PanelPlacaMensual.setLayout(new java.awt.GridBagLayout());
+
+        placaCobroMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        placaCobroMensual.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        placaCobroMensual.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                placaCobroMensualMouseClicked(evt);
             }
         });
+        placaCobroMensual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                placaCobroMensualActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 148;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 10, 0);
+        PanelPlacaMensual.add(placaCobroMensual, gridBagConstraints);
+
+        jLabel26.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel26.setText("Placa");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 10, 10);
+        PanelPlacaMensual.add(jLabel26, gridBagConstraints);
+
+        actionCobroMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        actionCobroMensual.setText("Cobrar Mensualidad");
+        actionCobroMensual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionCobroMensualActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.ipadx = 59;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        PanelPlacaMensual.add(actionCobroMensual, gridBagConstraints);
+
+        tablaMorosos.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
+        tablaMorosos.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        tablaMorosos.setRowHeight(30);
+        ScrollMensual.setViewportView(tablaMorosos);
+
+        jSeparator3.setForeground(new java.awt.Color(0, 0, 0));
 
         javax.swing.GroupLayout panelDiarioLayout = new javax.swing.GroupLayout(panelDiario);
         panelDiario.setLayout(panelDiarioLayout);
         panelDiarioLayout.setHorizontalGroup(
             panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelDiarioLayout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1066, Short.MAX_VALUE)
-                        .addComponent(jScrollPane6))
-                    .addComponent(jLabel16))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane12, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(panelDiarioLayout.createSequentialGroup()
-                        .addComponent(jLabel27)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addContainerGap()
+                        .addComponent(ScrollMensual, javax.swing.GroupLayout.PREFERRED_SIZE, 1072, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(PanelPlacaMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelDiarioLayout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(jLabel16))
+                    .addGroup(panelDiarioLayout.createSequentialGroup()
+                        .addGap(442, 442, 442)
+                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(panelDiarioLayout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(ScrollDiario, javax.swing.GroupLayout.PREFERRED_SIZE, 860, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelDiarioLayout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(placaDiario))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelDiarioLayout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(cascosDiario, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE))
-                            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelDiarioLayout.createSequentialGroup()
-                                .addComponent(actionAnularDiario)
+                                .addGap(16, 16, 16)
+                                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(actionDiario))
-                            .addComponent(jScrollPane8)
+                                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(panelDiarioLayout.createSequentialGroup()
-                                .addComponent(jLabel17)
-                                .addGap(0, 151, Short.MAX_VALUE))
-                            .addComponent(actionCobroMensual1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(actionCobroMensual2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addContainerGap())))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jSeparator3)
+                                    .addGroup(panelDiarioLayout.createSequentialGroup()
+                                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
+                .addContainerGap())
         );
         panelDiarioLayout.setVerticalGroup(
             panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelDiarioLayout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(14, 14, 14)
                 .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelDiarioLayout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(ScrollDiario, javax.swing.GroupLayout.PREFERRED_SIZE, 442, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(11, 11, 11)
                         .addComponent(jLabel16))
                     .addGroup(panelDiarioLayout.createSequentialGroup()
-                        .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel4)
-                            .addComponent(placaDiario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel5)
-                            .addComponent(cascosDiario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(actionDiario)
-                            .addComponent(actionAnularDiario))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel17)
-                        .addGap(3, 3, 3)
-                        .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(actionCobroMensual2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel27)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane12, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(panelDiarioLayout.createSequentialGroup()
-                        .addComponent(actionCobroMensual1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                        .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(35, 35, 35)
+                        .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(6, 6, 6)
+                .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(ScrollMensual, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(PanelPlacaMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         Contenedor.addTab("Diario", panelDiario);
@@ -643,7 +796,7 @@ public class GUI extends javax.swing.JFrame {
                         .addComponent(jLabel7)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(finconsHistorial)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 833, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel8)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(totalHistorial, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -654,7 +807,7 @@ public class GUI extends javax.swing.JFrame {
                         .addComponent(actionHistorial1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(actionModHistorial)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 554, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(fechaSelector, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(30, 30, 30))
         );
@@ -668,7 +821,7 @@ public class GUI extends javax.swing.JFrame {
                     .addComponent(actionHistorial1)
                     .addComponent(actionModHistorial))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 617, Short.MAX_VALUE)
+                .addComponent(jScrollPane4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(historialPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
@@ -709,77 +862,6 @@ public class GUI extends javax.swing.JFrame {
         });
         jScrollPane5.setViewportView(tablaMensual);
 
-        jLabel9.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        jLabel9.setText("Placa");
-
-        jLabel10.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        jLabel10.setText("Cedula");
-
-        jLabel11.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        jLabel11.setText("Nombre");
-
-        jLabel12.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        jLabel12.setText("Telefono");
-
-        jLabel13.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        jLabel13.setText("Mensualidad");
-
-        placaMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        placaMensual.setMinimumSize(new java.awt.Dimension(6, 30));
-        placaMensual.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                placaMensualActionPerformed(evt);
-            }
-        });
-
-        documentoMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        documentoMensual.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                documentoMensualActionPerformed(evt);
-            }
-        });
-
-        nombreMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        nombreMensual.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nombreMensualActionPerformed(evt);
-            }
-        });
-
-        telefonoMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        telefonoMensual.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                telefonoMensualActionPerformed(evt);
-            }
-        });
-
-        mensualidadMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        mensualidadMensual.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        mensualidadMensual.setText("0");
-        mensualidadMensual.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mensualidadMensualActionPerformed(evt);
-            }
-        });
-
-        actionMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        actionMensual.setText("Añadir/Editar");
-        actionMensual.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                actionMensualActionPerformed(evt);
-            }
-        });
-
-        ingresoMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-
-        cobroMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-
-        jLabel14.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        jLabel14.setText("Ingreso");
-
-        jLabel15.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
-        jLabel15.setText("Cobro");
-
         tablaCobroMensual.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         tablaCobroMensual.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -815,6 +897,37 @@ public class GUI extends javax.swing.JFrame {
             }
         });
 
+        jPanel8.setBackground(new java.awt.Color(255, 255, 0));
+        java.awt.GridBagLayout jPanel8Layout = new java.awt.GridBagLayout();
+        jPanel8Layout.columnWidths = new int[] {0, 5, 0};
+        jPanel8Layout.rowHeights = new int[] {0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 0};
+        jPanel8.setLayout(jPanel8Layout);
+
+        nombreMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        nombreMensual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nombreMensualActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipadx = 166;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 2, 0);
+        jPanel8.add(nombreMensual, gridBagConstraints);
+
+        jLabel9.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel9.setText("Placa");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 2, 0);
+        jPanel8.add(jLabel9, gridBagConstraints);
+
         actionMensual2.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
         actionMensual2.setText("Eliminar");
         actionMensual2.addActionListener(new java.awt.event.ActionListener() {
@@ -822,6 +935,182 @@ public class GUI extends javax.swing.JFrame {
                 actionMensual2ActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 16;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 186;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        jPanel8.add(actionMensual2, gridBagConstraints);
+
+        jLabel14.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel14.setText("Ingreso");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 10;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 2, 0);
+        jPanel8.add(jLabel14, gridBagConstraints);
+
+        cobroMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 12;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipadx = 47;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 2, 0);
+        jPanel8.add(cobroMensual, gridBagConstraints);
+
+        jLabel11.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel11.setText("Nombre");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 2, 0);
+        jPanel8.add(jLabel11, gridBagConstraints);
+
+        actionMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        actionMensual.setText("Añadir/Editar");
+        actionMensual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionMensualActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 14;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.ipadx = 134;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        jPanel8.add(actionMensual, gridBagConstraints);
+
+        jLabel10.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel10.setText("Cedula");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 2, 0);
+        jPanel8.add(jLabel10, gridBagConstraints);
+
+        ingresoMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 10;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipadx = 47;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 2, 0);
+        jPanel8.add(ingresoMensual, gridBagConstraints);
+
+        mensualidadMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        mensualidadMensual.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        mensualidadMensual.setText("0");
+        mensualidadMensual.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                mensualidadMensualFocusGained(evt);
+            }
+        });
+        mensualidadMensual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mensualidadMensualActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 8;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipadx = 166;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 2, 0);
+        jPanel8.add(mensualidadMensual, gridBagConstraints);
+
+        documentoMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        documentoMensual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                documentoMensualActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipadx = 166;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 2, 0);
+        jPanel8.add(documentoMensual, gridBagConstraints);
+
+        jLabel15.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel15.setText("Cobro");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 12;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 2, 0);
+        jPanel8.add(jLabel15, gridBagConstraints);
+
+        placaMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        placaMensual.setMinimumSize(new java.awt.Dimension(6, 30));
+        placaMensual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                placaMensualActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipadx = 166;
+        gridBagConstraints.ipady = 5;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 0);
+        jPanel8.add(placaMensual, gridBagConstraints);
+
+        telefonoMensual.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        telefonoMensual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                telefonoMensualActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipadx = 166;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 2, 0);
+        jPanel8.add(telefonoMensual, gridBagConstraints);
+
+        jLabel13.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel13.setText("Mensualidad");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 8;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 2, 0);
+        jPanel8.add(jLabel13, gridBagConstraints);
+
+        jLabel12.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
+        jLabel12.setText("Telefono");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 2, 0);
+        jPanel8.add(jLabel12, gridBagConstraints);
 
         javax.swing.GroupLayout panelMensualLayout = new javax.swing.GroupLayout(panelMensual);
         panelMensual.setLayout(panelMensualLayout);
@@ -830,91 +1119,42 @@ public class GUI extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelMensualLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1069, Short.MAX_VALUE)
-                    .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(panelMensualLayout.createSequentialGroup()
                         .addComponent(jLabel25)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 774, Short.MAX_VALUE))
                     .addGroup(panelMensualLayout.createSequentialGroup()
                         .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel13, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel14)
-                            .addComponent(jLabel15)
-                            .addComponent(jLabel12)
-                            .addComponent(jLabel11)
-                            .addComponent(jLabel10)
-                            .addComponent(jLabel9))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(cobroMensual, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 144, Short.MAX_VALUE)
-                            .addComponent(telefonoMensual)
-                            .addComponent(mensualidadMensual)
-                            .addComponent(ingresoMensual, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(placaMensual, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(documentoMensual)
-                            .addComponent(nombreMensual))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jSeparator1)
-                    .addComponent(selectorMensual, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(actionMensual, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jScrollPane5)
+                            .addComponent(jScrollPane7))
+                        .addGap(18, 18, 18)))
+                .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(actionMensual1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(actionMensual2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(30, 30, 30))
+                    .addComponent(selectorMensual, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         panelMensualLayout.setVerticalGroup(
             panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelMensualLayout.createSequentialGroup()
-                .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(panelMensualLayout.createSequentialGroup()
-                        .addGap(19, 19, 19)
-                        .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel9)
-                            .addComponent(placaMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel10)
-                            .addComponent(documentoMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel11)
-                            .addComponent(nombreMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel12)
-                            .addComponent(telefonoMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel13)
-                            .addComponent(mensualidadMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(ingresoMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel14))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(cobroMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel15))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(actionMensual)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(actionMensual2))
-                    .addGroup(panelMensualLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 383, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel25)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addContainerGap()
+                .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 383, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(panelMensualLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelMensualLayout.createSequentialGroup()
-                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel25)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                    .addGroup(panelMensualLayout.createSequentialGroup()
+                        .addGap(40, 40, 40)
+                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(selectorMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(actionMensual1)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 256, Short.MAX_VALUE))
+                        .addGap(0, 201, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -1048,8 +1288,8 @@ public class GUI extends javax.swing.JFrame {
                             .addComponent(jLabel21)
                             .addComponent(jLabel19))
                         .addGap(18, 18, 18)
-                        .addGroup(userPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(cobradoClientes, javax.swing.GroupLayout.DEFAULT_SIZE, 164, Short.MAX_VALUE)
+                        .addGroup(userPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(cobradoClientes)
                             .addComponent(minutosClientes)
                             .addComponent(entradasClientes)))
                     .addComponent(jLabel22)
@@ -1064,7 +1304,7 @@ public class GUI extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(banDesdeClientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane11, javax.swing.GroupLayout.DEFAULT_SIZE, 1056, Short.MAX_VALUE)
+                .addComponent(jScrollPane11, javax.swing.GroupLayout.DEFAULT_SIZE, 1069, Short.MAX_VALUE)
                 .addGap(30, 30, 30))
         );
         userPanelLayout.setVerticalGroup(
@@ -1107,7 +1347,7 @@ public class GUI extends javax.swing.JFrame {
                         .addComponent(actionBanClientes)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(actionUnbanClientes)
-                        .addGap(0, 1, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(jScrollPane11))
                 .addContainerGap())
         );
@@ -1190,11 +1430,11 @@ public class GUI extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(aloLocker, javax.swing.GroupLayout.DEFAULT_SIZE, 99, Short.MAX_VALUE))
+                        .addComponent(aloLocker))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(capLocker, javax.swing.GroupLayout.DEFAULT_SIZE, 109, Short.MAX_VALUE)))
+                        .addComponent(capLocker)))
                 .addGap(30, 30, 30))
         );
         jPanel1Layout.setVerticalGroup(
@@ -1228,7 +1468,7 @@ public class GUI extends javax.swing.JFrame {
         );
         panelLockersLayout.setVerticalGroup(
             panelLockersLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 708, Short.MAX_VALUE)
+            .addComponent(jScrollPane2)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
@@ -1286,14 +1526,14 @@ public class GUI extends javax.swing.JFrame {
                 .addGroup(configPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(configPanelLayout.createSequentialGroup()
                         .addComponent(descConfig)
-                        .addGap(0, 257, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(valorConfig)
                     .addComponent(actionImport, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         configPanelLayout.setVerticalGroup(
             configPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 708, Short.MAX_VALUE)
+            .addComponent(jScrollPane3)
             .addGroup(configPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(descConfig)
@@ -1312,11 +1552,13 @@ public class GUI extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(Contenedor, javax.swing.GroupLayout.PREFERRED_SIZE, 1410, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(Contenedor, javax.swing.GroupLayout.Alignment.TRAILING)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(Contenedor)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(Contenedor, javax.swing.GroupLayout.PREFERRED_SIZE, 834, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 125, Short.MAX_VALUE))
         );
 
         pack();
@@ -1379,7 +1621,8 @@ public class GUI extends javax.swing.JFrame {
         int seleccion = Auxi.selector(ingreso);        
         switch(seleccion){
             case 0:
-                ingresoDiario();
+                System.out.println(seleccion);
+                JOptionPane.showMessageDialog(null, "El ingreso no es un formato permitido.");
                 break;
             case 1:
                 ingresoDiario();
@@ -1388,6 +1631,9 @@ public class GUI extends javax.swing.JFrame {
                 ingresoDiario();
                 break;
             case 3:
+                ingresoDiario();
+                break;  
+            case 4:
                 if(cuposActivos.containsKey(Long.parseLong(ingreso))){
                     Cupo cupo = cuposActivos.remove(Long.parseLong(ingreso));
                     retiroDiario(cupo);
@@ -1432,53 +1678,6 @@ public class GUI extends javax.swing.JFrame {
         return true;
     }
     
-    private void actionDiarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionDiarioActionPerformed
-            if(estadoUsuario(placaDiario.getText())){
-                actionDiarioProceso();
-                observacinoesDiario.setText("");
-                inicializarTablaDiario();
-            }
-    }//GEN-LAST:event_actionDiarioActionPerformed
-
-    private void placaDiarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_placaDiarioActionPerformed
-        switch(Auxi.selector(placaDiario.getText())){
-            case 1:
-                cascosDiario.requestFocus();
-                cascosDiario.selectAll();
-                Usuario usuario = Conection.getUsuario().findUsuario(placaDiario.getText());
-                if(usuario!=null){
-                    if(usuario.getBaneado()!=null){
-                        observacinoesDiario.setText(usuario.getBaneado().getRazon());
-                        JOptionPane.showMessageDialog(null, "El usuario esta baneado del sistema, revisar razon.");
-                        placaDiario.requestFocus();
-                        placaDiario.setText("");
-                    }else{
-                        observacinoesDiario.setText(usuario.getObservacion());
-                    }
-                }
-                break;
-            case 4:
-                JOptionPane.showMessageDialog(null, "Entrada erronea.");
-                placaDiario.requestFocus();
-                placaDiario.selectAll();
-                break;
-            default:
-                actionDiario.requestFocus();
-                break;                
-        }
-    }//GEN-LAST:event_placaDiarioActionPerformed
-
-    private void cascosDiarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cascosDiarioActionPerformed
-        if(cascosDiario.getText().compareTo("-")==0){
-            colaEntrada.add(placaDiario.getText().toUpperCase());
-            cascosDiario.setText("0");
-            placaDiario.setText("");
-            placaDiario.requestFocus();
-        }else{
-            actionDiario.requestFocus();
-        }
-    }//GEN-LAST:event_cascosDiarioActionPerformed
-
     private void configPanelComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_configPanelComponentShown
         inicializarTablaConfig();
     }//GEN-LAST:event_configPanelComponentShown
@@ -1511,10 +1710,6 @@ public class GUI extends javax.swing.JFrame {
         inicializarTablaHistorial(fechaSelector.getDate());
     }//GEN-LAST:event_fechaSelectorActionPerformed
 
-    private void placaCobroMensualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_placaCobroMensualActionPerformed
-        actionCobroMensualActionPerformed(evt);
-    }//GEN-LAST:event_placaCobroMensualActionPerformed
-
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
         
     }//GEN-LAST:event_formWindowActivated
@@ -1524,24 +1719,8 @@ public class GUI extends javax.swing.JFrame {
         cargarListaMensuales();
     }//GEN-LAST:event_formWindowOpened
 
-    private void actionCobroMensualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionCobroMensualActionPerformed
-        UsuarioMensual usuario = Conection.getUsuarioMensual().findUsuarioMensual(placaCobroMensual.getText());
-        if(usuario!=null){
-            new MensualidadDialogo(this, true, usuario);
-        }else{
-            JOptionPane.showMessageDialog(null, "No existe ese cliente mensual.");
-        }
-        placaCobroMensual.setText("");
-        placaCobroMensual.requestFocus();
-        inicializarTablaMorosos();
-    }//GEN-LAST:event_actionCobroMensualActionPerformed
-
-    private void panelDiarioComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_panelDiarioComponentShown
-        placaDiario.requestFocus();
-    }//GEN-LAST:event_panelDiarioComponentShown
-
     private void actionHistorialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionHistorialActionPerformed
-        EntityManager em = Conection.getEmf().createEntityManager();
+        EntityManager em = Conection.getEMF().createEntityManager();
         Query query = em.createQuery("SELECT c FROM CobroMensual c WHERE c.cobroMensualPK.fecha = :fecha");
         query.setParameter("fecha", fechaSelector.getDate());
         List<CobroMensual> cobroList = query.getResultList();
@@ -1624,34 +1803,6 @@ public class GUI extends javax.swing.JFrame {
     private void selectorMensualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectorMensualActionPerformed
         inicializarTablaCobroMensual(selectorMensual.getDate());
     }//GEN-LAST:event_selectorMensualActionPerformed
-
-    private void actionAnularDiarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionAnularDiarioActionPerformed
-        if(tablaDiario.getSelectedRow()!=-1){
-            Cupo cupo = (Cupo)tablaDiario.getValueAt(tablaDiario.getSelectedRow(), 0);
-            cuposActivos.remove(cupo.getCupoPK().getConsecutivo());
-            if(cupo.getLocker()!=null){
-                Locker locker = cupo.getLocker();
-                locker.setAlojamiento(0);
-                try {
-                    Conection.getLocker().edit(locker);
-                } catch (Exception ex) {
-                    Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            try {
-                Conection.getCupo().destroy(cupo.getCupoPK());
-            } catch (IllegalOrphanException ex) {
-                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (NonexistentEntityException ex) {
-                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            inicializarTablaDiario();
-            tablaDiario.clearSelection();
-            JOptionPane.showMessageDialog(null, "Elemento anulado existosamente.");
-        }else{
-            JOptionPane.showMessageDialog(null, "Debe seleccionar un elemento primero.");
-        }
-    }//GEN-LAST:event_actionAnularDiarioActionPerformed
 
     private void placaClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_placaClientesActionPerformed
         actionClientesActionPerformed(evt);
@@ -1787,18 +1938,6 @@ public class GUI extends javax.swing.JFrame {
         placaClientes.selectAll();
     }//GEN-LAST:event_placaClientesMouseClicked
 
-    private void placaDiarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_placaDiarioMouseClicked
-        placaDiario.selectAll();
-    }//GEN-LAST:event_placaDiarioMouseClicked
-
-    private void cascosDiarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cascosDiarioMouseClicked
-        cascosDiario.selectAll();
-    }//GEN-LAST:event_cascosDiarioMouseClicked
-
-    private void placaCobroMensualMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_placaCobroMensualMouseClicked
-        placaCobroMensual.selectAll();
-    }//GEN-LAST:event_placaCobroMensualMouseClicked
-
     private void formWindowGainedFocus(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowGainedFocus
         placaDiario.requestFocus();
     }//GEN-LAST:event_formWindowGainedFocus
@@ -1825,16 +1964,6 @@ public class GUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_actionHistorial1ActionPerformed
 
-    private void actionCobroMensual1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionCobroMensual1ActionPerformed
-        if(tablaDiario.getSelectedRow()!=-1){
-            Cupo cupo = (Cupo)tablaDiario.getValueAt(tablaDiario.getSelectedRow(), 0);
-            PrintNow.imprimirReciboEntrada(cupo);
-            tablaDiario.clearSelection();
-        }else{
-            JOptionPane.showMessageDialog(null, "Seleccione un elemento.");
-        }
-    }//GEN-LAST:event_actionCobroMensual1ActionPerformed
-
     private void actionMensual2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionMensual2ActionPerformed
         UsuarioMensual user = Conection.getUsuarioMensual().findUsuarioMensual(placaMensual.getText());
         if(user!=null){
@@ -1856,34 +1985,6 @@ public class GUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_actionMensual2ActionPerformed
 
-    private void tablaDiarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaDiarioMouseClicked
-        if(tablaDiario.getSelectedRow()!=-1){
-            Cupo cupo = (Cupo)tablaDiario.getValueAt(tablaDiario.getSelectedRow(), 0);
-            observacinoesDiario.setText(cupo.getPlaca().getUsuario().getObservacion());
-        }
-    }//GEN-LAST:event_tablaDiarioMouseClicked
-
-    private void actionCobroMensual2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionCobroMensual2ActionPerformed
-        if(tablaDiario.getSelectedRow()!=-1){
-            Cupo cupo = (Cupo)tablaDiario.getValueAt(tablaDiario.getSelectedRow(), 0);
-            Usuario user = cupo.getPlaca().getUsuario();
-            user.setObservacion(observacinoesDiario.getText());
-            try {
-                Conection.getUsuario().edit(user);
-            } catch (NonexistentEntityException ex) {
-                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (Exception ex) {
-                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            observacinoesDiario.setText("");
-            tablaDiario.clearSelection();
-        }        
-    }//GEN-LAST:event_actionCobroMensual2ActionPerformed
-
-    private void listaEsperaValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listaEsperaValueChanged
-        colaEntrada.remove(listaEspera.getSelectedValue());
-    }//GEN-LAST:event_listaEsperaValueChanged
-
     private void actionModHistorialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionModHistorialActionPerformed
         if(tablaHistorial.getSelectedRow()!=-1){
             CobroDiario cobro = (CobroDiario)tablaHistorial.getValueAt(tablaHistorial.getSelectedRow(), 0);
@@ -1901,6 +2002,163 @@ public class GUI extends javax.swing.JFrame {
             inicializarTablaHistorial(fechaSelector.getDate());
         }
     }//GEN-LAST:event_actionModHistorialActionPerformed
+
+    private void mensualidadMensualFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_mensualidadMensualFocusGained
+        mensualidadMensual.selectAll();
+    }//GEN-LAST:event_mensualidadMensualFocusGained
+
+    private void panelDiarioComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_panelDiarioComponentShown
+        placaDiario.requestFocus();
+    }//GEN-LAST:event_panelDiarioComponentShown
+
+    private void cascosDiarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cascosDiarioActionPerformed
+        if(cascosDiario.getText().compareTo("-")==0){
+            colaEntrada.add(placaDiario.getText().toUpperCase());
+            cascosDiario.setText("0");
+            placaDiario.setText("");
+            placaDiario.requestFocus();
+        }else{
+            actionDiario.requestFocus();
+        }
+    }//GEN-LAST:event_cascosDiarioActionPerformed
+
+    private void cascosDiarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cascosDiarioMouseClicked
+        cascosDiario.selectAll();
+    }//GEN-LAST:event_cascosDiarioMouseClicked
+
+    private void actionDiarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionDiarioActionPerformed
+        if(estadoUsuario(placaDiario.getText())){
+            actionDiarioProceso();
+            observacinoesDiario.setText("");
+            inicializarTablaDiario();
+        }
+    }//GEN-LAST:event_actionDiarioActionPerformed
+
+    private void placaDiarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_placaDiarioActionPerformed
+        switch(Auxi.selector(placaDiario.getText())){
+            case 1:
+            cascosDiario.requestFocus();
+            cascosDiario.selectAll();
+            Usuario usuario = Conection.getUsuario().findUsuario(placaDiario.getText());
+            if(usuario!=null){
+                if(usuario.getBaneado()!=null){
+                    observacinoesDiario.setText(usuario.getBaneado().getRazon());
+                    JOptionPane.showMessageDialog(null, "El usuario esta baneado del sistema, revisar razon.");
+                    placaDiario.requestFocus();
+                    placaDiario.setText("");
+                }else{
+                    observacinoesDiario.setText(usuario.getObservacion());
+                }
+            }
+            break;
+            case 0:
+            JOptionPane.showMessageDialog(null, "Entrada erronea.");
+            placaDiario.requestFocus();
+            placaDiario.selectAll();
+            break;
+            default:
+            actionDiario.requestFocus();
+            break;
+        }
+    }//GEN-LAST:event_placaDiarioActionPerformed
+
+    private void placaDiarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_placaDiarioMouseClicked
+        placaDiario.selectAll();
+    }//GEN-LAST:event_placaDiarioMouseClicked
+
+    private void actionCobroMensual1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionCobroMensual1ActionPerformed
+        if(tablaDiario.getSelectedRow()!=-1){
+            Cupo cupo = (Cupo)tablaDiario.getValueAt(tablaDiario.getSelectedRow(), 0);
+            PrintNow.imprimirReciboEntrada(cupo);
+            tablaDiario.clearSelection();
+        }else{
+            JOptionPane.showMessageDialog(null, "Seleccione un elemento.");
+        }
+    }//GEN-LAST:event_actionCobroMensual1ActionPerformed
+
+    private void actionAnularDiarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionAnularDiarioActionPerformed
+        if(tablaDiario.getSelectedRow()!=-1){
+            Cupo cupo = (Cupo)tablaDiario.getValueAt(tablaDiario.getSelectedRow(), 0);
+            cuposActivos.remove(cupo.getCupoPK().getConsecutivo());
+            if(cupo.getLocker()!=null){
+                Locker locker = cupo.getLocker();
+                locker.setAlojamiento(0);
+                try {
+                    Conection.getLocker().edit(locker);
+                } catch (Exception ex) {
+                    Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            try {
+                Conection.getCupo().destroy(cupo.getCupoPK());
+            } catch (IllegalOrphanException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (NonexistentEntityException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            inicializarTablaDiario();
+            tablaDiario.clearSelection();
+            JOptionPane.showMessageDialog(null, "Elemento anulado existosamente.");
+        }else{
+            JOptionPane.showMessageDialog(null, "Debe seleccionar un elemento primero.");
+        }
+    }//GEN-LAST:event_actionAnularDiarioActionPerformed
+
+    private void actionCobroMensualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionCobroMensualActionPerformed
+        UsuarioMensual usuario = Conection.getUsuarioMensual().findUsuarioMensual(placaCobroMensual.getText());
+        if(usuario!=null){
+            new MensualidadDialogo(this, true, usuario);
+        }else{
+            JOptionPane.showMessageDialog(null, "No existe ese cliente mensual.");
+        }
+        placaCobroMensual.setText("");
+        placaCobroMensual.requestFocus();
+        inicializarTablaMorosos();
+    }//GEN-LAST:event_actionCobroMensualActionPerformed
+
+    private void placaCobroMensualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_placaCobroMensualActionPerformed
+        actionCobroMensualActionPerformed(evt);
+    }//GEN-LAST:event_placaCobroMensualActionPerformed
+
+    private void placaCobroMensualMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_placaCobroMensualMouseClicked
+        placaCobroMensual.selectAll();
+    }//GEN-LAST:event_placaCobroMensualMouseClicked
+
+    private void ScrollDiarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ScrollDiarioMouseClicked
+
+    }//GEN-LAST:event_ScrollDiarioMouseClicked
+
+    private void tablaDiarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaDiarioMouseClicked
+        if(tablaDiario.getSelectedRow()!=-1){
+            Cupo cupo = (Cupo)tablaDiario.getValueAt(tablaDiario.getSelectedRow(), 0);
+            observacinoesDiario.setText(cupo.getPlaca().getUsuario().getObservacion());
+            String[] aux = Auxi.calcularTiempoMotoTentativo(cupo);
+            selplaca.setText(cupo.getPlaca().getPlaca());
+            seltiempo.setText(aux[0]);
+            selcobro.setText(aux[1]);
+        }
+    }//GEN-LAST:event_tablaDiarioMouseClicked
+
+    private void listaEsperaValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listaEsperaValueChanged
+        colaEntrada.remove(listaEspera.getSelectedValue());
+    }//GEN-LAST:event_listaEsperaValueChanged
+
+    private void actionCobroMensual2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionCobroMensual2ActionPerformed
+        if(tablaDiario.getSelectedRow()!=-1){
+            Cupo cupo = (Cupo)tablaDiario.getValueAt(tablaDiario.getSelectedRow(), 0);
+            Usuario user = cupo.getPlaca().getUsuario();
+            user.setObservacion(observacinoesDiario.getText());
+            try {
+                Conection.getUsuario().edit(user);
+            } catch (NonexistentEntityException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            observacinoesDiario.setText("");
+            tablaDiario.clearSelection();
+        }
+    }//GEN-LAST:event_actionCobroMensual2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1939,6 +2197,9 @@ public class GUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane Contenedor;
+    private javax.swing.JPanel PanelPlacaMensual;
+    private javax.swing.JScrollPane ScrollDiario;
+    private javax.swing.JScrollPane ScrollMensual;
     private javax.swing.JButton actionAnularDiario;
     private javax.swing.JButton actionBanClientes;
     private javax.swing.JButton actionClientes;
@@ -2001,7 +2262,12 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel8;
     private javax.swing.JScrollPane jScrollPane10;
     private javax.swing.JScrollPane jScrollPane11;
     private javax.swing.JScrollPane jScrollPane12;
@@ -2009,11 +2275,12 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
-    private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JScrollPane jScrollPane8;
     private javax.swing.JScrollPane jScrollPane9;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JSeparator jSeparator3;
     private javax.swing.JList<String> listaEspera;
     private javax.swing.JTextField mensualidadMensual;
     private javax.swing.JTextField minutosClientes;
@@ -2029,7 +2296,10 @@ public class GUI extends javax.swing.JFrame {
     private javax.swing.JTextField placaDiario;
     private javax.swing.JTextField placaMensual;
     private javax.swing.JTextArea razonClientes;
+    private javax.swing.JLabel selcobro;
     private org.jdesktop.swingx.JXDatePicker selectorMensual;
+    private javax.swing.JLabel selplaca;
+    private javax.swing.JLabel seltiempo;
     private javax.swing.JTable tablaClientes;
     private javax.swing.JTable tablaCobroMensual;
     private javax.swing.JTable tablaConfig;
@@ -2045,7 +2315,7 @@ public class GUI extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     private void inicializarTablaLockers() {
-        EntityManager em = Conection.getEmf().createEntityManager();
+        EntityManager em = Conection.getEMF().createEntityManager();
         Query query = em.createQuery("select l from Locker l ORDER BY l.identificador");
         List<Locker> lockerList = query.getResultList();
         String[] columnas = {"Identificador", "Alojamiento", "Capacidad"};
@@ -2063,7 +2333,7 @@ public class GUI extends javax.swing.JFrame {
     }
     
     private void inicializarTablaConfig() {
-        EntityManager em = Conection.getEmf().createEntityManager();
+        EntityManager em = Conection.getEMF().createEntityManager();
         Query query = em.createQuery("select c from Configuraciones c");
         List<Configuraciones> confList = query.getResultList();
         String[] columnas = {"Descripcion", "Valor"};
@@ -2107,7 +2377,7 @@ public class GUI extends javax.swing.JFrame {
         Cupo cupo = new Cupo(new CupoPK(consecutivo, new GregorianCalendar().getTime()), 0, 0, 0);
         cupo.setPlaca(usuario);
         if(cascos>0){
-            EntityManager em = Conection.getEmf().createEntityManager();
+            EntityManager em = Conection.getEMF().createEntityManager();
             Query query = em.createQuery("select l from Locker l where l.alojamiento = 0 and l.capacidad >= :capacidad ORDER BY l.identificador");
             query.setParameter("capacidad", cascos);
             List<Locker> lockers = query.getResultList();
@@ -2146,19 +2416,10 @@ public class GUI extends javax.swing.JFrame {
         cupo.setSalida(new GregorianCalendar().getTime());
         Auxi.calcularTiempoMoto(cupo);
         cupoActual = cupo;        
-    }
-    
-    private void mantenerTablaDiario(){
-        for(int i=0; i<tablaDiario.getRowCount(); i++){
-            Cupo cupo = (Cupo)tablaDiario.getValueAt(i, 0);
-            String valores[] = Auxi.calcularTiempoMotoTentativo(cupo);
-            tablaDiario.setValueAt(valores[0], i, 5);
-            tablaDiario.setValueAt(valores[1], i, 6);
-        }
-    }
+    }    
 
     private void inicializarTablaHistorial(Date date) {
-        EntityManager em = Conection.getEmf().createEntityManager();
+        EntityManager em = Conection.getEMF().createEntityManager();
         Query query = em.createQuery("SELECT c FROM CobroDiario c WHERE c.fecha = :fecha ORDER BY c.consecutivo DESC");
         query.setParameter("fecha", date);
         List<CobroDiario> cobros = query.getResultList();
@@ -2196,7 +2457,7 @@ public class GUI extends javax.swing.JFrame {
     }
     
     private void inicializarTablaMensual() {
-        EntityManager em = Conection.getEmf().createEntityManager();
+        EntityManager em = Conection.getEMF().createEntityManager();
         Query query = em.createQuery("SELECT u FROM UsuarioMensual u");
         List<UsuarioMensual> userList = query.getResultList();
         String[] columnas = {"Placa", "Cedula", "Nombre", "Telefono", "Ingreso", "Cobro", "Mensualidad"};
@@ -2218,7 +2479,7 @@ public class GUI extends javax.swing.JFrame {
     }
     
     private void inicializarTablaMorosos() {
-        EntityManager em = Conection.getEmf().createEntityManager();
+        EntityManager em = Conection.getEMF().createEntityManager();
         Query query = em.createQuery("SELECT u FROM UsuarioMensual u WHERE u.sigCobro <= CURRENT_DATE");
         List<UsuarioMensual> userList = query.getResultList();
         String[] columnas = {"Placa", "Cedula", "Nombre", "Telefono", "Cobro", "Mensualidad"};
@@ -2239,7 +2500,7 @@ public class GUI extends javax.swing.JFrame {
     }
     
     private void inicializarTablaCobroMensual(Date date) {
-        EntityManager em = Conection.getEmf().createEntityManager();
+        EntityManager em = Conection.getEMF().createEntityManager();
         Query query = em.createQuery("SELECT c FROM CobroMensual c WHERE c.cobroMensualPK.fecha = :fecha");
         query.setParameter("fecha", date);
         List<CobroMensual> cobroList = query.getResultList();
@@ -2260,7 +2521,7 @@ public class GUI extends javax.swing.JFrame {
         tablaCobroMensual.getTableHeader().setFont(new Font("Arial", Font.PLAIN, 24));
     }
     private void inicializarTablaClientes(UsuarioDiario user) {
-        EntityManager em = Conection.getEmf().createEntityManager();
+        EntityManager em = Conection.getEMF().createEntityManager();
         Query query = em.createQuery("SELECT c FROM Cupo c WHERE c.placa = :placa AND c.salida IS NOT NULL ORDER BY c.salida DESC");
         query.setParameter("placa", user);
         List<Cupo> cupoList = query.getResultList();
@@ -2289,7 +2550,7 @@ public class GUI extends javax.swing.JFrame {
     }
 
     private void cargarListaMensuales() {
-        EntityManager em = Conection.getEmf().createEntityManager();
+        EntityManager em = Conection.getEMF().createEntityManager();
         Query query = em.createQuery("SELECT m FROM UsuarioMensual m");
         List<UsuarioMensual> mensualesList = query.getResultList();
         for(UsuarioMensual cliente: mensualesList){
@@ -2307,5 +2568,36 @@ public class GUI extends javax.swing.JFrame {
         cobroMensual.setDate(new Date());
         inicializarTablaMensual();
         inicializarTablaMorosos();
+    }
+
+    private void inicializarBase() {
+        try {
+                Configuraciones fecha = new Configuraciones("fechaActual", "03-05-1992");
+                Configuraciones consecutivoDiario = new Configuraciones("consecutivoDiario", "1");
+                Configuraciones horaCierre = new Configuraciones("horaCierre", "8:00 pm");
+                Configuraciones mhMoto = new Configuraciones("mediaHoraMoto", "700");
+                Configuraciones uhMoto = new Configuraciones("unaHoraMoto", "1000");
+                Configuraciones phMoto = new Configuraciones("porHoraMoto", "800");
+                Configuraciones mhCarro = new Configuraciones("mediaHoraCarro", "1000");
+                Configuraciones uhCarro = new Configuraciones("unaHoraCarro", "2000");
+                Configuraciones phCarro = new Configuraciones("porHoraCarro", "800");
+                Configuraciones contacto = new Configuraciones("contacto", "numero//contacto");
+                Configuraciones consecutivo = new Configuraciones("consecutivo", "1");
+                Configuraciones adminPass = new Configuraciones("adminPass", "0000");
+                Conection.getConfiguraciones().create(fecha);
+                Conection.getConfiguraciones().create(consecutivoDiario);
+                Conection.getConfiguraciones().create(horaCierre);
+                Conection.getConfiguraciones().create(mhMoto);
+                Conection.getConfiguraciones().create(uhMoto);
+                Conection.getConfiguraciones().create(phMoto);
+                Conection.getConfiguraciones().create(mhCarro);
+                Conection.getConfiguraciones().create(uhCarro);
+                Conection.getConfiguraciones().create(phCarro);
+                Conection.getConfiguraciones().create(contacto);
+                Conection.getConfiguraciones().create(consecutivo);
+                Conection.getConfiguraciones().create(adminPass);
+            } catch (Exception ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
     }
 }
