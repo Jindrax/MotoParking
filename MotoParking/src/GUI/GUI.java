@@ -22,6 +22,7 @@ import Negocio.Locker;
 import Negocio.Usuario;
 import Negocio.UsuarioDiario;
 import Negocio.UsuarioMensual;
+import Utilidades.AlphanumComparator;
 import Utilidades.Autenticador;
 import Utilidades.Auxi;
 import ca.odell.glazedlists.BasicEventList;
@@ -31,6 +32,7 @@ import ca.odell.glazedlists.swing.GlazedListsSwing;
 import java.awt.Font;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -290,6 +292,7 @@ public class GUI extends javax.swing.JFrame {
                 panelDiarioComponentShown(evt);
             }
         });
+        panelDiario.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         ScrollDiario.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -317,6 +320,8 @@ public class GUI extends javax.swing.JFrame {
         });
         ScrollDiario.setViewportView(tablaDiario);
 
+        panelDiario.add(ScrollDiario, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 14, 860, 442));
+
         jPanel2.setBackground(new java.awt.Color(255, 255, 0));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -330,16 +335,21 @@ public class GUI extends javax.swing.JFrame {
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
+        panelDiario.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
+
         jLabel16.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
         jLabel16.setText("Clientes mensuales en estado de mora:");
+        panelDiario.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 467, -1, -1));
 
         jSeparator2.setForeground(new java.awt.Color(0, 0, 0));
+        panelDiario.add(jSeparator2, new org.netbeans.lib.awtextra.AbsoluteConstraints(880, 204, 528, 12));
 
         jPanel5.setBackground(new java.awt.Color(255, 255, 0));
         java.awt.GridBagLayout jPanel5Layout = new java.awt.GridBagLayout();
         jPanel5Layout.columnWidths = new int[] {0, 5, 0};
         jPanel5Layout.rowHeights = new int[] {0};
         jPanel5.setLayout(jPanel5Layout);
+        panelDiario.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(442, 793, 208, -1));
 
         jPanel4.setBackground(new java.awt.Color(255, 255, 0));
         jPanel4.setLayout(new java.awt.GridBagLayout());
@@ -389,6 +399,8 @@ public class GUI extends javax.swing.JFrame {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         jPanel4.add(jLabel17, gridBagConstraints);
 
+        panelDiario.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(1116, 222, 292, 196));
+
         jPanel7.setBackground(new java.awt.Color(255, 255, 0));
         jPanel7.setPreferredSize(new java.awt.Dimension(150, 181));
         jPanel7.setLayout(new java.awt.GridBagLayout());
@@ -424,6 +436,8 @@ public class GUI extends javax.swing.JFrame {
         jLabel27.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         jLabel27.setText("Lista de espera:");
         jPanel7.add(jLabel27, new java.awt.GridBagConstraints());
+
+        panelDiario.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(1124, 14, 284, 172));
 
         jPanel6.setBackground(new java.awt.Color(255, 255, 0));
         jPanel6.setLayout(new java.awt.GridBagLayout());
@@ -507,6 +521,8 @@ public class GUI extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 8);
         jPanel6.add(jLabel5, gridBagConstraints);
 
+        panelDiario.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(886, 14, -1, 172));
+
         jPanel3.setBackground(new java.awt.Color(255, 255, 0));
         jPanel3.setLayout(new java.awt.GridBagLayout());
 
@@ -568,6 +584,8 @@ public class GUI extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
         jPanel3.add(selplaca, gridBagConstraints);
 
+        panelDiario.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(880, 222, 228, -1));
+
         PanelPlacaMensual.setBackground(new java.awt.Color(255, 255, 0));
         PanelPlacaMensual.setLayout(new java.awt.GridBagLayout());
 
@@ -616,6 +634,8 @@ public class GUI extends javax.swing.JFrame {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         PanelPlacaMensual.add(actionCobroMensual, gridBagConstraints);
 
+        panelDiario.add(PanelPlacaMensual, new org.netbeans.lib.awtextra.AbsoluteConstraints(1100, 502, -1, -1));
+
         tablaMorosos.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         tablaMorosos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -631,73 +651,10 @@ public class GUI extends javax.swing.JFrame {
         tablaMorosos.setRowHeight(30);
         ScrollMensual.setViewportView(tablaMorosos);
 
-        jSeparator3.setForeground(new java.awt.Color(0, 0, 0));
+        panelDiario.add(ScrollMensual, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 502, 1072, 273));
 
-        javax.swing.GroupLayout panelDiarioLayout = new javax.swing.GroupLayout(panelDiario);
-        panelDiario.setLayout(panelDiarioLayout);
-        panelDiarioLayout.setHorizontalGroup(
-            panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelDiarioLayout.createSequentialGroup()
-                .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelDiarioLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(ScrollMensual, javax.swing.GroupLayout.PREFERRED_SIZE, 1072, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(PanelPlacaMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(panelDiarioLayout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addComponent(jLabel16))
-                    .addGroup(panelDiarioLayout.createSequentialGroup()
-                        .addGap(442, 442, 442)
-                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(panelDiarioLayout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addComponent(ScrollDiario, javax.swing.GroupLayout.PREFERRED_SIZE, 860, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panelDiarioLayout.createSequentialGroup()
-                                .addGap(16, 16, 16)
-                                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(panelDiarioLayout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jSeparator3)
-                                    .addGroup(panelDiarioLayout.createSequentialGroup()
-                                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
-                .addContainerGap())
-        );
-        panelDiarioLayout.setVerticalGroup(
-            panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelDiarioLayout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelDiarioLayout.createSequentialGroup()
-                        .addComponent(ScrollDiario, javax.swing.GroupLayout.PREFERRED_SIZE, 442, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(11, 11, 11)
-                        .addComponent(jLabel16))
-                    .addGroup(panelDiarioLayout.createSequentialGroup()
-                        .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(35, 35, 35)
-                        .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(6, 6, 6)
-                .addGroup(panelDiarioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(ScrollMensual, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(PanelPlacaMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
+        jSeparator3.setForeground(new java.awt.Color(0, 0, 0));
+        panelDiario.add(jSeparator3, new org.netbeans.lib.awtextra.AbsoluteConstraints(880, 453, 528, 12));
 
         Contenedor.addTab("Diario", panelDiario);
 
@@ -2381,6 +2338,7 @@ public class GUI extends javax.swing.JFrame {
             Query query = em.createQuery("select l from Locker l where l.alojamiento = 0 and l.capacidad >= :capacidad ORDER BY l.identificador");
             query.setParameter("capacidad", cascos);
             List<Locker> lockers = query.getResultList();
+            Collections.sort(lockers, new AlphanumComparator());
             if(lockers.size()>0){
                 Locker locker = lockers.get(0);
                 locker.setAlojamiento(cascos);
