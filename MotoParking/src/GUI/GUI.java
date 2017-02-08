@@ -57,6 +57,7 @@ import org.joda.time.LocalDate;
  * @author santiago pc
  */
 public class GUI extends javax.swing.JFrame {
+
     /**
      * Creates new form GUI
      */
@@ -64,22 +65,22 @@ public class GUI extends javax.swing.JFrame {
     Cupo cupoActual = null;
     EventList<String> colaEntrada;
     EventList<String> mensuales;
-    
-    private void inicializarTablaDiario(){
+
+    private void inicializarTablaDiario() {
         EntityManager em = Conection.getEMF().createEntityManager();
         Query query = em.createQuery("select c from Cupo c where c.salida is NULL ORDER BY c.cupoPK.consecutivo DESC");
         List<Cupo> cupos = query.getResultList();
         String[] columnas = {"#", "Placa", "Ingreso", "Locker", "Cascos", "Entradas"};
         Object[][] campos = new Object[cupos.size()][columnas.length];
-        int i=0;
-        for(Cupo cupo: cupos){
+        int i = 0;
+        for (Cupo cupo : cupos) {
             campos[i][0] = cupo;
             campos[i][1] = cupo.getPlaca().getPlaca();
             campos[i][2] = Auxi.formaterHora(cupo.getCupoPK().getIngreso());
-            if(cupo.getLocker()==null){
+            if (cupo.getLocker() == null) {
                 campos[i][3] = "Ninguno";
                 campos[i][4] = "-";
-            }else{
+            } else {
                 campos[i][3] = cupo.getLocker();
                 campos[i][4] = cupo.getLocker().getAlojamiento();
             }
@@ -92,13 +93,13 @@ public class GUI extends javax.swing.JFrame {
         tablaDiario.getTableHeader().setFont(new Font("Arial", Font.PLAIN, 24));
         tablaDiario.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         int tamano[] = {70, 350, 120, 100, 100, 120};
-        for(i=0; i<tablaDiario.getColumnCount(); i++){
+        for (i = 0; i < tablaDiario.getColumnCount(); i++) {
             TableColumn columna = tablaDiario.getColumnModel().getColumn(i);
             columna.setPreferredWidth(tamano[i]);
         }
     }
-    
-    public GUI(){
+
+    public GUI() {
         initComponents();
         ImageIcon icono = new ImageIcon(getClass().getResource("/Recursos/IcoMotoParqueo.png"));
         this.setIconImage(icono.getImage());
@@ -107,12 +108,12 @@ public class GUI extends javax.swing.JFrame {
         Date fechaActual = LocalDate.now().toDate();
         Configuraciones fecha = Conection.getConfiguraciones().findConfiguraciones("fechaActual"),
                 consecutivo = Conection.getConfiguraciones().findConfiguraciones("consecutivoDiario");
-        if(fecha==null){
+        if (fecha == null) {
             inicializarBase();
             fecha = Conection.getConfiguraciones().findConfiguraciones("fechaActual");
             consecutivo = Conection.getConfiguraciones().findConfiguraciones("consecutivoDiario");
         }
-        if(fecha.getValor().compareTo(formato.format(fechaActual))!=0){
+        if (fecha.getValor().compareTo(formato.format(fechaActual)) != 0) {
             fecha.setValor(formato.format(fechaActual));
             consecutivo.setValor("1");
         }
@@ -123,11 +124,13 @@ public class GUI extends javax.swing.JFrame {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
         colaEntrada = new BasicEventList<>();
-	DefaultEventListModel<String> modelo = GlazedListsSwing.eventListModel(colaEntrada);
-	listaEspera.setModel(modelo);
-	AutoCompleteDecorator.decorate(placaDiario, colaEntrada, false);
+        DefaultEventListModel<String> modelo = GlazedListsSwing.eventListModel(colaEntrada);
+        listaEspera.setModel(modelo);
+        AutoCompleteDecorator.decorate(placaDiario, colaEntrada, false);
         mensuales = new BasicEventList<>();
-	AutoCompleteDecorator.decorate(placaCobroMensual, mensuales, false);
+        AutoCompleteDecorator.decorate(placaCobroMensual, mensuales, false);
+        (new Thread(new ServidorTCP(this))).start();
+        (new Thread(new ServidorUDP(this))).start();
     }
 
     /**
@@ -1533,11 +1536,11 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_panelAdminComponentShown
 
     private void jScrollPane2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jScrollPane2MouseClicked
-        
+
     }//GEN-LAST:event_jScrollPane2MouseClicked
 
     private void tablaLockersMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaLockersMouseReleased
-        
+
     }//GEN-LAST:event_tablaLockersMouseReleased
 
     private void tablaLockersMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaLockersMouseClicked
@@ -1546,21 +1549,21 @@ public class GUI extends javax.swing.JFrame {
             idLocker.setText(locker.getIdentificador());
             aloLocker.setText(String.valueOf(locker.getAlojamiento()));
             capLocker.setText(String.valueOf(locker.getCapacidad()));
-        }else{
+        } else {
             JOptionPane.showMessageDialog(null, "Seleccione un locker primero.");
-        }    
+        }
     }//GEN-LAST:event_tablaLockersMouseClicked
 
     private void actionLockerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionLockerActionPerformed
         Locker locker = Conection.getLocker().findLocker(idLocker.getText());
-        if(locker == null){
+        if (locker == null) {
             locker = new Locker(idLocker.getText(), Long.parseLong(aloLocker.getText()), Long.parseLong(capLocker.getText()));
             try {
                 Conection.getLocker().create(locker);
             } catch (Exception ex) {
                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }else{
+        } else {
             locker.setIdentificador(idLocker.getText());
             locker.setAlojamiento(Long.parseLong(aloLocker.getText()));
             locker.setCapacidad(Long.parseLong(capLocker.getText()));
@@ -1573,60 +1576,134 @@ public class GUI extends javax.swing.JFrame {
         inicializarTablaLockers();
     }//GEN-LAST:event_actionLockerActionPerformed
 
-    private void actionDiarioProceso(){
-        String ingreso = placaDiario.getText();
-        int seleccion = Auxi.selector(ingreso);        
-        switch(seleccion){
+    public String prospectoPorRed(String ingreso) {
+        Cupo cupo = cuposActivos.get(Long.parseLong(ingreso));
+        if(cupo==null){
+            return "Ticket no existente o retirado";
+        }
+        String[] aux = Auxi.calcularTiempoMotoTentativo(cupo);
+        return "Placa: " + cupo.getPlaca().getPlaca() + "\nTiempo: " + aux[0] + "\nCobro: " + aux[1];
+    }
+    
+    public String retiroPorRed(String ingreso, boolean imprimir) {
+        Cupo cupo = cuposActivos.remove(Long.parseLong(ingreso));
+        if(cupo==null){
+            return "Ticket no existente o retirado";
+        }
+        retiroDiario(cupo);
+        Configuraciones consecutivo = Conection.getConfiguraciones().findConfiguraciones("consecutivo");
+        CobroDiario cobro = new CobroDiario();
+        UsuarioDiario usuario = cupo.getPlaca();
+        cobro.setConsecutivo(Long.parseLong(consecutivo.getValor()));
+        cobro.setFecha(new Date());
+        cobro.setCobro(cupo.getCobroSugerido());
+        cobro.setCupo(cupoActual);
+        usuario.setEntradas(usuario.getEntradas() + 1);
+        usuario.setMinutosRegistrados(usuario.getMinutosRegistrados() + cupo.getHoras() * 60 + cupo.getMinutos());
+        usuario.setCobroTotal(usuario.getCobroTotal() + cobro.getCobro());
+        try {
+            Conection.getCupo().edit(cupoActual);
+            Conection.getUsuarioDiario().edit(usuario);
+            Conection.getCobroDiaro().create(cobro);
+            consecutivo.setValor(String.valueOf(Integer.parseInt(consecutivo.getValor()) + 1));
+            Conection.getConfiguraciones().edit(consecutivo);
+            Locker locker = cupo.getLocker();
+            if (locker != null) {
+                locker.setAlojamiento(0);
+                Conection.getLocker().edit(locker);
+            }
+        } catch (NonexistentEntityException ex) {
+            return "Ha ocurrido un error";
+        } catch (Exception ex) {
+            return "Ha ocurrido un error";
+        }
+        if(imprimir){
+            PrintNow.imprimirReciboSalida(cupo, cobro.getCobro());
+        }
+        if(cupo.getLocker()!=null){
+            return "Cobro: " + String.valueOf(cupo.getCobroSugerido()) + "\n" + "Cascos: " + cupo.getLocker().getIdentificador();
+        }else{
+            return "Cobro: " + String.valueOf(cupo.getCobroSugerido()) + "\n" + "Sin cascos";
+        }
+    }
+
+    public String actionDiarioProceso(String ingreso, int cascos, int origen) {
+        int seleccion = Auxi.selector(ingreso);
+        String retorno = null;
+        switch (seleccion) {
             case 0:
-                System.out.println(seleccion);
-                JOptionPane.showMessageDialog(null, "El ingreso no es un formato permitido.");
-                break;
+                if (origen == 0) {
+                    JOptionPane.showMessageDialog(null, "El ingreso no es un formato permitido.");
+                    break;
+                } else {
+                    retorno = "Invalido";
+                    break;
+                }
             case 1:
-                ingresoDiario();
+                retorno = ingresoDiario(ingreso.toUpperCase(), cascos);
                 break;
             case 2:
-                ingresoDiario();
+                retorno = ingresoDiario(ingreso.toUpperCase(), cascos);
                 break;
             case 3:
-                ingresoDiario();
-                break;  
+                retorno = ingresoDiario(ingreso.toUpperCase(), cascos);
+                break;
             case 4:
-                if(cuposActivos.containsKey(Long.parseLong(ingreso))){
-                    Cupo cupo = cuposActivos.remove(Long.parseLong(ingreso));
-                    retiroDiario(cupo);
-                    new RetiroDialogo(this, rootPaneCheckingEnabled, cupo);
+                if (cuposActivos.containsKey(Long.parseLong(ingreso))) {
+                    if (origen == 0) {
+                        Cupo cupo = cuposActivos.remove(Long.parseLong(ingreso));
+                        retiroDiario(cupo);
+                        new RetiroDialogo(this, rootPaneCheckingEnabled, cupo);
+                        inicializarTablaDiario();
+                    } else {
+                        retiroPorRed(ingreso, false);
+                    }
                     inicializarTablaDiario();
-                }else{
-                    JOptionPane.showMessageDialog(null, "Ese cupo no existe en el sistema.");                    
+                } else {
+                    if (origen == 0) {
+                        JOptionPane.showMessageDialog(null, "Ese cupo no existe en el sistema.");
+                    } else {
+                        retorno = "No existe ese ticket";
+                    }
                 }
                 break;
             case 5:
-                JOptionPane.showMessageDialog(null, "El cliente es un cliente mensual.");
-                break;
+                if (origen == 0) {
+                    JOptionPane.showMessageDialog(null, "El cliente es un cliente mensual.");
+                    break;
+                } else {
+                    retorno = "Mensual";
+                    break;
+                }
             default:
-                System.out.println(seleccion);
-                JOptionPane.showMessageDialog(null, "El ingreso no es un formato permitido.");
-                break;
+                if (origen == 0) {
+                    JOptionPane.showMessageDialog(null, "El ingreso no es un formato permitido.");
+                    break;
+                } else {
+                    retorno = "Invalido";
+                    break;
+                }
         }
         placaDiario.setText("");
         cascosDiario.setText("0");
         placaDiario.requestFocus();
+        return retorno;
     }
-    
-    private boolean estadoUsuario(String placa){
+
+    private boolean estadoUsuario(String placa) {
         UsuarioDiario user = Conection.getUsuarioDiario().findUsuarioDiario(placa);
-        if(user!=null){
-            if(user.getUsuario().getBaneado()!=null){
+        if (user != null) {
+            if (user.getUsuario().getBaneado() != null) {
                 observacinoesDiario.setText(user.getUsuario().getBaneado().getRazon());
                 JOptionPane.showMessageDialog(null, "El usuario se encuentra impedido en el sistema.");
                 placaDiario.setText("");
                 placaDiario.requestFocus();
                 return false;
-            }else{
-                if(user.getUsuario().getObservacion()!=null){
+            } else {
+                if (user.getUsuario().getObservacion() != null) {
                     observacinoesDiario.setText(user.getUsuario().getObservacion());
                     return true;
-                }else{
+                } else {
                     observacinoesDiario.setText("");
                     return true;
                 }
@@ -1634,14 +1711,14 @@ public class GUI extends javax.swing.JFrame {
         }
         return true;
     }
-    
+
     private void configPanelComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_configPanelComponentShown
         inicializarTablaConfig();
     }//GEN-LAST:event_configPanelComponentShown
 
     private void tablaConfigMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaConfigMouseClicked
-        if(tablaConfig.getSelectedRow() != -1){
-            Configuraciones config = (Configuraciones)tablaConfig.getValueAt(tablaConfig.getSelectedRow(), 0); 
+        if (tablaConfig.getSelectedRow() != -1) {
+            Configuraciones config = (Configuraciones) tablaConfig.getValueAt(tablaConfig.getSelectedRow(), 0);
             descConfig.setText(config.getDescripcion());
             valorConfig.setText(config.getValor());
         }
@@ -1668,7 +1745,7 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_fechaSelectorActionPerformed
 
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
-        
+
     }//GEN-LAST:event_formWindowActivated
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
@@ -1692,9 +1769,9 @@ public class GUI extends javax.swing.JFrame {
 
     private void actionMensualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionMensualActionPerformed
         UsuarioMensual usuarioMensual = Conection.getUsuarioMensual().findUsuarioMensual(placaMensual.getText().toUpperCase());
-        if(usuarioMensual == null){
+        if (usuarioMensual == null) {
             Usuario usuario = Conection.getUsuario().findUsuario(placaMensual.getText().toUpperCase());
-            if(usuario == null){
+            if (usuario == null) {
                 usuario = new Usuario(placaMensual.getText().toUpperCase());
                 usuario.setTipo("Moto");
                 usuario.setObservacion("");
@@ -1721,7 +1798,7 @@ public class GUI extends javax.swing.JFrame {
             }
             mensuales.add(usuarioMensual.getPlaca());
             JOptionPane.showMessageDialog(null, "Cliente mensual añadido correctamente.");
-        }else{
+        } else {
             usuarioMensual.setDocumento(documentoMensual.getText().toUpperCase());
             usuarioMensual.setNombre(nombreMensual.getText().toUpperCase());
             usuarioMensual.setTelefono(telefonoMensual.getText().toUpperCase());
@@ -1745,8 +1822,8 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_mensualidadMensualActionPerformed
 
     private void tablaMensualMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaMensualMouseClicked
-        if(tablaMensual.getSelectedRow()!=-1){
-            UsuarioMensual usuario = (UsuarioMensual)tablaMensual.getValueAt(tablaMensual.getSelectedRow(), 0);
+        if (tablaMensual.getSelectedRow() != -1) {
+            UsuarioMensual usuario = (UsuarioMensual) tablaMensual.getValueAt(tablaMensual.getSelectedRow(), 0);
             placaMensual.setText(usuario.getPlaca());
             documentoMensual.setText(usuario.getDocumento());
             nombreMensual.setText(usuario.getNombre());
@@ -1767,17 +1844,17 @@ public class GUI extends javax.swing.JFrame {
 
     private void actionClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionClientesActionPerformed
         UsuarioDiario usuario = Conection.getUsuarioDiario().findUsuarioDiario(placaClientes.getText());
-        if(usuario != null){
+        if (usuario != null) {
             entradasClientes.setText(String.valueOf(usuario.getEntradas()));
             minutosClientes.setText(String.valueOf(usuario.getMinutosRegistrados()));
             cobradoClientes.setText(String.valueOf(usuario.getCobroTotal()));
             observacionesClientes.setText(usuario.getUsuario().getObservacion());
-            if(usuario.getUsuario().getBaneado()!=null){
+            if (usuario.getUsuario().getBaneado() != null) {
                 razonClientes.setText(usuario.getUsuario().getBaneado().getRazon());
                 banDesdeClientes.setText(Auxi.formaterFecha(usuario.getUsuario().getBaneado().getFecha()));
             }
             inicializarTablaClientes(usuario);
-        }else{
+        } else {
             JOptionPane.showMessageDialog(null, "El usuario buscado no existe.");
             placaClientes.setText("");
             placaClientes.requestFocus();
@@ -1786,7 +1863,7 @@ public class GUI extends javax.swing.JFrame {
 
     private void actionGuardarClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionGuardarClientesActionPerformed
         UsuarioDiario usuario = Conection.getUsuarioDiario().findUsuarioDiario(placaClientes.getText());
-        if(usuario != null){
+        if (usuario != null) {
             Usuario user = usuario.getUsuario();
             user.setObservacion(observacionesClientes.getText());
             try {
@@ -1804,14 +1881,14 @@ public class GUI extends javax.swing.JFrame {
             razonClientes.setText("");
             banDesdeClientes.setText("");
             placaClientes.requestFocus();
-        }else{
+        } else {
             JOptionPane.showMessageDialog(null, "Usuario invalido.");
         }
     }//GEN-LAST:event_actionGuardarClientesActionPerformed
 
     private void actionBanClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionBanClientesActionPerformed
         UsuarioDiario usuario = Conection.getUsuarioDiario().findUsuarioDiario(placaClientes.getText());
-        if(usuario != null){
+        if (usuario != null) {
             Usuario user = usuario.getUsuario();
             Baneado ban = new Baneado();
             ban.setPlaca(user.getPlaca());
@@ -1835,16 +1912,16 @@ public class GUI extends javax.swing.JFrame {
             razonClientes.setText("");
             banDesdeClientes.setText("");
             placaClientes.requestFocus();
-        }else{
+        } else {
             JOptionPane.showMessageDialog(null, "Usuario invalido.");
         }
     }//GEN-LAST:event_actionBanClientesActionPerformed
 
     private void actionUnbanClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionUnbanClientesActionPerformed
         UsuarioDiario usuario = Conection.getUsuarioDiario().findUsuarioDiario(placaClientes.getText());
-        if(usuario != null){
+        if (usuario != null) {
             Usuario user = usuario.getUsuario();
-            if(user.getBaneado()!=null){
+            if (user.getBaneado() != null) {
                 Baneado ban = user.getBaneado();
                 user.setBaneado(null);
                 try {
@@ -1854,8 +1931,8 @@ public class GUI extends javax.swing.JFrame {
                     Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (Exception ex) {
                     Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-                }                
-            }else{
+                }
+            } else {
                 JOptionPane.showMessageDialog(null, "El usuario no ha estado baneado.");
             }
             placaClientes.setText("");
@@ -1866,7 +1943,7 @@ public class GUI extends javax.swing.JFrame {
             razonClientes.setText("");
             banDesdeClientes.setText("");
             placaClientes.requestFocus();
-        }else{
+        } else {
             JOptionPane.showMessageDialog(null, "Usuario invalido.");
         }
     }//GEN-LAST:event_actionUnbanClientesActionPerformed
@@ -1904,28 +1981,28 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_panelLockersComponentShown
 
     private void actionMensual1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionMensual1ActionPerformed
-        if(tablaCobroMensual.getSelectedRow()!=-1){
-            CobroMensual cobro = (CobroMensual)tablaCobroMensual.getValueAt(tablaCobroMensual.getSelectedRow(), 0);
+        if (tablaCobroMensual.getSelectedRow() != -1) {
+            CobroMensual cobro = (CobroMensual) tablaCobroMensual.getValueAt(tablaCobroMensual.getSelectedRow(), 0);
             PrintNow.printReciboMensual(cobro);
-        }else{
+        } else {
             JOptionPane.showMessageDialog(null, "Seleccione un cobro.");
         }
     }//GEN-LAST:event_actionMensual1ActionPerformed
 
     private void actionHistorial1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionHistorial1ActionPerformed
-        if(tablaHistorial.getSelectedRow()!=-1){
-            CobroDiario cobro = (CobroDiario)tablaHistorial.getValueAt(tablaHistorial.getSelectedRow(), 0);
+        if (tablaHistorial.getSelectedRow() != -1) {
+            CobroDiario cobro = (CobroDiario) tablaHistorial.getValueAt(tablaHistorial.getSelectedRow(), 0);
             PrintNow.imprimirReciboSalida(cobro.getCupo(), cobro.getCobro());
-        }else{
+        } else {
             JOptionPane.showMessageDialog(null, "Seleccione un elemento.");
         }
     }//GEN-LAST:event_actionHistorial1ActionPerformed
 
     private void actionMensual2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionMensual2ActionPerformed
         UsuarioMensual user = Conection.getUsuarioMensual().findUsuarioMensual(placaMensual.getText());
-        if(user!=null){
+        if (user != null) {
             try {
-                for(CobroMensual cobro: user.getCobroMensualList()){
+                for (CobroMensual cobro : user.getCobroMensualList()) {
                     Conection.getCobroMensual().destroy(cobro.getCobroMensualPK());
                 }
                 Conection.getUsuarioMensual().destroy(user.getPlaca());
@@ -1936,18 +2013,18 @@ public class GUI extends javax.swing.JFrame {
                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             } catch (NonexistentEntityException ex) {
                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-            }            
-        }else{
+            }
+        } else {
             JOptionPane.showMessageDialog(null, "Cliente mensual no encontrado.");
         }
     }//GEN-LAST:event_actionMensual2ActionPerformed
 
     private void actionModHistorialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionModHistorialActionPerformed
-        if(tablaHistorial.getSelectedRow()!=-1){
-            CobroDiario cobro = (CobroDiario)tablaHistorial.getValueAt(tablaHistorial.getSelectedRow(), 0);
+        if (tablaHistorial.getSelectedRow() != -1) {
+            CobroDiario cobro = (CobroDiario) tablaHistorial.getValueAt(tablaHistorial.getSelectedRow(), 0);
             Cupo cupo = cobro.getCupo();
             String valorIngreso = JOptionPane.showInputDialog("Ingrese el valor correspondiente: ", cupo.getCobroSugerido());
-            if(valorIngreso!=null){
+            if (valorIngreso != null) {
                 cobro.setCobro(Long.parseLong(valorIngreso));
                 try {
                     Conection.getCobroDiaro().edit(cobro);
@@ -1969,12 +2046,12 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_panelDiarioComponentShown
 
     private void cascosDiarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cascosDiarioActionPerformed
-        if(cascosDiario.getText().compareTo("-")==0){
+        if (cascosDiario.getText().compareTo("-") == 0) {
             colaEntrada.add(placaDiario.getText().toUpperCase());
             cascosDiario.setText("0");
             placaDiario.setText("");
             placaDiario.requestFocus();
-        }else{
+        } else {
             actionDiario.requestFocus();
         }
     }//GEN-LAST:event_cascosDiarioActionPerformed
@@ -1984,38 +2061,40 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_cascosDiarioMouseClicked
 
     private void actionDiarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionDiarioActionPerformed
-        if(estadoUsuario(placaDiario.getText())){
-            actionDiarioProceso();
+        if (estadoUsuario(placaDiario.getText())) {
+            String ingreso = placaDiario.getText();
+            int cascos = Integer.parseInt(cascosDiario.getText());
+            actionDiarioProceso(ingreso, cascos, 0);
             observacinoesDiario.setText("");
             inicializarTablaDiario();
         }
     }//GEN-LAST:event_actionDiarioActionPerformed
 
     private void placaDiarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_placaDiarioActionPerformed
-        switch(Auxi.selector(placaDiario.getText())){
+        switch (Auxi.selector(placaDiario.getText())) {
             case 1:
-            cascosDiario.requestFocus();
-            cascosDiario.selectAll();
-            Usuario usuario = Conection.getUsuario().findUsuario(placaDiario.getText());
-            if(usuario!=null){
-                if(usuario.getBaneado()!=null){
-                    observacinoesDiario.setText(usuario.getBaneado().getRazon());
-                    JOptionPane.showMessageDialog(null, "El usuario esta baneado del sistema, revisar razon.");
-                    placaDiario.requestFocus();
-                    placaDiario.setText("");
-                }else{
-                    observacinoesDiario.setText(usuario.getObservacion());
+                cascosDiario.requestFocus();
+                cascosDiario.selectAll();
+                Usuario usuario = Conection.getUsuario().findUsuario(placaDiario.getText());
+                if (usuario != null) {
+                    if (usuario.getBaneado() != null) {
+                        observacinoesDiario.setText(usuario.getBaneado().getRazon());
+                        JOptionPane.showMessageDialog(null, "El usuario esta baneado del sistema, revisar razon.");
+                        placaDiario.requestFocus();
+                        placaDiario.setText("");
+                    } else {
+                        observacinoesDiario.setText(usuario.getObservacion());
+                    }
                 }
-            }
-            break;
+                break;
             case 0:
-            JOptionPane.showMessageDialog(null, "Entrada erronea.");
-            placaDiario.requestFocus();
-            placaDiario.selectAll();
-            break;
+                JOptionPane.showMessageDialog(null, "Entrada erronea.");
+                placaDiario.requestFocus();
+                placaDiario.selectAll();
+                break;
             default:
-            actionDiario.requestFocus();
-            break;
+                actionDiario.requestFocus();
+                break;
         }
     }//GEN-LAST:event_placaDiarioActionPerformed
 
@@ -2024,20 +2103,20 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_placaDiarioMouseClicked
 
     private void actionCobroMensual1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionCobroMensual1ActionPerformed
-        if(tablaDiario.getSelectedRow()!=-1){
-            Cupo cupo = (Cupo)tablaDiario.getValueAt(tablaDiario.getSelectedRow(), 0);
+        if (tablaDiario.getSelectedRow() != -1) {
+            Cupo cupo = (Cupo) tablaDiario.getValueAt(tablaDiario.getSelectedRow(), 0);
             PrintNow.imprimirReciboEntrada(cupo);
             tablaDiario.clearSelection();
-        }else{
+        } else {
             JOptionPane.showMessageDialog(null, "Seleccione un elemento.");
         }
     }//GEN-LAST:event_actionCobroMensual1ActionPerformed
 
     private void actionAnularDiarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionAnularDiarioActionPerformed
-        if(tablaDiario.getSelectedRow()!=-1){
-            Cupo cupo = (Cupo)tablaDiario.getValueAt(tablaDiario.getSelectedRow(), 0);
+        if (tablaDiario.getSelectedRow() != -1) {
+            Cupo cupo = (Cupo) tablaDiario.getValueAt(tablaDiario.getSelectedRow(), 0);
             cuposActivos.remove(cupo.getCupoPK().getConsecutivo());
-            if(cupo.getLocker()!=null){
+            if (cupo.getLocker() != null) {
                 Locker locker = cupo.getLocker();
                 locker.setAlojamiento(0);
                 try {
@@ -2056,16 +2135,16 @@ public class GUI extends javax.swing.JFrame {
             inicializarTablaDiario();
             tablaDiario.clearSelection();
             JOptionPane.showMessageDialog(null, "Elemento anulado existosamente.");
-        }else{
+        } else {
             JOptionPane.showMessageDialog(null, "Debe seleccionar un elemento primero.");
         }
     }//GEN-LAST:event_actionAnularDiarioActionPerformed
 
     private void actionCobroMensualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionCobroMensualActionPerformed
         UsuarioMensual usuario = Conection.getUsuarioMensual().findUsuarioMensual(placaCobroMensual.getText());
-        if(usuario!=null){
+        if (usuario != null) {
             new MensualidadDialogo(this, true, usuario);
-        }else{
+        } else {
             JOptionPane.showMessageDialog(null, "No existe ese cliente mensual.");
         }
         placaCobroMensual.setText("");
@@ -2086,8 +2165,8 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_ScrollDiarioMouseClicked
 
     private void tablaDiarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaDiarioMouseClicked
-        if(tablaDiario.getSelectedRow()!=-1){
-            Cupo cupo = (Cupo)tablaDiario.getValueAt(tablaDiario.getSelectedRow(), 0);
+        if (tablaDiario.getSelectedRow() != -1) {
+            Cupo cupo = (Cupo) tablaDiario.getValueAt(tablaDiario.getSelectedRow(), 0);
             observacinoesDiario.setText(cupo.getPlaca().getUsuario().getObservacion());
             String[] aux = Auxi.calcularTiempoMotoTentativo(cupo);
             selplaca.setText(cupo.getPlaca().getPlaca());
@@ -2101,8 +2180,8 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_listaEsperaValueChanged
 
     private void actionCobroMensual2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionCobroMensual2ActionPerformed
-        if(tablaDiario.getSelectedRow()!=-1){
-            Cupo cupo = (Cupo)tablaDiario.getValueAt(tablaDiario.getSelectedRow(), 0);
+        if (tablaDiario.getSelectedRow() != -1) {
+            Cupo cupo = (Cupo) tablaDiario.getValueAt(tablaDiario.getSelectedRow(), 0);
             Usuario user = cupo.getPlaca().getUsuario();
             user.setObservacion(observacinoesDiario.getText());
             try {
@@ -2276,9 +2355,9 @@ public class GUI extends javax.swing.JFrame {
         Query query = em.createQuery("select l from Locker l ORDER BY l.identificador");
         List<Locker> lockerList = query.getResultList();
         String[] columnas = {"Identificador", "Alojamiento", "Capacidad"};
-        Object[][] campos =  new Object[lockerList.size()][columnas.length];
+        Object[][] campos = new Object[lockerList.size()][columnas.length];
         int i = 0;
-        for(Locker locker: lockerList){
+        for (Locker locker : lockerList) {
             campos[i][0] = locker;
             campos[i][1] = locker.getAlojamiento();
             campos[i][2] = locker.getCapacidad();
@@ -2288,15 +2367,15 @@ public class GUI extends javax.swing.JFrame {
         tablaLockers.setModel(modelo);
         tablaLockers.getTableHeader().setFont(new Font("Arial", Font.PLAIN, 24));
     }
-    
+
     private void inicializarTablaConfig() {
         EntityManager em = Conection.getEMF().createEntityManager();
         Query query = em.createQuery("select c from Configuraciones c");
         List<Configuraciones> confList = query.getResultList();
         String[] columnas = {"Descripcion", "Valor"};
-        Object[][] campos =  new Object[confList.size()][columnas.length];
+        Object[][] campos = new Object[confList.size()][columnas.length];
         int i = 0;
-        for(Configuraciones conf: confList){
+        for (Configuraciones conf : confList) {
             campos[i][0] = conf;
             campos[i][1] = conf.getValor();
             i++;
@@ -2306,9 +2385,7 @@ public class GUI extends javax.swing.JFrame {
         tablaConfig.getTableHeader().setFont(new Font("Arial", Font.PLAIN, 24));
     }
 
-    private void ingresoDiario() {
-        String placa = placaDiario.getText().toUpperCase();
-        int cascos = Integer.parseInt(cascosDiario.getText());
+    public String ingresoDiario(String placa, int cascos) {
         UsuarioDiario usuario = Conection.getUsuarioDiario().findUsuarioDiario(placa);
         if (usuario == null) {
             Usuario usuarioGeneral = Conection.getUsuario().findUsuario(placa);
@@ -2333,13 +2410,13 @@ public class GUI extends javax.swing.JFrame {
         long consecutivo = Long.parseLong(Conection.getConfiguraciones().findConfiguraciones("consecutivoDiario").getValor());
         Cupo cupo = new Cupo(new CupoPK(consecutivo, new GregorianCalendar().getTime()), 0, 0, 0);
         cupo.setPlaca(usuario);
-        if(cascos>0){
+        if (cascos > 0) {
             EntityManager em = Conection.getEMF().createEntityManager();
             Query query = em.createQuery("select l from Locker l where l.alojamiento = 0 and l.capacidad >= :capacidad ORDER BY l.identificador");
             query.setParameter("capacidad", cascos);
             List<Locker> lockers = query.getResultList();
             Collections.sort(lockers, new AlphanumComparator());
-            if(lockers.size()>0){
+            if (lockers.size() > 0) {
                 Locker locker = lockers.get(0);
                 locker.setAlojamiento(cascos);
                 try {
@@ -2348,9 +2425,9 @@ public class GUI extends javax.swing.JFrame {
                     Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 cupo.setLocker(locker);
-            }else{
+            } else {
                 JOptionPane.showMessageDialog(null, "No existen lockers disponibles.");
-            }            
+            }
         }
         try {
             Conection.getCupo().create(cupo);
@@ -2368,13 +2445,18 @@ public class GUI extends javax.swing.JFrame {
         colaEntrada.remove(placa);
         PrintNow.imprimirReciboEntrada(cupo);
         inicializarTablaDiario();
+        if (cupo.getLocker() != null) {
+            return cupo.getLocker().getIdentificador();
+        } else {
+            return "Sin Cascos";
+        }
     }
 
     private void retiroDiario(Cupo cupo) {
         cupo.setSalida(new GregorianCalendar().getTime());
         Auxi.calcularTiempoMoto(cupo);
-        cupoActual = cupo;        
-    }    
+        cupoActual = cupo;
+    }
 
     private void inicializarTablaHistorial(Date date) {
         EntityManager em = Conection.getEMF().createEntityManager();
@@ -2382,19 +2464,19 @@ public class GUI extends javax.swing.JFrame {
         query.setParameter("fecha", date);
         List<CobroDiario> cobros = query.getResultList();
         List<Long> cons = new ArrayList<>();
-        long total=0;
-        int i=0;
+        long total = 0;
+        int i = 0;
         String[] columnas = {"Consecutivo", "Placa", "Entrada", "Salida", "Cobrado", "Locker"};
         Object[][] campos = new Object[cobros.size()][columnas.length];
-        for(CobroDiario cobro: cobros){
+        for (CobroDiario cobro : cobros) {
             campos[i][0] = cobro;
             campos[i][1] = cobro.getCupo().getPlaca().getPlaca();
             campos[i][2] = Auxi.formaterHora(cobro.getCupo().getCupoPK().getIngreso());
             campos[i][3] = Auxi.formaterHora(cobro.getCupo().getSalida());
             campos[i][4] = cobro.getCobro();
-            if(cobro.getCupo().getLocker()!=null){
+            if (cobro.getCupo().getLocker() != null) {
                 campos[i][5] = cobro.getCupo().getLocker();
-            }else{
+            } else {
                 campos[i][5] = "Ninguno";
             }
             cons.add(cobro.getConsecutivo());
@@ -2403,25 +2485,25 @@ public class GUI extends javax.swing.JFrame {
         }
         DefaultTableModel modelo = new DefaultTableModel(campos, columnas);
         tablaHistorial.setModel(modelo);
-        if(cons.size()>0){
+        if (cons.size() > 0) {
             finconsHistorial.setText(String.valueOf(cons.get(0)));
-            iniconsHistorial.setText(String.valueOf(cons.get(cons.size()-1)));
-        }else{
+            iniconsHistorial.setText(String.valueOf(cons.get(cons.size() - 1)));
+        } else {
             iniconsHistorial.setText("N/A");
             finconsHistorial.setText("N/A");
         }
         totalHistorial.setText(String.valueOf(total));
         tablaHistorial.getTableHeader().setFont(new Font("Arial", Font.PLAIN, 24));
     }
-    
+
     private void inicializarTablaMensual() {
         EntityManager em = Conection.getEMF().createEntityManager();
         Query query = em.createQuery("SELECT u FROM UsuarioMensual u");
         List<UsuarioMensual> userList = query.getResultList();
         String[] columnas = {"Placa", "Cedula", "Nombre", "Telefono", "Ingreso", "Cobro", "Mensualidad"};
-        Object[][] campos =  new Object[userList.size()][columnas.length];
+        Object[][] campos = new Object[userList.size()][columnas.length];
         int i = 0;
-        for(UsuarioMensual user: userList){
+        for (UsuarioMensual user : userList) {
             campos[i][0] = user;
             campos[i][1] = user.getDocumento();
             campos[i][2] = user.getNombre();
@@ -2435,15 +2517,15 @@ public class GUI extends javax.swing.JFrame {
         tablaMensual.setModel(modelo);
         tablaMensual.getTableHeader().setFont(new Font("Arial", Font.PLAIN, 24));
     }
-    
+
     private void inicializarTablaMorosos() {
         EntityManager em = Conection.getEMF().createEntityManager();
         Query query = em.createQuery("SELECT u FROM UsuarioMensual u WHERE u.sigCobro <= CURRENT_DATE");
         List<UsuarioMensual> userList = query.getResultList();
         String[] columnas = {"Placa", "Cedula", "Nombre", "Telefono", "Cobro", "Mensualidad"};
-        Object[][] campos =  new Object[userList.size()][columnas.length];
+        Object[][] campos = new Object[userList.size()][columnas.length];
         int i = 0;
-        for(UsuarioMensual user: userList){
+        for (UsuarioMensual user : userList) {
             campos[i][0] = user;
             campos[i][1] = user.getDocumento();
             campos[i][2] = user.getNombre();
@@ -2456,16 +2538,16 @@ public class GUI extends javax.swing.JFrame {
         tablaMorosos.setModel(modelo);
         tablaMorosos.getTableHeader().setFont(new Font("Arial", Font.PLAIN, 24));
     }
-    
+
     private void inicializarTablaCobroMensual(Date date) {
         EntityManager em = Conection.getEMF().createEntityManager();
         Query query = em.createQuery("SELECT c FROM CobroMensual c WHERE c.cobroMensualPK.fecha = :fecha");
         query.setParameter("fecha", date);
         List<CobroMensual> cobroList = query.getResultList();
         String[] columnas = {"Placa", "Fecha", "Nombre", "Desde", "Hasta", "Cobro"};
-        Object[][] campos =  new Object[cobroList.size()][columnas.length];
+        Object[][] campos = new Object[cobroList.size()][columnas.length];
         int i = 0;
-        for(CobroMensual cobro: cobroList){
+        for (CobroMensual cobro : cobroList) {
             campos[i][0] = cobro;
             campos[i][1] = Auxi.formaterFecha(cobro.getCobroMensualPK().getFecha());
             campos[i][2] = cobro.getUsuarioMensual().getNombre();
@@ -2478,26 +2560,27 @@ public class GUI extends javax.swing.JFrame {
         tablaCobroMensual.setModel(modelo);
         tablaCobroMensual.getTableHeader().setFont(new Font("Arial", Font.PLAIN, 24));
     }
+
     private void inicializarTablaClientes(UsuarioDiario user) {
         EntityManager em = Conection.getEMF().createEntityManager();
         Query query = em.createQuery("SELECT c FROM Cupo c WHERE c.placa = :placa AND c.salida IS NOT NULL ORDER BY c.salida DESC");
         query.setParameter("placa", user);
         List<Cupo> cupoList = query.getResultList();
         String[] columnas = {"Fecha", "Ingreso", "Salido", "Horas", "Minutos", "Locker", "Sugerido", "Cobro"};
-        Object[][] campos =  new Object[cupoList.size()][columnas.length];
+        Object[][] campos = new Object[cupoList.size()][columnas.length];
         int i = 0;
-        for(Cupo cupo: cupoList){
+        for (Cupo cupo : cupoList) {
             CobroDiario cobro = cupo.getCobroDiarioList().get(0);
             campos[i][0] = Auxi.formaterFecha(cobro.getFecha());
             campos[i][1] = Auxi.formaterHora(cupo.getCupoPK().getIngreso());
             campos[i][2] = Auxi.formaterHora(cupo.getSalida());
             campos[i][3] = cupo.getHoras();
             campos[i][4] = cupo.getMinutos();
-            if(cupo.getLocker()!=null){
+            if (cupo.getLocker() != null) {
                 campos[i][5] = cupo.getLocker().getIdentificador();
-            }else{
+            } else {
                 campos[i][5] = "Ninguno";
-            }            
+            }
             campos[i][6] = cupo.getCobroSugerido();
             campos[i][7] = cobro.getCobro();
             i++;
@@ -2511,7 +2594,7 @@ public class GUI extends javax.swing.JFrame {
         EntityManager em = Conection.getEMF().createEntityManager();
         Query query = em.createQuery("SELECT m FROM UsuarioMensual m");
         List<UsuarioMensual> mensualesList = query.getResultList();
-        for(UsuarioMensual cliente: mensualesList){
+        for (UsuarioMensual cliente : mensualesList) {
             mensuales.add(cliente.getPlaca());
         }
     }
@@ -2530,32 +2613,32 @@ public class GUI extends javax.swing.JFrame {
 
     private void inicializarBase() {
         try {
-                Configuraciones fecha = new Configuraciones("fechaActual", "03-05-1992");
-                Configuraciones consecutivoDiario = new Configuraciones("consecutivoDiario", "1");
-                Configuraciones horaCierre = new Configuraciones("horaCierre", "8:00 pm");
-                Configuraciones mhMoto = new Configuraciones("mediaHoraMoto", "700");
-                Configuraciones uhMoto = new Configuraciones("unaHoraMoto", "1000");
-                Configuraciones phMoto = new Configuraciones("porHoraMoto", "800");
-                Configuraciones mhCarro = new Configuraciones("mediaHoraCarro", "1000");
-                Configuraciones uhCarro = new Configuraciones("unaHoraCarro", "2000");
-                Configuraciones phCarro = new Configuraciones("porHoraCarro", "800");
-                Configuraciones contacto = new Configuraciones("contacto", "numero//contacto");
-                Configuraciones consecutivo = new Configuraciones("consecutivo", "1");
-                Configuraciones adminPass = new Configuraciones("adminPass", "0000");
-                Conection.getConfiguraciones().create(fecha);
-                Conection.getConfiguraciones().create(consecutivoDiario);
-                Conection.getConfiguraciones().create(horaCierre);
-                Conection.getConfiguraciones().create(mhMoto);
-                Conection.getConfiguraciones().create(uhMoto);
-                Conection.getConfiguraciones().create(phMoto);
-                Conection.getConfiguraciones().create(mhCarro);
-                Conection.getConfiguraciones().create(uhCarro);
-                Conection.getConfiguraciones().create(phCarro);
-                Conection.getConfiguraciones().create(contacto);
-                Conection.getConfiguraciones().create(consecutivo);
-                Conection.getConfiguraciones().create(adminPass);
-            } catch (Exception ex) {
-                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            Configuraciones fecha = new Configuraciones("fechaActual", "03-05-1992");
+            Configuraciones consecutivoDiario = new Configuraciones("consecutivoDiario", "1");
+            Configuraciones horaCierre = new Configuraciones("horaCierre", "8:00 pm");
+            Configuraciones mhMoto = new Configuraciones("mediaHoraMoto", "700");
+            Configuraciones uhMoto = new Configuraciones("unaHoraMoto", "1000");
+            Configuraciones phMoto = new Configuraciones("porHoraMoto", "800");
+            Configuraciones mhCarro = new Configuraciones("mediaHoraCarro", "1000");
+            Configuraciones uhCarro = new Configuraciones("unaHoraCarro", "2000");
+            Configuraciones phCarro = new Configuraciones("porHoraCarro", "800");
+            Configuraciones contacto = new Configuraciones("contacto", "numero//contacto");
+            Configuraciones consecutivo = new Configuraciones("consecutivo", "1");
+            Configuraciones adminPass = new Configuraciones("adminPass", "0000");
+            Conection.getConfiguraciones().create(fecha);
+            Conection.getConfiguraciones().create(consecutivoDiario);
+            Conection.getConfiguraciones().create(horaCierre);
+            Conection.getConfiguraciones().create(mhMoto);
+            Conection.getConfiguraciones().create(uhMoto);
+            Conection.getConfiguraciones().create(phMoto);
+            Conection.getConfiguraciones().create(mhCarro);
+            Conection.getConfiguraciones().create(uhCarro);
+            Conection.getConfiguraciones().create(phCarro);
+            Conection.getConfiguraciones().create(contacto);
+            Conection.getConfiguraciones().create(consecutivo);
+            Conection.getConfiguraciones().create(adminPass);
+        } catch (Exception ex) {
+            Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

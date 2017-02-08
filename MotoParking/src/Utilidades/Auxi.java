@@ -38,7 +38,6 @@ public class Auxi {
             if(Conection.getUsuarioMensual().findUsuarioMensual(ingreso)!=null){
                 return 5;
             }else{
-                System.out.println("Moto");
                 return 1;
             }
         }
@@ -46,7 +45,6 @@ public class Auxi {
             if(Conection.getUsuarioMensual().findUsuarioMensual(ingreso)!=null){
                 return 5;
             }else{
-                System.out.println("Carro");
                 return 2;
             }
         }
@@ -54,12 +52,10 @@ public class Auxi {
             if(Conection.getUsuarioMensual().findUsuarioMensual(ingreso)!=null){
                 return 5;
             }else{
-                System.out.println("Cedula");
                 return 3;
             }
         }
         if(Pattern.matches(ticket, ingreso)){
-            System.out.println("Ticket");
             return 4;
         }
         return 0;
