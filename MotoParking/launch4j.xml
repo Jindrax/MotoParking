@@ -3,7 +3,7 @@
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
   <jar>C:\Users\Todesser\Documents\NetBeansProjects\MotoParking\MotoParking\store\MotoParking.jar</jar>
-  <outfile>C:\Users\Todesser\Desktop\MotoParqueo.exe</outfile>
+  <outfile>C:\Users\Todesser\Desktop\Parklog.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir>.</chdir>

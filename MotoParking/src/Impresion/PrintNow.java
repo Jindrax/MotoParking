@@ -50,9 +50,9 @@ public class PrintNow {
                 if (pageIndex > 0) {
                     return NO_SUCH_PAGE;
                 } //Only one page
-                int y = 10;
-                g2d.drawImage(img, 36, y, null);
-                y += 84;
+                int y = 15;
+                //g2d.drawImage(img, 36, y, null);              impresion de logo
+                //y += 84;
                 for (LineaRecibo next : Bill) {
                     g2d.setFont(new Font("Times New Roman", next.mod, next.size));
                     g2d.drawString(next.linea, 0, y);
@@ -76,9 +76,9 @@ public class PrintNow {
     }
 
     public static void encabezado() {
-        addLinea("    MotoParqueo 259", Font.BOLD, 14);
-        addLinea("            Luz Stella Garcia Campos", Font.PLAIN, 8);
-        addLinea("    39554400-2" + " " + "Regimen Simplificado", Font.PLAIN, 8);
+        addLinea("        Parqueadero", Font.BOLD, 14);
+        addLinea("    LA PRIMERA H.", Font.BOLD, 14);
+        addLinea("            NIT. 7.702.822-6", Font.PLAIN, 10);
         addLinea("");
     }
     
@@ -89,7 +89,7 @@ public class PrintNow {
         while(token.hasMoreTokens()){
             addLinea(token.nextToken());
         }        
-        addLinea("Cll. 9 #2-59");
+        addLinea("Carrera 1H No. 9 - 18 Neiva");
     }
 
     public static void imprimirReciboEntrada(Cupo cupo) {
@@ -198,7 +198,7 @@ public class PrintNow {
             addLinea(nombre, Font.BOLD, 10);
         }
         addLinea("Ha pagado a:");
-        addLinea("Luz Stella Garcia Campos");
+        addLinea("LA PRIMERA H.");
         addLinea("$" + String.valueOf(mensualidad), Font.BOLD, 10);
         addLinea("Por servicio de parqueadero de:");
         addLinea("moto placa:");

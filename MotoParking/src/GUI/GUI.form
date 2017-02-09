@@ -3,12 +3,12 @@
 <Form version="1.9" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
-    <Property name="title" type="java.lang.String" value="MotoParqueo 259"/>
+    <Property name="title" type="java.lang.String" value="Parklog"/>
     <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-      <Dimension value="[1440, 860]"/>
+      <Dimension value="[1340, 700]"/>
     </Property>
     <Property name="size" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-      <Dimension value="[1440, 860]"/>
+      <Dimension value="[1340, 700]"/>
     </Property>
   </Properties>
   <SyntheticProperties>
@@ -35,15 +35,12 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="Contenedor" alignment="1" max="32767" attributes="0"/>
+          <Component id="Contenedor" alignment="1" min="-2" max="-2" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
-              <Component id="Contenedor" min="-2" pref="834" max="-2" attributes="0"/>
-              <EmptySpace min="0" pref="125" max="32767" attributes="0"/>
-          </Group>
+          <Component id="Contenedor" min="-2" max="-2" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
@@ -54,7 +51,17 @@
           <Color blue="0" green="0" red="0" type="rgb"/>
         </Property>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-          <Font name="Arial" size="24" style="0"/>
+          <Font name="Arial" size="18" style="0"/>
+        </Property>
+        <Property name="inheritsPopupMenu" type="boolean" value="true"/>
+        <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[1330, 665]"/>
+        </Property>
+        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[1330, 665]"/>
+        </Property>
+        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[1330, 665]"/>
         </Property>
       </Properties>
       <Events>
@@ -68,8 +75,11 @@
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="0" green="ff" red="ff" type="rgb"/>
             </Property>
+            <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[1340, 665]"/>
+            </Property>
             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-              <Dimension value="[1406, 860]"/>
+              <Dimension value="[1340, 665]"/>
             </Property>
           </Properties>
           <Events>
@@ -175,7 +185,7 @@
             <Component class="javax.swing.JLabel" name="jLabel16">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Arial" size="24" style="0"/>
+                  <Font name="Tahoma" size="14" style="0"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Clientes mensuales en estado de mora:"/>
               </Properties>
@@ -193,7 +203,7 @@
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-                  <AbsoluteConstraints x="880" y="204" width="528" height="12"/>
+                  <AbsoluteConstraints x="880" y="190" width="440" height="10"/>
                 </Constraint>
               </Constraints>
             </Component>
@@ -278,7 +288,7 @@
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-                  <AbsoluteConstraints x="1116" y="222" width="292" height="196"/>
+                  <AbsoluteConstraints x="1070" y="200" width="240" height="196"/>
                 </Constraint>
               </Constraints>
 
@@ -305,6 +315,9 @@
                     <Component class="javax.swing.JTextArea" name="observacinoesDiario">
                       <Properties>
                         <Property name="columns" type="int" value="20"/>
+                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                          <Font name="Tahoma" size="14" style="0"/>
+                        </Property>
                         <Property name="lineWrap" type="boolean" value="true"/>
                         <Property name="rows" type="int" value="5"/>
                         <Property name="wrapStyleWord" type="boolean" value="true"/>
@@ -315,7 +328,7 @@
                 <Component class="javax.swing.JButton" name="actionCobroMensual2">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Tahoma" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Guardar Observacion"/>
                   </Properties>
@@ -331,7 +344,7 @@
                 <Component class="javax.swing.JLabel" name="jLabel17">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Tahoma" size="24" style="0"/>
+                      <Font name="Tahoma" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Observaciones:"/>
                   </Properties>
@@ -354,7 +367,7 @@
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-                  <AbsoluteConstraints x="1124" y="14" width="284" height="172"/>
+                  <AbsoluteConstraints x="1070" y="10" width="240" height="172"/>
                 </Constraint>
               </Constraints>
 
@@ -377,7 +390,7 @@
                     <Component class="javax.swing.JList" name="listaEspera">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Arial" size="24" style="0"/>
+                          <Font name="Tahoma" size="14" style="0"/>
                         </Property>
                         <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.editors2.ListModelEditor">
                           <StringArray count="5">
@@ -389,6 +402,15 @@
                           </StringArray>
                         </Property>
                         <Property name="selectionMode" type="int" value="0"/>
+                        <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                          <Dimension value="[50, 155]"/>
+                        </Property>
+                        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                          <Dimension value="[50, 155]"/>
+                        </Property>
+                        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                          <Dimension value="[50, 155]"/>
+                        </Property>
                       </Properties>
                       <Events>
                         <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="listaEsperaValueChanged"/>
@@ -402,7 +424,7 @@
                 <Component class="javax.swing.JLabel" name="jLabel27">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Tahoma" size="24" style="0"/>
+                      <Font name="Tahoma" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Lista de espera:"/>
                   </Properties>
@@ -422,7 +444,7 @@
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-                  <AbsoluteConstraints x="886" y="14" width="-1" height="172"/>
+                  <AbsoluteConstraints x="880" y="20" width="180" height="90"/>
                 </Constraint>
               </Constraints>
 
@@ -431,22 +453,25 @@
                 <Component class="javax.swing.JLabel" name="jLabel4">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Tahoma" size="24" style="0"/>
+                      <Font name="Tahoma" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Placa"/>
                   </Properties>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
-                      <GridBagConstraints gridX="0" gridY="0" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="17" weightX="0.0" weightY="0.0"/>
+                      <GridBagConstraints gridX="0" gridY="0" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="17" weightX="0.4" weightY="0.0"/>
                     </Constraint>
                   </Constraints>
                 </Component>
                 <Component class="javax.swing.JTextField" name="placaDiario">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Tahoma" size="24" style="0"/>
+                      <Font name="Tahoma" size="14" style="0"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="4"/>
+                    <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                      <Dimension value="[12, 35]"/>
+                    </Property>
                   </Properties>
                   <Events>
                     <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="placaDiarioMouseClicked"/>
@@ -454,14 +479,14 @@
                   </Events>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
-                      <GridBagConstraints gridX="1" gridY="0" gridWidth="1" gridHeight="1" fill="2" ipadX="129" ipadY="0" insetsTop="5" insetsLeft="0" insetsBottom="5" insetsRight="0" anchor="13" weightX="0.0" weightY="0.0"/>
+                      <GridBagConstraints gridX="1" gridY="0" gridWidth="1" gridHeight="1" fill="0" ipadX="115" ipadY="0" insetsTop="3" insetsLeft="3" insetsBottom="3" insetsRight="3" anchor="13" weightX="0.0" weightY="0.0"/>
                     </Constraint>
                   </Constraints>
                 </Component>
                 <Component class="javax.swing.JButton" name="actionDiario">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Tahoma" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Registrar"/>
                   </Properties>
@@ -477,10 +502,13 @@
                 <Component class="javax.swing.JTextField" name="cascosDiario">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Tahoma" size="24" style="0"/>
+                      <Font name="Tahoma" size="14" style="0"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="4"/>
                     <Property name="text" type="java.lang.String" value="0"/>
+                    <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                      <Dimension value="[12, 35]"/>
+                    </Property>
                   </Properties>
                   <Events>
                     <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="cascosDiarioMouseClicked"/>
@@ -488,20 +516,20 @@
                   </Events>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
-                      <GridBagConstraints gridX="1" gridY="1" gridWidth="1" gridHeight="1" fill="2" ipadX="111" ipadY="0" insetsTop="5" insetsLeft="0" insetsBottom="5" insetsRight="0" anchor="13" weightX="0.0" weightY="0.0"/>
+                      <GridBagConstraints gridX="1" gridY="1" gridWidth="1" gridHeight="1" fill="0" ipadX="115" ipadY="0" insetsTop="3" insetsLeft="3" insetsBottom="3" insetsRight="3" anchor="13" weightX="0.0" weightY="0.0"/>
                     </Constraint>
                   </Constraints>
                 </Component>
                 <Component class="javax.swing.JLabel" name="jLabel5">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Tahoma" size="24" style="0"/>
+                      <Font name="Tahoma" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Cascos"/>
                   </Properties>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
-                      <GridBagConstraints gridX="0" gridY="1" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="0" insetsRight="8" anchor="17" weightX="0.1" weightY="0.0"/>
+                      <GridBagConstraints gridX="0" gridY="1" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="17" weightX="0.4" weightY="0.0"/>
                     </Constraint>
                   </Constraints>
                 </Component>
@@ -515,7 +543,7 @@
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-                  <AbsoluteConstraints x="880" y="222" width="228" height="-1"/>
+                  <AbsoluteConstraints x="880" y="200" width="180" height="-1"/>
                 </Constraint>
               </Constraints>
 
@@ -524,7 +552,7 @@
                 <Component class="javax.swing.JLabel" name="seltiempo">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Tahoma" size="24" style="0"/>
+                      <Font name="Tahoma" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Tiempo"/>
                   </Properties>
@@ -537,7 +565,7 @@
                 <Component class="javax.swing.JLabel" name="selcobro">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Tahoma" size="24" style="0"/>
+                      <Font name="Tahoma" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Cobro"/>
                   </Properties>
@@ -550,7 +578,7 @@
                 <Component class="javax.swing.JButton" name="actionAnularDiario">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Tahoma" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Anular"/>
                   </Properties>
@@ -566,7 +594,7 @@
                 <Component class="javax.swing.JButton" name="actionCobroMensual1">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Tahoma" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Ticket"/>
                   </Properties>
@@ -582,7 +610,7 @@
                 <Component class="javax.swing.JLabel" name="selplaca">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Tahoma" size="24" style="0"/>
+                      <Font name="Tahoma" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Placa"/>
                   </Properties>
@@ -602,7 +630,7 @@
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-                  <AbsoluteConstraints x="1100" y="502" width="-1" height="-1"/>
+                  <AbsoluteConstraints x="1100" y="502" width="210" height="-1"/>
                 </Constraint>
               </Constraints>
 
@@ -611,7 +639,7 @@
                 <Component class="javax.swing.JTextField" name="placaCobroMensual">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Tahoma" size="14" style="0"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="4"/>
                   </Properties>
@@ -621,27 +649,27 @@
                   </Events>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
-                      <GridBagConstraints gridX="1" gridY="0" gridWidth="1" gridHeight="1" fill="2" ipadX="148" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="10" insetsRight="0" anchor="13" weightX="0.0" weightY="0.0"/>
+                      <GridBagConstraints gridX="1" gridY="0" gridWidth="1" gridHeight="1" fill="2" ipadX="148" ipadY="0" insetsTop="3" insetsLeft="3" insetsBottom="5" insetsRight="3" anchor="13" weightX="0.7" weightY="0.0"/>
                     </Constraint>
                   </Constraints>
                 </Component>
                 <Component class="javax.swing.JLabel" name="jLabel26">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Tahoma" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Placa"/>
                   </Properties>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
-                      <GridBagConstraints gridX="0" gridY="0" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="10" insetsRight="10" anchor="17" weightX="0.0" weightY="0.0"/>
+                      <GridBagConstraints gridX="0" gridY="0" gridWidth="1" gridHeight="1" fill="2" ipadX="0" ipadY="0" insetsTop="3" insetsLeft="3" insetsBottom="5" insetsRight="3" anchor="17" weightX="0.3" weightY="0.0"/>
                     </Constraint>
                   </Constraints>
                 </Component>
                 <Component class="javax.swing.JButton" name="actionCobroMensual">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Tahoma" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Cobrar Mensualidad"/>
                   </Properties>
@@ -659,7 +687,7 @@
             <Container class="javax.swing.JScrollPane" name="ScrollMensual">
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-                  <AbsoluteConstraints x="10" y="502" width="1072" height="273"/>
+                  <AbsoluteConstraints x="10" y="490" width="1080" height="130"/>
                 </Constraint>
               </Constraints>
 
@@ -691,7 +719,7 @@
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-                  <AbsoluteConstraints x="880" y="453" width="528" height="12"/>
+                  <AbsoluteConstraints x="880" y="453" width="440" height="12"/>
                 </Constraint>
               </Constraints>
             </Component>
@@ -703,7 +731,16 @@
               <Color blue="0" green="0" red="0" type="rgb"/>
             </Property>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="Arial" size="24" style="0"/>
+              <Font name="Arial" size="18" style="0"/>
+            </Property>
+            <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[1340, 665]"/>
+            </Property>
+            <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[1340, 665]"/>
+            </Property>
+            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[1340, 665]"/>
             </Property>
           </Properties>
           <Events>
@@ -723,6 +760,9 @@
               <Properties>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="0" green="ff" red="ff" type="rgb"/>
+                </Property>
+                <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                  <Dimension value="[1340, 600]"/>
                 </Property>
               </Properties>
               <Events>
@@ -755,15 +795,20 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="totalHistorial" min="-2" pref="131" max="-2" attributes="0"/>
                               </Group>
-                              <Component id="jScrollPane4" alignment="1" max="32767" attributes="0"/>
-                              <Group type="102" alignment="1" attributes="0">
-                                  <Component id="actionHistorial" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                  <Component id="actionHistorial1" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                  <Component id="actionModHistorial" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="32767" attributes="0"/>
-                                  <Component id="fechaSelector" min="-2" pref="223" max="-2" attributes="0"/>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Group type="103" groupAlignment="1" attributes="0">
+                                      <Group type="102" attributes="0">
+                                          <Component id="actionHistorial" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                          <Component id="actionHistorial1" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                          <Component id="actionModHistorial" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace min="-2" pref="684" max="-2" attributes="0"/>
+                                          <Component id="fechaSelector" min="-2" pref="223" max="-2" attributes="0"/>
+                                      </Group>
+                                      <Component id="jScrollPane4" min="-2" pref="1290" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
@@ -773,16 +818,16 @@
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <EmptySpace max="-2" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="fechaSelector" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="actionHistorial" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="actionHistorial1" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="actionModHistorial" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="fechaSelector" alignment="3" min="-2" pref="25" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jScrollPane4" max="32767" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Component id="jScrollPane4" min="-2" pref="512" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel6" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="iniconsHistorial" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -791,13 +836,18 @@
                               <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="totalHistorial" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="77" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
               </Layout>
               <SubComponents>
                 <Container class="javax.swing.JScrollPane" name="jScrollPane4">
+                  <Properties>
+                    <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                      <Dimension value="[450, 400]"/>
+                    </Property>
+                  </Properties>
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                   <SubComponents>
@@ -822,7 +872,7 @@
                 <Component class="org.jdesktop.swingx.JXDatePicker" name="fechaSelector">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                   </Properties>
                   <Events>
@@ -832,7 +882,7 @@
                 <Component class="javax.swing.JLabel" name="jLabel6">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Tahoma" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Desde"/>
                   </Properties>
@@ -840,7 +890,7 @@
                 <Component class="javax.swing.JLabel" name="iniconsHistorial">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Tahoma" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="jLabel7"/>
                   </Properties>
@@ -848,7 +898,7 @@
                 <Component class="javax.swing.JLabel" name="jLabel7">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Tahoma" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Hasta"/>
                   </Properties>
@@ -856,7 +906,7 @@
                 <Component class="javax.swing.JLabel" name="finconsHistorial">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Tahoma" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="jLabel8"/>
                   </Properties>
@@ -864,7 +914,7 @@
                 <Component class="javax.swing.JLabel" name="jLabel8">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Tahoma" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Total"/>
                   </Properties>
@@ -872,7 +922,7 @@
                 <Component class="javax.swing.JLabel" name="totalHistorial">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Tahoma" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="4"/>
                     <Property name="text" type="java.lang.String" value="jLabel9"/>
@@ -881,7 +931,7 @@
                 <Component class="javax.swing.JButton" name="actionHistorial">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Imprimir Resumen"/>
                   </Properties>
@@ -892,7 +942,7 @@
                 <Component class="javax.swing.JButton" name="actionHistorial1">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Imprimir Recibo"/>
                   </Properties>
@@ -903,7 +953,7 @@
                 <Component class="javax.swing.JButton" name="actionModHistorial">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Modificar"/>
                   </Properties>
@@ -917,6 +967,9 @@
               <Properties>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="0" green="ff" red="ff" type="rgb"/>
+                </Property>
+                <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                  <Dimension value="[1340, 600]"/>
                 </Property>
               </Properties>
               <Events>
@@ -936,25 +989,32 @@
                       <Group type="102" alignment="1" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
                                   <Component id="jLabel25" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="0" pref="774" max="32767" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
                               </Group>
-                              <Group type="102" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="jScrollPane5" max="32767" attributes="0"/>
+                                      <Component id="jScrollPane5" pref="1005" max="32767" attributes="0"/>
                                       <Component id="jScrollPane7" max="32767" attributes="0"/>
                                   </Group>
-                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="1" attributes="0">
+                                      <Group type="102" alignment="1" attributes="0">
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Component id="actionMensual1" min="-2" pref="269" max="-2" attributes="0"/>
+                                              <Component id="selectorMensual" min="-2" pref="269" max="-2" attributes="0"/>
+                                              <Component id="jSeparator1" min="-2" pref="269" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
+                                      </Group>
+                                      <Group type="102" alignment="1" attributes="0">
+                                          <Component id="jPanel8" min="-2" pref="285" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                      </Group>
+                                  </Group>
                               </Group>
                           </Group>
-                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="jPanel8" alignment="1" max="32767" attributes="0"/>
-                              <Component id="jSeparator1" alignment="1" max="32767" attributes="0"/>
-                              <Component id="actionMensual1" alignment="1" max="32767" attributes="0"/>
-                              <Component id="selectorMensual" alignment="1" max="32767" attributes="0"/>
-                          </Group>
-                          <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -962,26 +1022,23 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="1" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="jScrollPane5" min="-2" pref="383" max="-2" attributes="0"/>
                               <Component id="jPanel8" min="-2" max="-2" attributes="0"/>
                           </Group>
+                          <EmptySpace min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel25" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace min="-2" max="-2" attributes="0"/>
-                                  <Component id="jLabel25" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jScrollPane7" pref="0" max="32767" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace min="-2" pref="40" max="-2" attributes="0"/>
+                              <Group type="102" attributes="0">
                                   <Component id="jSeparator1" min="-2" pref="11" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="selectorMensual" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
                                   <Component id="actionMensual1" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="0" pref="201" max="32767" attributes="0"/>
+                                  <EmptySpace min="0" pref="86" max="32767" attributes="0"/>
                               </Group>
+                              <Component id="jScrollPane7" pref="0" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
@@ -1046,7 +1103,7 @@
                 <Component class="org.jdesktop.swingx.JXDatePicker" name="selectorMensual">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                   </Properties>
                   <Events>
@@ -1056,7 +1113,7 @@
                 <Component class="javax.swing.JLabel" name="jLabel25">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Cobros de mensualidades:"/>
                   </Properties>
@@ -1064,7 +1121,7 @@
                 <Component class="javax.swing.JButton" name="actionMensual1">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Imprimir Recibo"/>
                   </Properties>
@@ -1082,7 +1139,7 @@
                     <Component class="javax.swing.JTextField" name="nombreMensual">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Arial" size="24" style="0"/>
+                          <Font name="Arial" size="14" style="0"/>
                         </Property>
                       </Properties>
                       <Events>
@@ -1097,7 +1154,7 @@
                     <Component class="javax.swing.JLabel" name="jLabel9">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Arial" size="24" style="0"/>
+                          <Font name="Arial" size="14" style="0"/>
                         </Property>
                         <Property name="text" type="java.lang.String" value="Placa"/>
                       </Properties>
@@ -1110,7 +1167,7 @@
                     <Component class="javax.swing.JButton" name="actionMensual2">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Arial" size="24" style="0"/>
+                          <Font name="Arial" size="14" style="0"/>
                         </Property>
                         <Property name="text" type="java.lang.String" value="Eliminar"/>
                       </Properties>
@@ -1126,7 +1183,7 @@
                     <Component class="javax.swing.JLabel" name="jLabel14">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Arial" size="24" style="0"/>
+                          <Font name="Arial" size="14" style="0"/>
                         </Property>
                         <Property name="text" type="java.lang.String" value="Ingreso"/>
                       </Properties>
@@ -1139,7 +1196,7 @@
                     <Component class="org.jdesktop.swingx.JXDatePicker" name="cobroMensual">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Arial" size="24" style="0"/>
+                          <Font name="Arial" size="14" style="0"/>
                         </Property>
                       </Properties>
                       <Constraints>
@@ -1151,7 +1208,7 @@
                     <Component class="javax.swing.JLabel" name="jLabel11">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Arial" size="24" style="0"/>
+                          <Font name="Arial" size="14" style="0"/>
                         </Property>
                         <Property name="text" type="java.lang.String" value="Nombre"/>
                       </Properties>
@@ -1164,7 +1221,7 @@
                     <Component class="javax.swing.JButton" name="actionMensual">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Arial" size="24" style="0"/>
+                          <Font name="Arial" size="14" style="0"/>
                         </Property>
                         <Property name="text" type="java.lang.String" value="A&#xf1;adir/Editar"/>
                       </Properties>
@@ -1180,7 +1237,7 @@
                     <Component class="javax.swing.JLabel" name="jLabel10">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Arial" size="24" style="0"/>
+                          <Font name="Arial" size="14" style="0"/>
                         </Property>
                         <Property name="text" type="java.lang.String" value="Cedula"/>
                       </Properties>
@@ -1193,7 +1250,7 @@
                     <Component class="org.jdesktop.swingx.JXDatePicker" name="ingresoMensual">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Arial" size="24" style="0"/>
+                          <Font name="Arial" size="14" style="0"/>
                         </Property>
                       </Properties>
                       <Constraints>
@@ -1205,7 +1262,7 @@
                     <Component class="javax.swing.JTextField" name="mensualidadMensual">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Arial" size="24" style="0"/>
+                          <Font name="Arial" size="14" style="0"/>
                         </Property>
                         <Property name="horizontalAlignment" type="int" value="4"/>
                         <Property name="text" type="java.lang.String" value="0"/>
@@ -1223,7 +1280,7 @@
                     <Component class="javax.swing.JTextField" name="documentoMensual">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Arial" size="24" style="0"/>
+                          <Font name="Arial" size="14" style="0"/>
                         </Property>
                       </Properties>
                       <Events>
@@ -1238,7 +1295,7 @@
                     <Component class="javax.swing.JLabel" name="jLabel15">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Arial" size="24" style="0"/>
+                          <Font name="Arial" size="14" style="0"/>
                         </Property>
                         <Property name="text" type="java.lang.String" value="Cobro"/>
                       </Properties>
@@ -1251,7 +1308,7 @@
                     <Component class="javax.swing.JTextField" name="placaMensual">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Arial" size="24" style="0"/>
+                          <Font name="Arial" size="14" style="0"/>
                         </Property>
                         <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                           <Dimension value="[6, 30]"/>
@@ -1269,7 +1326,7 @@
                     <Component class="javax.swing.JTextField" name="telefonoMensual">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Arial" size="24" style="0"/>
+                          <Font name="Arial" size="14" style="0"/>
                         </Property>
                       </Properties>
                       <Events>
@@ -1284,7 +1341,7 @@
                     <Component class="javax.swing.JLabel" name="jLabel13">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Arial" size="24" style="0"/>
+                          <Font name="Arial" size="14" style="0"/>
                         </Property>
                         <Property name="text" type="java.lang.String" value="Mensualidad"/>
                       </Properties>
@@ -1297,7 +1354,7 @@
                     <Component class="javax.swing.JLabel" name="jLabel12">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Arial" size="24" style="0"/>
+                          <Font name="Arial" size="14" style="0"/>
                         </Property>
                         <Property name="text" type="java.lang.String" value="Telefono"/>
                       </Properties>
@@ -3094,6 +3151,9 @@
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="0" green="ff" red="ff" type="rgb"/>
                 </Property>
+                <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                  <Dimension value="[1340, 600]"/>
+                </Property>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
@@ -3143,7 +3203,7 @@
                               </Group>
                           </Group>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
-                          <Component id="jScrollPane11" pref="1069" max="32767" attributes="0"/>
+                          <Component id="jScrollPane11" max="32767" attributes="0"/>
                           <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -3206,7 +3266,7 @@
                 <Component class="javax.swing.JLabel" name="jLabel18">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Placa"/>
                   </Properties>
@@ -3214,7 +3274,7 @@
                 <Component class="javax.swing.JTextField" name="placaClientes">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                   </Properties>
                   <Events>
@@ -3225,7 +3285,7 @@
                 <Component class="javax.swing.JButton" name="actionClientes">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Buscar"/>
                   </Properties>
@@ -3236,7 +3296,7 @@
                 <Component class="javax.swing.JLabel" name="jLabel19">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Entradas"/>
                   </Properties>
@@ -3245,14 +3305,14 @@
                   <Properties>
                     <Property name="editable" type="boolean" value="false"/>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JLabel" name="jLabel20">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Minutos"/>
                   </Properties>
@@ -3261,14 +3321,14 @@
                   <Properties>
                     <Property name="editable" type="boolean" value="false"/>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JLabel" name="jLabel21">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Cobrado"/>
                   </Properties>
@@ -3277,14 +3337,14 @@
                   <Properties>
                     <Property name="editable" type="boolean" value="false"/>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JLabel" name="jLabel22">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Observaciones"/>
                   </Properties>
@@ -3300,7 +3360,7 @@
                       <Properties>
                         <Property name="columns" type="int" value="20"/>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Arial" size="18" style="0"/>
+                          <Font name="Arial" size="14" style="0"/>
                         </Property>
                         <Property name="lineWrap" type="boolean" value="true"/>
                         <Property name="rows" type="int" value="5"/>
@@ -3312,7 +3372,7 @@
                 <Component class="javax.swing.JButton" name="actionGuardarClientes">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Guardar"/>
                   </Properties>
@@ -3323,7 +3383,7 @@
                 <Component class="javax.swing.JButton" name="actionBanClientes">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Banear"/>
                   </Properties>
@@ -3342,7 +3402,7 @@
                       <Properties>
                         <Property name="columns" type="int" value="20"/>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Arial" size="18" style="0"/>
+                          <Font name="Arial" size="14" style="0"/>
                         </Property>
                         <Property name="lineWrap" type="boolean" value="true"/>
                         <Property name="rows" type="int" value="5"/>
@@ -3354,7 +3414,7 @@
                 <Component class="javax.swing.JLabel" name="jLabel23">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Razon Baneo"/>
                   </Properties>
@@ -3362,7 +3422,7 @@
                 <Component class="javax.swing.JButton" name="actionUnbanClientes">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Desbanear"/>
                   </Properties>
@@ -3373,7 +3433,7 @@
                 <Component class="javax.swing.JLabel" name="jLabel24">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Baneado desde:"/>
                   </Properties>
@@ -3381,7 +3441,7 @@
                 <Component class="javax.swing.JLabel" name="banDesdeClientes">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="4"/>
                     <Property name="text" type="java.lang.String" value="0"/>
@@ -3416,6 +3476,9 @@
               <Properties>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="0" green="ff" red="ff" type="rgb"/>
+                </Property>
+                <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                  <Dimension value="[1340, 600]"/>
                 </Property>
               </Properties>
               <Events>
@@ -3539,7 +3602,7 @@
                     <Component class="javax.swing.JLabel" name="jLabel1">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Arial" size="24" style="0"/>
+                          <Font name="Arial" size="14" style="0"/>
                         </Property>
                         <Property name="text" type="java.lang.String" value="Identificacion"/>
                       </Properties>
@@ -3547,14 +3610,14 @@
                     <Component class="javax.swing.JTextField" name="idLocker">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Arial" size="24" style="0"/>
+                          <Font name="Arial" size="14" style="0"/>
                         </Property>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JLabel" name="jLabel2">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Arial" size="24" style="0"/>
+                          <Font name="Arial" size="14" style="0"/>
                         </Property>
                         <Property name="text" type="java.lang.String" value="Alojamiento"/>
                       </Properties>
@@ -3562,14 +3625,14 @@
                     <Component class="javax.swing.JTextField" name="aloLocker">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Arial" size="24" style="0"/>
+                          <Font name="Arial" size="14" style="0"/>
                         </Property>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JLabel" name="jLabel3">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Arial" size="24" style="0"/>
+                          <Font name="Arial" size="14" style="0"/>
                         </Property>
                         <Property name="text" type="java.lang.String" value="Capacidad"/>
                       </Properties>
@@ -3577,14 +3640,14 @@
                     <Component class="javax.swing.JTextField" name="capLocker">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Arial" size="24" style="0"/>
+                          <Font name="Arial" size="14" style="0"/>
                         </Property>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JButton" name="actionLocker">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Arial" size="24" style="0"/>
+                          <Font name="Arial" size="14" style="0"/>
                         </Property>
                         <Property name="text" type="java.lang.String" value="A&#xf1;adir/Editar"/>
                       </Properties>
@@ -3603,6 +3666,9 @@
                 </Property>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="24" style="0"/>
+                </Property>
+                <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                  <Dimension value="[1340, 600]"/>
                 </Property>
               </Properties>
               <Events>
@@ -3679,7 +3745,7 @@
                 <Component class="javax.swing.JTextField" name="valorConfig">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="4"/>
                   </Properties>
@@ -3690,7 +3756,7 @@
                 <Component class="javax.swing.JLabel" name="descConfig">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Nuevo Valor"/>
                   </Properties>
@@ -3698,7 +3764,7 @@
                 <Component class="javax.swing.JButton" name="actionImport">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Arial" size="24" style="0"/>
+                      <Font name="Arial" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Importar Data"/>
                   </Properties>
