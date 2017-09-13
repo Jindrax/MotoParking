@@ -79,6 +79,14 @@ public class PrintNow {
         addLinea("    MotoParqueo 259", Font.BOLD, 14);
         addLinea("            Luz Stella Garcia Campos", Font.PLAIN, 8);
         addLinea("    39554400-2" + " " + "Regimen Simplificado", Font.PLAIN, 8);
+        try{
+            String polizaReg = Conection.getConfiguraciones().findConfiguraciones("polizaReg").getValor(),
+                    polizaHead = Conection.getConfiguraciones().findConfiguraciones("polizaHeader").getValor();
+            addLinea(polizaHead, Font.PLAIN, 8);
+            addLinea(polizaReg, Font.PLAIN, 8);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
         addLinea("");
     }
     
@@ -93,8 +101,15 @@ public class PrintNow {
     }
 
     public static void imprimirReciboEntrada(Cupo cupo) {
-        String horaE = Auxi.formaterHora(cupo.getCupoPK().getIngreso()),
-                horaCierre = Conection.getConfiguraciones().findConfiguraciones("horaCierre").getValor();
+        String horaE = Auxi.formaterHora(cupo.getCupoPK().getIngreso()), horaCierre, cierreSize;
+        try{
+            horaCierre = Conection.getConfiguraciones().findConfiguraciones("horaCierre").getValor();
+            cierreSize = Conection.getConfiguraciones().findConfiguraciones("cierreSize").getValor();
+        }catch(Exception e){
+            e.printStackTrace();
+            horaCierre = "";
+            cierreSize = "0";
+        }
         recibo = new ArrayList<LineaRecibo>();
         encabezado();
         if (new GregorianCalendar().get(GregorianCalendar.HOUR_OF_DAY) >= 12) {
@@ -117,10 +132,9 @@ public class PrintNow {
         } else {
             addLinea("Ningun Casco", Font.BOLD, 14);
         }
-        addLinea("");
         pie();
-        addLinea("Hoy servicio hasta", Font.BOLD, 12);
-        addLinea(horaCierre, Font.BOLD, 12);
+        addLinea("Hoy servicio hasta", Font.BOLD, Integer.parseInt(cierreSize));
+        addLinea(horaCierre, Font.BOLD, Integer.parseInt(cierreSize)+4);
         try {
             printCard(recibo);
         } catch (PrinterException e) {
@@ -129,9 +143,16 @@ public class PrintNow {
     }
 
     public static void imprimirReciboSalida(Cupo cupo, long cobro) {
-        String horaE = Auxi.formaterHora(cupo.getCupoPK().getIngreso());
+        String horaE = Auxi.formaterHora(cupo.getCupoPK().getIngreso()), horaCierre, cierreSize;
         String horaS = Auxi.formaterHora(cupo.getSalida());
-        String horaCierre = horaCierre = Conection.getConfiguraciones().findConfiguraciones("horaCierre").getValor();
+        try{
+            horaCierre = Conection.getConfiguraciones().findConfiguraciones("horaCierre").getValor();
+            cierreSize = Conection.getConfiguraciones().findConfiguraciones("cierreSize").getValor();
+        }catch(Exception e){
+            e.printStackTrace();
+            horaCierre = "";
+            cierreSize = "0";
+        }
         recibo = new ArrayList<LineaRecibo>();
         encabezado();
         if (new GregorianCalendar().get(GregorianCalendar.HOUR_OF_DAY) >= 12) {
@@ -155,10 +176,9 @@ public class PrintNow {
         addLinea(horaE + "---->" + horaS, Font.BOLD, 14);
         addLinea(String.format("%d:%d", cupo.getHoras(), cupo.getMinutos()), Font.BOLD, 14);
         addLinea("Total: $" + cobro, Font.BOLD, 14);
-        addLinea("");
         pie();
-        addLinea("Hoy servicio hasta", Font.BOLD, 12);
-        addLinea(horaCierre, Font.BOLD, 12);
+        addLinea("Hoy servicio hasta", Font.BOLD, Integer.parseInt(cierreSize));
+        addLinea(horaCierre, Font.BOLD, Integer.parseInt(cierreSize)+4);
         try {
             printCard(recibo);
         } catch (PrinterException e) {
