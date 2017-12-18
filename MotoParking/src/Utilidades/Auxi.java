@@ -62,7 +62,17 @@ public class Auxi {
     }
 
     public static void calcularTiempoMoto(Cupo cupo) {
-        Interval intervalo = new Interval(cupo.getCupoPK().getIngreso().getTime(), cupo.getSalida().getTime());
+        long gracia = 0;
+        try{
+            gracia = Long.valueOf(Conection.getConfiguraciones().findConfiguraciones("gracia").getValor());
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        gracia *= 1000*60;
+        Interval intervalo = new Interval(cupo.getSalida().getTime(), cupo.getSalida().getTime());
+        if(cupo.getSalida().getTime()-gracia > cupo.getCupoPK().getIngreso().getTime()){
+            intervalo = new Interval(cupo.getCupoPK().getIngreso().getTime(), cupo.getSalida().getTime() - gracia);
+        }
         long horas = intervalo.toDuration().getStandardHours();
         long minutos = intervalo.toDuration().getStandardMinutes();
         minutos -= horas * 60;
@@ -92,21 +102,35 @@ public class Auxi {
         }        
         cupo.setHoras(horas);
         cupo.setMinutos(minutos);
-        if (horas == 0) {
-            if (minutos < 30) {
-                cupo.setCobroSugerido(Long.parseLong(mediaHora.getValor()));
-            } else {
-                cupo.setCobroSugerido(Long.parseLong(unaHora.getValor()));
-            }
-        } else if (minutos < 30) {
-            cupo.setCobroSugerido(Long.parseLong(porHora.getValor()) * (horas + 1));
+        if (minutos == 0) {
+            cupo.setCobroSugerido(0);
         } else {
-            cupo.setCobroSugerido(Long.parseLong(porHora.getValor()) * (horas + 1));
-        }
+            if (horas == 0) {
+                if (minutos < 30) {
+                    cupo.setCobroSugerido(Long.parseLong(mediaHora.getValor()));
+                } else {
+                    cupo.setCobroSugerido(Long.parseLong(unaHora.getValor()));
+                }
+            } else if (minutos < 30) {
+                cupo.setCobroSugerido(Long.parseLong(porHora.getValor()) * (horas + 1));
+            } else {
+                cupo.setCobroSugerido(Long.parseLong(porHora.getValor()) * (horas + 1));
+            }
+        }      
     }
 
     public static String[] calcularTiempoMotoTentativo(Cupo cupo) {
-        Interval intervalo = new Interval(cupo.getCupoPK().getIngreso().getTime(), new Date().getTime() + 1);
+        long gracia = 0, entrada = cupo.getCupoPK().getIngreso().getTime(), salida = new Date().getTime() + 1;
+        try{
+            gracia = Long.valueOf(Conection.getConfiguraciones().findConfiguraciones("gracia").getValor());
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        gracia *= 1000*60;
+        Interval intervalo = new Interval(salida, salida);        
+        if(salida-gracia > entrada){
+            intervalo = new Interval(entrada, salida - gracia);
+        }
         Period period = intervalo.toPeriod();
         PeriodFormatter minutesAndSeconds = new PeriodFormatterBuilder()
                 .printZeroAlways()
@@ -145,17 +169,21 @@ public class Auxi {
         }
         cupo.setHoras(horas);
         cupo.setMinutos(minutos);
-        if (horas == 0) {
-            if (minutos < 30) {
-                cobro = Long.parseLong(mediaHora.getValor());
-            } else {
-                cobro = Long.parseLong(unaHora.getValor());
-            }
-        } else if (minutos < 30) {
-            cobro = Long.parseLong(porHora.getValor()) * (horas + 1);
+        if (minutos == 0) {
+            cobro = 0;
         } else {
-            cobro = Long.parseLong(porHora.getValor()) * (horas + 1);
-        }
+            if (horas == 0) {
+                if (minutos < 30) {
+                    cobro = Long.parseLong(mediaHora.getValor());
+                } else {
+                    cobro = Long.parseLong(unaHora.getValor());
+                }
+            } else if (minutos < 30) {
+                cobro = Long.parseLong(porHora.getValor()) * (horas + 1);
+            } else {
+                cobro = Long.parseLong(porHora.getValor()) * (horas + 1);
+            }
+        }        
         String retorno[] = {result, String.valueOf(cobro)};
         return retorno;
     }

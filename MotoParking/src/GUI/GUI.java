@@ -22,9 +22,9 @@ import Negocio.Locker;
 import Negocio.Usuario;
 import Negocio.UsuarioDiario;
 import Negocio.UsuarioMensual;
-import Utilidades.AlphanumComparator;
 import Utilidades.Autenticador;
 import Utilidades.Auxi;
+import Utilidades.CustomComparator;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.swing.DefaultEventListModel;
@@ -38,8 +38,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
@@ -1114,7 +1112,7 @@ public class GUI extends javax.swing.JFrame {
                         .addComponent(selectorMensual, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(actionMensual1)
-                        .addGap(0, 201, Short.MAX_VALUE)))
+                        .addGap(0, 203, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -2047,7 +2045,7 @@ public class GUI extends javax.swing.JFrame {
 
     private void cascosDiarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cascosDiarioActionPerformed
         if (cascosDiario.getText().compareTo("-") == 0) {
-            colaEntrada.add(placaDiario.getText().toUpperCase());
+            colaEntrada.add(placaDiario.getText().toUpperCase().trim());
             cascosDiario.setText("0");
             placaDiario.setText("");
             placaDiario.requestFocus();
@@ -2061,9 +2059,9 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_cascosDiarioMouseClicked
 
     private void actionDiarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionDiarioActionPerformed
-        if (estadoUsuario(placaDiario.getText())) {
-            String ingreso = placaDiario.getText();
-            int cascos = Integer.parseInt(cascosDiario.getText());
+        if (estadoUsuario(placaDiario.getText().trim())) {
+            String ingreso = placaDiario.getText().trim();
+            int cascos = Integer.parseInt(cascosDiario.getText().trim());
             actionDiarioProceso(ingreso, cascos, 0);
             observacinoesDiario.setText("");
             inicializarTablaDiario();
@@ -2071,11 +2069,11 @@ public class GUI extends javax.swing.JFrame {
     }//GEN-LAST:event_actionDiarioActionPerformed
 
     private void placaDiarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_placaDiarioActionPerformed
-        switch (Auxi.selector(placaDiario.getText())) {
+        switch (Auxi.selector(placaDiario.getText().trim())) {
             case 1:
                 cascosDiario.requestFocus();
                 cascosDiario.selectAll();
-                Usuario usuario = Conection.getUsuario().findUsuario(placaDiario.getText());
+                Usuario usuario = Conection.getUsuario().findUsuario(placaDiario.getText().trim());
                 if (usuario != null) {
                     if (usuario.getBaneado() != null) {
                         observacinoesDiario.setText(usuario.getBaneado().getRazon());
@@ -2354,6 +2352,7 @@ public class GUI extends javax.swing.JFrame {
         EntityManager em = Conection.getEMF().createEntityManager();
         Query query = em.createQuery("select l from Locker l ORDER BY l.identificador");
         List<Locker> lockerList = query.getResultList();
+        Collections.sort(lockerList, new CustomComparator());
         String[] columnas = {"Identificador", "Alojamiento", "Capacidad"};
         Object[][] campos = new Object[lockerList.size()][columnas.length];
         int i = 0;
@@ -2415,7 +2414,7 @@ public class GUI extends javax.swing.JFrame {
             Query query = em.createQuery("select l from Locker l where l.alojamiento = 0 and l.capacidad >= :capacidad ORDER BY l.identificador");
             query.setParameter("capacidad", cascos);
             List<Locker> lockers = query.getResultList();
-            Collections.sort(lockers, new AlphanumComparator());
+            Collections.sort(lockers, new CustomComparator());
             if (lockers.size() > 0) {
                 Locker locker = lockers.get(0);
                 locker.setAlojamiento(cascos);

@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.imageio.ImageIO;
-
-import Impresion.LineaRecibo;
 import Negocio.Configuraciones;
 
 public class PrintNow {
@@ -76,14 +74,21 @@ public class PrintNow {
     }
 
     public static void encabezado() {
-        addLinea("    MotoParqueo 259", Font.BOLD, 14);
-        addLinea("            Luz Stella Garcia Campos", Font.PLAIN, 8);
-        addLinea("    39554400-2" + " " + "Regimen Simplificado", Font.PLAIN, 8);
         try{
             String polizaReg = Conection.getConfiguraciones().findConfiguraciones("polizaReg").getValor(),
-                    polizaHead = Conection.getConfiguraciones().findConfiguraciones("polizaHeader").getValor();
-            addLinea(polizaHead, Font.PLAIN, 8);
-            addLinea(polizaReg, Font.PLAIN, 8);
+                    polizaHead = Conection.getConfiguraciones().findConfiguraciones("polizaHeader").getValor(),
+                    nombre = Conection.getConfiguraciones().findConfiguraciones("nombreEmpresa").getValor(),
+                    representante = Conection.getConfiguraciones().findConfiguraciones("nombreRepresentante").getValor(),
+                    nit = Conection.getConfiguraciones().findConfiguraciones("nitEmpresa").getValor(),
+                    regimen = Conection.getConfiguraciones().findConfiguraciones("regimen").getValor();                
+                    
+            addLinea(nombre, Font.BOLD, 14);
+            addLinea(representante, Font.PLAIN, 8);
+            addLinea(nit + " " + regimen, Font.PLAIN, 8);
+            if(!polizaReg.equals("no aplica")){
+                addLinea(polizaHead, Font.PLAIN, 8);
+                addLinea(polizaReg, Font.PLAIN, 8);
+            }
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -97,7 +102,12 @@ public class PrintNow {
         while(token.hasMoreTokens()){
             addLinea(token.nextToken());
         }        
-        addLinea("Cll. 9 #2-59");
+        try{
+            String direccion = Conection.getConfiguraciones().findConfiguraciones("direccion").getValor();
+            addLinea(direccion);            
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     public static void imprimirReciboEntrada(Cupo cupo) {
@@ -195,9 +205,15 @@ public class PrintNow {
     }
 
     public static void printReciboMensual(CobroMensual cupo) {
+        String representante = "";
+        try{
+            representante = Conection.getConfiguraciones().findConfiguraciones("nombreRepresentante").getValor();            
+        }catch(Exception e){
+            e.printStackTrace();
+        }
         String fechaAnt = Auxi.formaterFecha(cupo.getDesde());
         long mensualidad = cupo.getCobro();
-        recibo = new ArrayList<LineaRecibo>();
+        recibo = new ArrayList<>();
         encabezado();
         addLinea(Auxi.formaterFecha(new GregorianCalendar().getTime()), Font.BOLD, 14);
         String nombre = "";
@@ -218,7 +234,7 @@ public class PrintNow {
             addLinea(nombre, Font.BOLD, 10);
         }
         addLinea("Ha pagado a:");
-        addLinea("Luz Stella Garcia Campos");
+        addLinea(representante.trim());
         addLinea("$" + String.valueOf(mensualidad), Font.BOLD, 10);
         addLinea("Por servicio de parqueadero de:");
         addLinea("moto placa:");
