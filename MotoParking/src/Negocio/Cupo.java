@@ -5,6 +5,7 @@
  */
 package Negocio;
 
+import Network.CupoJSON;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -171,6 +172,10 @@ public class Cupo implements Serializable {
     @Override
     public String toString() {
         return String.valueOf(cupoPK.getConsecutivo());
+    }
+    
+    public CupoJSON toJSON(){
+        return new CupoJSON(cupoPK.getConsecutivo(), placa.getPlaca(), cupoPK.getIngreso().getTime(), salida.getTime(), horas, minutos, cobroSugerido, locker.getIdentificador() + ":" + locker.getAlojamiento());
     }
     
 }

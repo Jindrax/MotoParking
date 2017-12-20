@@ -21,3 +21,6 @@ Nuevas:
 "nitEmpresa"
 "nombreRepresentante"
 "regimen"
+
+
+INSERT INTO confiuraciones (descripcion, valor) VALUES ('cierreSize', 14, 'polizaReg', 'no aplica', 'polizaHeader', 'poliza:', 'nombreEmpresa', 'MotoParqueo259', 'nitEmpresa', 'nitempresa', 'nombreRepresentante', 'Luz Stella Garcia Campos', 'regimen', 'Regimen Simplificado');

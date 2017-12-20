@@ -112,7 +112,11 @@ public class Auxi {
                     cupo.setCobroSugerido(Long.parseLong(unaHora.getValor()));
                 }
             } else if (minutos < 30) {
-                cupo.setCobroSugerido(Long.parseLong(porHora.getValor()) * (horas + 1));
+                if(tipo == 2){
+                    cupo.setCobroSugerido((Long.parseLong(porHora.getValor()) * horas) + Long.parseLong(mediaHora.getValor()));
+                }else{
+                    cupo.setCobroSugerido(Long.parseLong(porHora.getValor()) * (horas + 1));                    
+                }
             } else {
                 cupo.setCobroSugerido(Long.parseLong(porHora.getValor()) * (horas + 1));
             }
@@ -179,7 +183,11 @@ public class Auxi {
                     cobro = Long.parseLong(unaHora.getValor());
                 }
             } else if (minutos < 30) {
-                cobro = Long.parseLong(porHora.getValor()) * (horas + 1);
+                if(tipo == 2){
+                    cobro = (Long.parseLong(porHora.getValor()) * horas) + Long.parseLong(mediaHora.getValor());
+                }else{
+                    cobro = Long.parseLong(porHora.getValor()) * (horas + 1);                    
+                }
             } else {
                 cobro = Long.parseLong(porHora.getValor()) * (horas + 1);
             }
