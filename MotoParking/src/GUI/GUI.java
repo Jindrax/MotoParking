@@ -5,7 +5,6 @@
  */
 package GUI;
 
-import Network.ServidorUDP;
 import Network.ServidorTCP;
 import Controladores.exceptions.IllegalOrphanException;
 import Controladores.exceptions.NonexistentEntityException;
@@ -24,6 +23,7 @@ import Negocio.Locker;
 import Negocio.Usuario;
 import Negocio.UsuarioDiario;
 import Negocio.UsuarioMensual;
+import Network.CupoJSON;
 import Utilidades.Autenticador;
 import Utilidades.Auxi;
 import Utilidades.CustomComparator;
@@ -132,7 +132,6 @@ public class GUI extends javax.swing.JFrame {
         mensuales = new BasicEventList<>();
         AutoCompleteDecorator.decorate(placaCobroMensual, mensuales, false);
         (new Thread(new ServidorTCP(this))).start();
-        (new Thread(new ServidorUDP(this))).start();
     }
 
     /**
@@ -1558,19 +1557,19 @@ public class GUI extends javax.swing.JFrame {
         inicializarTablaLockers();
     }//GEN-LAST:event_actionLockerActionPerformed
 
-    public String prospectoPorRed(String ingreso) {
-        Cupo cupo = cuposActivos.get(Long.parseLong(ingreso));
+    public CupoJSON prospectoPorRed(Long ingreso) {
+        Cupo cupo = cuposActivos.get(ingreso);
         if(cupo==null){
-            return "Ticket no existente o retirado";
+            return new CupoJSON(2);
         }
-        String[] aux = Auxi.calcularTiempoMotoTentativo(cupo);
-        return "Placa: " + cupo.getPlaca().getPlaca() + "\nTiempo: " + aux[0] + "\nCobro: " + aux[1];
+        Cupo retorno = Auxi.calcularTiempoMoto(cupo.clone());
+        return retorno.toJSON();
     }
     
-    public String retiroPorRed(String ingreso, boolean imprimir) {
-        Cupo cupo = cuposActivos.remove(Long.parseLong(ingreso));
+    public CupoJSON retiroPorRed(Long ingreso, boolean imprimir) {
+        Cupo cupo = cuposActivos.remove(ingreso);
         if(cupo==null){
-            return "Ticket no existente o retirado";
+            return new CupoJSON(2);
         }
         retiroDiario(cupo);
         Configuraciones consecutivo = Conection.getConfiguraciones().findConfiguraciones("consecutivo");
@@ -1595,30 +1594,26 @@ public class GUI extends javax.swing.JFrame {
                 Conection.getLocker().edit(locker);
             }
         } catch (NonexistentEntityException ex) {
-            return "Ha ocurrido un error";
+            return new CupoJSON(-1);
         } catch (Exception ex) {
-            return "Ha ocurrido un error";
+            return new CupoJSON(-1);
         }
         if(imprimir){
             PrintNow.imprimirReciboSalida(cupo, cobro.getCobro());
         }
-        if(cupo.getLocker()!=null){
-            return "Cobro: " + String.valueOf(cupo.getCobroSugerido()) + "\n" + "Cascos: " + cupo.getLocker().getIdentificador();
-        }else{
-            return "Cobro: " + String.valueOf(cupo.getCobroSugerido()) + "\n" + "Sin cascos";
-        }
+        return cupo.toJSON();
     }
 
-    public String actionDiarioProceso(String ingreso, int cascos, int origen) {
+    public CupoJSON actionDiarioProceso(String ingreso, int cascos, int origen) {
         int seleccion = Auxi.selector(ingreso);
-        String retorno = null;
+        CupoJSON retorno = null;
         switch (seleccion) {
             case 0:
                 if (origen == 0) {
                     JOptionPane.showMessageDialog(null, "El ingreso no es un formato permitido.");
                     break;
                 } else {
-                    retorno = "Invalido";
+                    //retorno = "Invalido";
                     break;
                 }
             case 1:
@@ -1638,14 +1633,14 @@ public class GUI extends javax.swing.JFrame {
                         new RetiroDialogo(this, rootPaneCheckingEnabled, cupo);
                         inicializarTablaDiario();
                     } else {
-                        retiroPorRed(ingreso, false);
+                        retiroPorRed(Long.valueOf(ingreso), false);
                     }
                     inicializarTablaDiario();
                 } else {
                     if (origen == 0) {
                         JOptionPane.showMessageDialog(null, "Ese cupo no existe en el sistema.");
                     } else {
-                        retorno = "No existe ese ticket";
+                        //retorno = "No existe ese ticket";
                     }
                 }
                 break;
@@ -1654,7 +1649,7 @@ public class GUI extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(null, "El cliente es un cliente mensual.");
                     break;
                 } else {
-                    retorno = "Mensual";
+                    //retorno = "Mensual";
                     break;
                 }
             default:
@@ -1662,7 +1657,7 @@ public class GUI extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(null, "El ingreso no es un formato permitido.");
                     break;
                 } else {
-                    retorno = "Invalido";
+                    //retorno = "Invalido";
                     break;
                 }
         }
@@ -2368,7 +2363,7 @@ public class GUI extends javax.swing.JFrame {
         tablaConfig.getTableHeader().setFont(new Font("Arial", Font.PLAIN, 24));
     }
 
-    public String ingresoDiario(String placa, int cascos) {
+    public CupoJSON ingresoDiario(String placa, int cascos) {
         UsuarioDiario usuario = Conection.getUsuarioDiario().findUsuarioDiario(placa);
         if (usuario == null) {
             Usuario usuarioGeneral = Conection.getUsuario().findUsuario(placa);
@@ -2428,11 +2423,7 @@ public class GUI extends javax.swing.JFrame {
         colaEntrada.remove(placa);
         PrintNow.imprimirReciboEntrada(cupo);
         inicializarTablaDiario();
-        if (cupo.getLocker() != null) {
-            return cupo.getLocker().getIdentificador();
-        } else {
-            return "Sin Cascos";
-        }
+        return cupo.toJSON();
     }
 
     private void retiroDiario(Cupo cupo) {

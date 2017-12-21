@@ -14,11 +14,12 @@ public class SolicitudCliente {
     public String placa;
     public long cascos;
     public long consecutivo;
+    public boolean impresion;
 
     public SolicitudCliente() {
     }
 
-    public SolicitudCliente(long tipoSolicitud, String placa, long cascos, long consecutivo) {
+    public SolicitudCliente(long tipoSolicitud, String placa, long cascos, long consecutivo, boolean impresion) {
         //0 solicitud de ingreso.
         //1 solicitud de prospecto de salida.
         //2 solicitud de salida.
@@ -26,6 +27,7 @@ public class SolicitudCliente {
         this.placa = placa;
         this.cascos = cascos;
         this.consecutivo = consecutivo;
+        this.impresion = impresion;
     }
 
     public long getTipoSolicitud() {
@@ -58,6 +60,14 @@ public class SolicitudCliente {
 
     public void setConsecutivo(long consecutivo) {
         this.consecutivo = consecutivo;
+    }
+
+    public boolean isImpresion() {
+        return impresion;
+    }
+
+    public void setImpresion(boolean impresion) {
+        this.impresion = impresion;
     }
     
 }

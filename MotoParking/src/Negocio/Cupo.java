@@ -178,4 +178,10 @@ public class Cupo implements Serializable {
         return new CupoJSON(cupoPK.getConsecutivo(), placa.getPlaca(), cupoPK.getIngreso().getTime(), salida.getTime(), horas, minutos, cobroSugerido, locker.getIdentificador() + ":" + locker.getAlojamiento());
     }
     
+    public Cupo clone(){
+        Cupo retorno = new Cupo(cupoPK);
+        retorno.setPlaca(placa);
+        return retorno;
+    }
+    
 }

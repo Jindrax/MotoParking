@@ -61,7 +61,7 @@ public class Auxi {
         return 0;
     }
 
-    public static void calcularTiempoMoto(Cupo cupo) {
+    public static Cupo calcularTiempoMoto(Cupo cupo) {
         long gracia = 0;
         try{
             gracia = Long.valueOf(Conection.getConfiguraciones().findConfiguraciones("gracia").getValor());
@@ -121,6 +121,7 @@ public class Auxi {
                 cupo.setCobroSugerido(Long.parseLong(porHora.getValor()) * (horas + 1));
             }
         }      
+        return cupo;
     }
 
     public static String[] calcularTiempoMotoTentativo(Cupo cupo) {

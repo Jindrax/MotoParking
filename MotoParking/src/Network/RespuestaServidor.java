@@ -13,6 +13,11 @@ import java.util.List;
  */
 public class RespuestaServidor {
     
+    //-1 error
+    //0 estado
+    //1 ingreso
+    //2 prospecto
+    //3 retiro
     public long tipoRespuesta;
     public List<CupoJSON> cupos;
 

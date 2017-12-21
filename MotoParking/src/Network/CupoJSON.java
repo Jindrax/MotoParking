@@ -18,6 +18,10 @@ public class CupoJSON {
     public long minutos;
     public long cobro;
     public String locker;
+    //-1 error no especificado
+    //1 error en la entrada
+    //2 tickete no encontrado
+    public int codigoError;
 
     public CupoJSON(long consecutivo, String placa, long start, long end, long horas, long minutos, long cobro, String locker) {
         this.consecutivo = consecutivo;
@@ -28,6 +32,11 @@ public class CupoJSON {
         this.minutos = minutos;
         this.cobro = cobro;
         this.locker = locker;
+        this.codigoError = 0;
+    }
+    
+    public CupoJSON(int codigoError){
+        this.codigoError = codigoError;
     }
 
     public CupoJSON() {
@@ -96,5 +105,13 @@ public class CupoJSON {
     public void setLocker(String locker) {
         this.locker = locker;
     } 
-    
+
+    public int getCodigoError() {
+        return codigoError;
+    }
+
+    public void setCodigoError(int codigoError) {
+        this.codigoError = codigoError;
+    }
+        
 }

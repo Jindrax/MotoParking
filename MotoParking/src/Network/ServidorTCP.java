@@ -7,15 +7,15 @@ package Network;
 
 import GUI.GUI;
 import Utilidades.Auxi;
+import com.google.gson.Gson;
 import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -72,50 +72,29 @@ class clientThread extends Thread {
             PrintStream outToClient = new PrintStream(clientSocket.getOutputStream());
             outToClient.println("Bienvenido");
             while (true) {
+                Gson parser = new Gson();
                 String entrada = inFromClient.readLine();
                 if (entrada == null || entrada.compareToIgnoreCase("salir")==0) {
                     break;
                 }
-                entrada = entrada.trim();
-                String respuesta = null;
-                String[] data = entrada.split(" ");
-                data[0] = data[0].trim();
+                RespuestaServidor respuesta = null;
+                SolicitudCliente solicitud = parser.fromJson(entrada, SolicitudCliente.class);
                 boolean cerrado = false;
-                switch(Auxi.selector(data[0])){
+                List<CupoJSON> cupos = new ArrayList<>();
+                CupoJSON resultado = null;
+                switch((int)solicitud.getTipoSolicitud()){
                     case 0:
-                        respuesta = "Invalido";
+                        cupos.add(gui.ingresoDiario(solicitud.getPlaca(), (int)solicitud.getCascos()));
+                        respuesta = new RespuestaServidor(1, cupos);
                         break;
                     case 1:
+                        cupos.add(gui.prospectoPorRed(solicitud.getConsecutivo()));
+                        respuesta = new RespuestaServidor(2, cupos);
+                        break;
                     case 2:
-                    case 3:
-                        respuesta = gui.ingresoDiario(data[0].toUpperCase(), Integer.valueOf(data[1].trim()));
+                        cupos.add(gui.retiroPorRed(solicitud.getConsecutivo(), solicitud.isImpresion()));
+                        respuesta = new RespuestaServidor(3, cupos);
                         break;
-                    case 4:
-                        respuesta = gui.prospectoPorRed(data[0]);
-                        if(respuesta.compareToIgnoreCase("Ticket no existente o retirado")==0){
-                            break;
-                        }
-                        outToClient.println(respuesta);
-                        outToClient.println("(r)etirar, (i)mprimir, (c)ancelar");
-                        String seleccion = inFromClient.readLine();
-                        if (seleccion == null) {
-                            cerrado = true;
-                            break;
-                        }
-                        switch(seleccion.charAt(0)){
-                            case 'r':
-                                respuesta = gui.retiroPorRed(data[0], false);
-                                break;
-                            case 'i':
-                                respuesta = gui.retiroPorRed(data[0], true);
-                                break;
-                            default:
-                                respuesta = "Retiro cancelado";
-                                break;                                
-                        }
-                        break;
-                    case 5:
-                        respuesta = "Cliente Mensual";
                 }
                 if(cerrado){
                     break;
