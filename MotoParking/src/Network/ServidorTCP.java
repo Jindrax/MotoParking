@@ -72,6 +72,8 @@ class clientThread extends Thread {
     
     private Socket clientSocket = null;
     private GUI gui = null;
+    private PrintStream outToClient = null;
+    
 
     public clientThread(Socket clientSocket, GUI gui, ServidorTCP servidor) {
         this.clientSocket = clientSocket;
@@ -84,8 +86,13 @@ class clientThread extends Thread {
         System.out.println("Hilo creado con el cliente: " + id);
         try {
             BufferedReader inFromClient = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            PrintStream outToClient = new PrintStream(clientSocket.getOutputStream());
-            outToClient.println("Bienvenido");
+            outToClient = new PrintStream(clientSocket.getOutputStream());
+            List<CupoJSON> cuposJSON = new ArrayList<>();
+            for(Cupo cupo: gui.getCuposActivos()){
+                cuposJSON.add(cupo.toJSON());
+            }
+            String estado = new Gson().toJson(cuposJSON);
+            outToClient.println(estado);
             while (true) {
                 Gson parser = new Gson();
                 String entrada = inFromClient.readLine();
@@ -130,13 +137,6 @@ class clientThread extends Thread {
     }
     
     public void notifyChanges(String estado){
-        try {
-            PrintStream outToClient = new PrintStream(clientSocket.getOutputStream());
-            outToClient.println(estado);
-            outToClient.close();
-            
-        } catch (IOException ex) {
-            Logger.getLogger(clientThread.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        outToClient.println(estado);
     }
 }

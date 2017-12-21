@@ -2624,4 +2624,7 @@ public class GUI extends javax.swing.JFrame {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    public List<Cupo> getCuposActivos(){
+        return new ArrayList<>(cuposActivos.values());
+    }
 }

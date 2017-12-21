@@ -175,7 +175,20 @@ public class Cupo implements Serializable {
     }
     
     public CupoJSON toJSON(){
-        return new CupoJSON(cupoPK.getConsecutivo(), placa.getPlaca(), cupoPK.getIngreso().getTime(), salida.getTime(), horas, minutos, cobroSugerido, locker.getIdentificador() + ":" + locker.getAlojamiento());
+        if(locker != null){
+            if(salida != null){
+                return new CupoJSON(cupoPK.getConsecutivo(), placa.getPlaca(), cupoPK.getIngreso().getTime(), salida.getTime(), horas, minutos, cobroSugerido, locker.getIdentificador() + ":" + locker.getAlojamiento());
+            }else{
+                return new CupoJSON(cupoPK.getConsecutivo(), placa.getPlaca(), cupoPK.getIngreso().getTime(), 0, 0, 0, 0, locker.getIdentificador() + ":" + locker.getAlojamiento());
+            }
+            
+        }else{
+            if(salida != null){
+                return new CupoJSON(cupoPK.getConsecutivo(), placa.getPlaca(), cupoPK.getIngreso().getTime(), salida.getTime(), horas, minutos, cobroSugerido, "");
+            }else{
+                return new CupoJSON(cupoPK.getConsecutivo(), placa.getPlaca(), cupoPK.getIngreso().getTime(), 0, 0, 0, 0, "");
+            }
+        }        
     }
     
     public Cupo clone(){
