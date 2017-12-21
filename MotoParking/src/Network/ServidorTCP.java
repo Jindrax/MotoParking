@@ -6,6 +6,7 @@
 package Network;
 
 import GUI.GUI;
+import Negocio.Cupo;
 import Utilidades.Auxi;
 import com.google.gson.Gson;
 import java.io.BufferedReader;
@@ -28,6 +29,7 @@ public class ServidorTCP implements Runnable {
     private static ServerSocket serverSocket = null;
     private static Socket clientSocket = null;
     private GUI gui = null;
+    public List<clientThread> clientes = null;
 
     @Override
     public void run() {
@@ -41,7 +43,7 @@ public class ServidorTCP implements Runnable {
         while (true) {
             try {
                 clientSocket = serverSocket.accept();
-                (new clientThread(clientSocket, gui)).start();
+                (new clientThread(clientSocket, gui, this)).start();
             } catch (IOException e) {
                 System.out.println("Error creando el socket");
             }
@@ -50,6 +52,18 @@ public class ServidorTCP implements Runnable {
 
     public ServidorTCP(GUI gui) {
         this.gui = gui;
+        clientes = new ArrayList<>();
+    }
+    
+    public void notifyChanges(List<Cupo> cupos){
+        List<CupoJSON> cuposJSON = new ArrayList<>();
+        for(Cupo cupo: cupos){
+            cuposJSON.add(cupo.toJSON());
+        }
+        String estado = new Gson().toJson(cuposJSON);
+        for(clientThread cliente: clientes){
+            cliente.notifyChanges(estado);
+        }
     }
 
 }
@@ -59,9 +73,10 @@ class clientThread extends Thread {
     private Socket clientSocket = null;
     private GUI gui = null;
 
-    public clientThread(Socket clientSocket, GUI gui) {
+    public clientThread(Socket clientSocket, GUI gui, ServidorTCP servidor) {
         this.clientSocket = clientSocket;
         this.gui = gui;
+        servidor.clientes.add(this);
     }
 
     public void run() {
@@ -81,7 +96,6 @@ class clientThread extends Thread {
                 SolicitudCliente solicitud = parser.fromJson(entrada, SolicitudCliente.class);
                 boolean cerrado = false;
                 List<CupoJSON> cupos = new ArrayList<>();
-                CupoJSON resultado = null;
                 switch((int)solicitud.getTipoSolicitud()){
                     case 0:
                         cupos.add(gui.ingresoDiario(solicitud.getPlaca(), (int)solicitud.getCascos()));
@@ -99,7 +113,7 @@ class clientThread extends Thread {
                 if(cerrado){
                     break;
                 }
-                outToClient.println(respuesta);
+                outToClient.println(parser.toJson(respuesta));
             }
             inFromClient.close();
             outToClient.close();
@@ -112,6 +126,17 @@ class clientThread extends Thread {
             Logger.getLogger(clientThread.class.getName()).log(Level.SEVERE, null, ex);
         } finally{
             
+        }
+    }
+    
+    public void notifyChanges(String estado){
+        try {
+            PrintStream outToClient = new PrintStream(clientSocket.getOutputStream());
+            outToClient.println(estado);
+            outToClient.close();
+            
+        } catch (IOException ex) {
+            Logger.getLogger(clientThread.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

@@ -65,6 +65,7 @@ public class GUI extends javax.swing.JFrame {
     Cupo cupoActual = null;
     EventList<String> colaEntrada;
     EventList<String> mensuales;
+    ServidorTCP servidor;
 
     private void inicializarTablaDiario() {
         EntityManager em = Conection.getEMF().createEntityManager();
@@ -131,7 +132,8 @@ public class GUI extends javax.swing.JFrame {
         AutoCompleteDecorator.decorate(placaDiario, colaEntrada, false);
         mensuales = new BasicEventList<>();
         AutoCompleteDecorator.decorate(placaCobroMensual, mensuales, false);
-        (new Thread(new ServidorTCP(this))).start();
+        servidor = new ServidorTCP(this);
+        (new Thread(servidor)).start();
     }
 
     /**
@@ -1601,6 +1603,7 @@ public class GUI extends javax.swing.JFrame {
         if(imprimir){
             PrintNow.imprimirReciboSalida(cupo, cobro.getCobro());
         }
+        servidor.notifyChanges(new ArrayList<>(cuposActivos.values()));
         return cupo.toJSON();
     }
 
@@ -1618,12 +1621,15 @@ public class GUI extends javax.swing.JFrame {
                 }
             case 1:
                 retorno = ingresoDiario(ingreso.toUpperCase(), cascos);
+                servidor.notifyChanges(new ArrayList<>(cuposActivos.values()));
                 break;
             case 2:
                 retorno = ingresoDiario(ingreso.toUpperCase(), cascos);
+                servidor.notifyChanges(new ArrayList<>(cuposActivos.values()));
                 break;
             case 3:
                 retorno = ingresoDiario(ingreso.toUpperCase(), cascos);
+                servidor.notifyChanges(new ArrayList<>(cuposActivos.values()));
                 break;
             case 4:
                 if (cuposActivos.containsKey(Long.parseLong(ingreso))) {
@@ -1631,6 +1637,9 @@ public class GUI extends javax.swing.JFrame {
                         Cupo cupo = cuposActivos.remove(Long.parseLong(ingreso));
                         retiroDiario(cupo);
                         new RetiroDialogo(this, rootPaneCheckingEnabled, cupo);
+                        if(cupo.getSalida() != null){
+                            servidor.notifyChanges(new ArrayList<>(cuposActivos.values()));
+                        }
                         inicializarTablaDiario();
                     } else {
                         retiroPorRed(Long.valueOf(ingreso), false);
