@@ -24,6 +24,8 @@ import Negocio.Usuario;
 import Negocio.UsuarioDiario;
 import Negocio.UsuarioMensual;
 import Network.CupoJSON;
+import Network.RespuestaServidor;
+import Network.SolicitudCliente;
 import Utilidades.Autenticador;
 import Utilidades.Auxi;
 import Utilidades.CustomComparator;
@@ -31,7 +33,9 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.swing.DefaultEventListModel;
 import ca.odell.glazedlists.swing.GlazedListsSwing;
+import com.esotericsoftware.kryo.Kryo;
 import java.awt.Font;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -132,8 +136,17 @@ public class GUI extends javax.swing.JFrame {
         AutoCompleteDecorator.decorate(placaDiario, colaEntrada, false);
         mensuales = new BasicEventList<>();
         AutoCompleteDecorator.decorate(placaCobroMensual, mensuales, false);
-        servidor = new ServidorTCP(this);
-        (new Thread(servidor)).start();
+        servidor = new ServidorTCP();
+        Kryo kryo = servidor.getKryo();
+        kryo.register(CupoJSON.class);
+        kryo.register(SolicitudCliente.class);
+        kryo.register(RespuestaServidor.class);
+        servidor.start();
+        try {
+            servidor.bind(8051);
+        } catch (IOException ex) {
+            Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
