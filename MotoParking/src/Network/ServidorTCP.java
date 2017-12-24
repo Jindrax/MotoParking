@@ -24,6 +24,7 @@ public class ServidorTCP extends Server {
     public void broadcast(Object o){
         for(Connection conection: getConnections()){
             conection.sendTCP(o);
+            System.out.println("Enviado estado");
         }
     }
     
@@ -32,6 +33,6 @@ public class ServidorTCP extends Server {
         for(Cupo cupo: cupos){
             estado.add(cupo.toJSON());
         }
-        broadcast(estado);
+        broadcast(new RespuestaServidor(0, estado));
     }
 }

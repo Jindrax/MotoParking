@@ -102,7 +102,7 @@ public class Auxi {
         }        
         cupo.setHoras(horas);
         cupo.setMinutos(minutos);
-        if (minutos == 0) {
+        if (horas == 0 && minutos == 0) {
             cupo.setCobroSugerido(0);
         } else {
             if (horas == 0) {
@@ -174,7 +174,7 @@ public class Auxi {
         }
         cupo.setHoras(horas);
         cupo.setMinutos(minutos);
-        if (minutos == 0) {
+        if (horas == 0 && minutos == 0) {
             cobro = 0;
         } else {
             if (horas == 0) {

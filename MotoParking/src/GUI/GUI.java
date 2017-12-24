@@ -25,6 +25,7 @@ import Negocio.UsuarioDiario;
 import Negocio.UsuarioMensual;
 import Network.CupoJSON;
 import Network.RespuestaServidor;
+import Network.ServidorListener;
 import Network.SolicitudCliente;
 import Utilidades.Autenticador;
 import Utilidades.Auxi;
@@ -141,9 +142,11 @@ public class GUI extends javax.swing.JFrame {
         kryo.register(CupoJSON.class);
         kryo.register(SolicitudCliente.class);
         kryo.register(RespuestaServidor.class);
+        kryo.register(ArrayList.class);
         servidor.start();
         try {
             servidor.bind(8051);
+            servidor.addListener(new ServidorListener(this));
         } catch (IOException ex) {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -1633,15 +1636,9 @@ public class GUI extends javax.swing.JFrame {
                     break;
                 }
             case 1:
-                retorno = ingresoDiario(ingreso.toUpperCase(), cascos);
-                servidor.notifyChanges(new ArrayList<>(cuposActivos.values()));
-                break;
             case 2:
-                retorno = ingresoDiario(ingreso.toUpperCase(), cascos);
-                servidor.notifyChanges(new ArrayList<>(cuposActivos.values()));
-                break;
             case 3:
-                retorno = ingresoDiario(ingreso.toUpperCase(), cascos);
+                retorno = ingresoDiario(ingreso.toUpperCase().trim(), cascos);
                 servidor.notifyChanges(new ArrayList<>(cuposActivos.values()));
                 break;
             case 4:
@@ -2444,7 +2441,9 @@ public class GUI extends javax.swing.JFrame {
         }
         colaEntrada.remove(placa);
         PrintNow.imprimirReciboEntrada(cupo);
+        //TODO: habilitar la impresion.
         inicializarTablaDiario();
+        servidor.notifyChanges(new ArrayList<>(cuposActivos.values()));
         return cupo.toJSON();
     }
 
