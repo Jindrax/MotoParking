@@ -194,6 +194,7 @@ public class Cupo implements Serializable {
     public Cupo clone(){
         Cupo retorno = new Cupo(cupoPK);
         retorno.setPlaca(placa);
+        retorno.setLocker(locker);
         return retorno;
     }
     

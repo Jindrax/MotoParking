@@ -1580,7 +1580,9 @@ public class GUI extends javax.swing.JFrame {
         if(cupo==null){
             return new CupoJSON(2);
         }
-        Cupo retorno = Auxi.calcularTiempoMoto(cupo.clone());
+        Cupo clone = cupo.clone();
+        clone.setSalida(new Date());
+        Cupo retorno = Auxi.calcularTiempoMoto(clone);
         return retorno.toJSON();
     }
     
@@ -1617,9 +1619,10 @@ public class GUI extends javax.swing.JFrame {
             return new CupoJSON(-1);
         }
         if(imprimir){
-            PrintNow.imprimirReciboSalida(cupo, cobro.getCobro());
+            //PrintNow.imprimirReciboSalida(cupo, cobro.getCobro());
         }
         servidor.notifyChanges(new ArrayList<>(cuposActivos.values()));
+        inicializarTablaDiario();
         return cupo.toJSON();
     }
 
@@ -1988,7 +1991,7 @@ public class GUI extends javax.swing.JFrame {
     private void actionHistorial1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionHistorial1ActionPerformed
         if (tablaHistorial.getSelectedRow() != -1) {
             CobroDiario cobro = (CobroDiario) tablaHistorial.getValueAt(tablaHistorial.getSelectedRow(), 0);
-            PrintNow.imprimirReciboSalida(cobro.getCupo(), cobro.getCobro());
+            //PrintNow.imprimirReciboSalida(cobro.getCupo(), cobro.getCobro());
         } else {
             JOptionPane.showMessageDialog(null, "Seleccione un elemento.");
         }
@@ -2101,7 +2104,7 @@ public class GUI extends javax.swing.JFrame {
     private void actionCobroMensual1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionCobroMensual1ActionPerformed
         if (tablaDiario.getSelectedRow() != -1) {
             Cupo cupo = (Cupo) tablaDiario.getValueAt(tablaDiario.getSelectedRow(), 0);
-            PrintNow.imprimirReciboEntrada(cupo);
+            //PrintNow.imprimirReciboEntrada(cupo);
             tablaDiario.clearSelection();
         } else {
             JOptionPane.showMessageDialog(null, "Seleccione un elemento.");
@@ -2440,7 +2443,7 @@ public class GUI extends javax.swing.JFrame {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
         colaEntrada.remove(placa);
-        PrintNow.imprimirReciboEntrada(cupo);
+        //PrintNow.imprimirReciboEntrada(cupo);
         //TODO: habilitar la impresion.
         inicializarTablaDiario();
         servidor.notifyChanges(new ArrayList<>(cuposActivos.values()));

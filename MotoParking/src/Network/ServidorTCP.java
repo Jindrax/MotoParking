@@ -23,8 +23,12 @@ public class ServidorTCP extends Server {
     
     public void broadcast(Object o){
         for(Connection conection: getConnections()){
-            conection.sendTCP(o);
-            System.out.println("Enviado estado");
+            if(conection.isConnected()){
+                conection.sendTCP(o);
+                System.out.println("Enviado estado a " + conection.getRemoteAddressTCP().toString());
+            }else{
+                conection.close();
+            }            
         }
     }
     

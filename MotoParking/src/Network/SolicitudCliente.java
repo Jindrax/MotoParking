@@ -30,6 +30,17 @@ public class SolicitudCliente {
         this.impresion = impresion;
     }
 
+    public SolicitudCliente(long tipoSolicitud, long consecutivo) {
+        this.tipoSolicitud = tipoSolicitud;
+        this.consecutivo = consecutivo;
+    }
+
+    public SolicitudCliente(long tipoSolicitud, long consecutivo, boolean impresion) {
+        this.tipoSolicitud = tipoSolicitud;
+        this.consecutivo = consecutivo;
+        this.impresion = impresion;
+    }
+
     public long getTipoSolicitud() {
         return tipoSolicitud;
     }

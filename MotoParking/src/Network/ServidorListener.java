@@ -52,6 +52,7 @@ public class ServidorListener extends Listener{
     @Override
     public void disconnected(Connection cnctn) {
         super.disconnected(cnctn); //To change body of generated methods, choose Tools | Templates.
+        System.out.println("Cliente " + cnctn.toString() + " desconectado");
     }
 
     @Override
